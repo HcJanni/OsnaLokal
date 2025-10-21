@@ -1,162 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.coordinatorlayout.widget.CoordinatorLayout
+<androidx.constraintlayout.widget.ConstraintLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="vertical">
+    <!-- A1) Plain Button (wird via M3-Theme zu MaterialButton aufgeblasen) -->
 
-        <com.google.android.material.appbar.AppBarLayout
-            android:id="@+id/appBarLayout"
+    <!-- A2) TextInputLayout (ohne expliziten Style) -->
+
+    <Button
+        android:id="@+id/plainBtn"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="44dp"
+        android:layout_marginEnd="16dp"
+        android:text="@string/btn_plain"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/tilEmail"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:hint="@string/textfield_label"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/plainBtn">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/tietEmail"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            app:elevation="0dp">
+            android:inputType="textEmailAddress" />
+    </com.google.android.material.textfield.TextInputLayout>
 
-            <com.google.android.material.appbar.MaterialToolbar
-                android:id="@+id/toolbar"
-                android:layout_width="match_parent"
-                android:layout_height="?attr/actionBarSize">
+    <!-- A3) Material Switch (neuer M3-Name; funktioniert sicher ab 1.10+) -->
+    <com.google.android.material.materialswitch.MaterialSwitch
+        android:id="@+id/m3Switch"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/switch_label"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/tilEmail" />
 
-                <!-- Container für die Icons, um sie an den Rändern zu platzieren -->
-                <androidx.constraintlayout.widget.ConstraintLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="match_parent">
+    <Button
+        android:id="@+id/btnZurMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zur Map gehen"
+        tools:layout_editor_absoluteX="143dp"
+        tools:layout_editor_absoluteY="341dp" />
 
-                    <!-- 1. Das sichtbare Such-Icon (nicht mehr klickbar) -->
-                    <ImageView
-                        android:id="@+id/icon_search"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:padding="8dp"
-                        android:src="@drawable/search"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintStart_toStartOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:tint="?attr/colorOnSurface" />
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
-                    <!-- 2. Der unsichtbare, klickbare Bereich FÜR DAS SUCH-ICON -->
-                    <View
-                        android:id="@+id/search_click_area"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true"
-                        app:layout_constraintBottom_toBottomOf="@id/icon_search"
-                        app:layout_constraintEnd_toEndOf="@id/icon_search"
-                        app:layout_constraintStart_toStartOf="@id/icon_search"
-                        app:layout_constraintTop_toTopOf="@id/icon_search" />
-
-
-                    <!-- 3. Das sichtbare Filter-Icon (nicht mehr klickbar) -->
-                    <ImageView
-                        android:id="@+id/icon_filter"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_marginEnd="16dp"
-                        android:padding="8dp"
-                        android:src="@drawable/filter"
-                        app:layout_constraintBottom_toBottomOf="parent"
-                        app:layout_constraintEnd_toEndOf="parent"
-                        app:layout_constraintTop_toTopOf="parent"
-                        app:tint="?attr/colorOnSurface" />
-
-                    <!-- 4. Der unsichtbare, klickbare Bereich FÜR DAS FILTER-ICON -->
-                    <View
-                        android:id="@+id/filter_click_area"
-                        android:layout_width="42dp"
-                        android:layout_height="42dp"
-                        android:background="?attr/selectableItemBackgroundBorderless"
-                        android:clickable="true"
-                        android:focusable="true"
-                        app:layout_constraintBottom_toBottomOf="@id/icon_filter"
-                        app:layout_constraintEnd_toEndOf="@id/icon_filter"
-                        app:layout_constraintStart_toStartOf="@id/icon_filter"
-                        app:layout_constraintTop_toTopOf="@id/icon_filter" />
-
-                </androidx.constraintlayout.widget.ConstraintLayout>
-
-            </com.google.android.material.appbar.MaterialToolbar>
-
-        </com.google.android.material.appbar.AppBarLayout>
-
-        <androidx.core.widget.NestedScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior">
-
-            <!-- LinearLayout als Hauptcontainer für alle folgenden Elemente -->
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical">
-
-                <!-- 1. Horizontale Scroll-Ansicht, damit die Chips nicht umbrechen -->
-                <HorizontalScrollView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:scrollbars="none"> <!-- Versteckt die Scroll-Leiste -->
-
-                    <!-- 2. Die ChipGroup, die die einzelnen Chips enthält -->
-                    <com.google.android.material.chip.ChipGroup
-                        android:id="@+id/chip_group_filters"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        app:singleLine="true"
-                        app:singleSelection="true"
-                        app:chipBackgroundColor="@color/chip_background_color"
-                        app:chipStrokeWidth="0dp"> <!-- Sorgt dafür, dass nur ein Chip aktiv sein kann -->
-
-                        <!-- 3. Die einzelnen Chips -->
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip_alle_routen"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:checked="true"
-                            android:text="Alle Routen"
-                            android:textColor="@color/chip_text_color"/>
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip_restaurants"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Restaurants"
-                            android:textColor="@color/chip_text_color"/>/>
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip_sehenswuerdigkeiten"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Sehenswürdigkeiten"
-                            android:textColor="@color/chip_text_color"/>/>
-
-                        <com.google.android.material.chip.Chip
-                            android:id="@+id/chip_Bars"
-                            style="@style/Widget.Material3.Chip.Filter"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bars"
-                            android:textColor="@color/chip_text_color"/>/>
-
-                    </com.google.android.material.chip.ChipGroup>
-                </HorizontalScrollView>
-
-            </LinearLayout>
-
-        </androidx.core.widget.NestedScrollView>
-    </LinearLayout>
-
-    <!-- HIER KOMMT SPÄTER DER RESTLICHE INHALT -->
-
-</androidx.coordinatorlayout.widget.CoordinatorLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>
