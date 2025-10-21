@@ -4,4 +4,11 @@
         <!-- Customize your dark theme here. -->
         <!-- <item name="colorPrimary">@color/my_dark_primary</item> -->
     </style>
+
+    <style name="ShapeAppearance.App.Chip.Pill" parent="">
+        <!-- Setzt den Eck-Stil auf "rund" -->
+        <item name="cornerFamily">rounded</item>
+        <!-- Setzt den Radius auf 50% der Höhe, was eine Pillenform ergibt -->
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>

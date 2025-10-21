@@ -5,17 +5,18 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
-import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import java.util.ArrayList;
+import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRouteClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,11 +55,33 @@ public class MainActivity extends AppCompatActivity {
         Log.d("M3CHECK", "textAppearanceTitleLarge? " + hasTitleLarge);
         Log.d("M3CHECK", "colorSurfaceContainer? " + hasSurfaceContainer);
 
-        // B) Sichttest: M3/Expressive-Dialog
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("M3 Dialog")
-                .setMessage("Sieht modern aus?")
-                .setPositiveButton("OK", null)
-                .show();
+        setupRoutesCarousel();
+    }
+
+    private void setupRoutesCarousel() {
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_routen);
+        List<Route> routes = new ArrayList<>();
+        routes.add(new Route("Ein Tag in Osnabrück", "Frühstück, Aktivitäten und Abendessen", "4 KM", R.drawable.rec_tours_testimg));
+        routes.add(new Route("Schlossgarten & Co.", "Entspannung im Grünen", "2 KM", R.drawable.rec_tours_testimg));
+        routes.add(new Route("Historische Altstadt", "Eine Reise in die Vergangenheit", "5 KM", R.drawable.rec_tours_testimg));
+
+        // 2. Adapter-Namen korrigieren und 'this' als Listener übergeben
+        RouteAdapter adapter = new RouteAdapter(routes, this);
+
+        recyclerView.setAdapter(adapter);
+        recyclerView.setHasFixedSize(true);
+    }
+
+    // 3. Implementiere die onRouteClick-Methode, um MapActivity zu starten
+    @Override
+    public void onRouteClick(Route route) {
+        // Erstelle einen Intent, der zur MapActivity navigieren soll
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+
+        // Optional: Gib Daten mit, die die MapActivity braucht
+        intent.putExtra("ROUTE_TITLE", route.getTitle());
+
+        // Starte die MapActivity
+        startActivity(intent);
     }
 }

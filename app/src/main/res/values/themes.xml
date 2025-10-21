@@ -12,4 +12,11 @@
         <item name="android:windowContentOverlay">@null</item>
         <item name="android:windowBackground">@color/white</item> <!-- oder deine Primärfarbe -->
     </style>
+
+    <style name="ShapeAppearance.App.Chip.Pill" parent="">
+        <!-- Setzt den Eck-Stil auf "rund" -->
+        <item name="cornerFamily">rounded</item>
+        <!-- Setzt den Radius auf 50% der Höhe, was eine Pillenform ergibt -->
+        <item name="cornerSize">50%</item>
+    </style>
 </resources>
