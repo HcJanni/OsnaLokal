@@ -7,7 +7,9 @@
     android:layout_marginEnd="16dp"
     app:cardCornerRadius="16dp"
     app:cardElevation="2dp"
-    app:strokeWidth="0dp">
+    app:strokeWidth="0dp"
+    android:clipChildren="false"
+    android:clipToPadding="false">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,7 +19,8 @@
         <!-- Bild mit KM-Anzeige oben rechts -->
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp">
+            android:layout_height="150dp"
+            android:clipChildren="false">
 
             <ImageView
                 android:id="@+id/image_route"

@@ -12,8 +12,12 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -54,11 +58,28 @@ public class MainActivity extends AppCompatActivity {
         Log.d("M3CHECK", "textAppearanceTitleLarge? " + hasTitleLarge);
         Log.d("M3CHECK", "colorSurfaceContainer? " + hasSurfaceContainer);
 
-        // B) Sichttest: M3/Expressive-Dialog
-        new MaterialAlertDialogBuilder(this)
-                .setTitle("M3 Dialog")
-                .setMessage("Sieht modern aus?")
-                .setPositiveButton("OK", null)
-                .show();
+        setupRoutesCarousel();
+    }
+
+    private void setupRoutesCarousel() {
+        // 1. RecyclerView im Layout finden
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_routen);
+
+        // 2. Beispieldaten erstellen
+        // WICHTIG: Füge Bilder mit diesen Namen (z.B. os_markt, os_schloss)
+        // zu deinem 'drawable'-Ordner hinzu!
+        List<Route> routes = new ArrayList<>();
+        routes.add(new Route("Ein Tag in Osnabrück", "Frühstück, Aktivitäten und Abendessen", "4 KM", R.drawable.rec_tours_testimg));
+        routes.add(new Route("Schlossgarten & Co.", "Entspannung im Grünen", "2 KM", R.drawable.rec_tours_testimg));
+        routes.add(new Route("Historische Altstadt", "Eine Reise in die Vergangenheit", "5 KM", R.drawable.rec_tours_testimg));
+
+        // 3. Adapter erstellen und mit den Daten füttern
+        RouterAdapter adapter = new RouterAdapter(routes);
+
+        // 4. Adapter dem RecyclerView zuweisen
+        recyclerView.setAdapter(adapter);
+
+        // Optional aber empfohlen: Performance-Optimierung
+        recyclerView.setHasFixedSize(true);
     }
 }
