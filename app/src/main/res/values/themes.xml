@@ -6,4 +6,10 @@
     </style>
 
     <style name="Theme.OsnaLokal" parent="Base.Theme.OsnaLokal" />
+
+    <style name="Theme.Splash.NoActionBar" parent="Theme.Material3.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/white</item> <!-- oder deine Primärfarbe -->
+    </style>
 </resources>
