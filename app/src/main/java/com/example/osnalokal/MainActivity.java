@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.view.View;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -12,6 +13,8 @@ import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,6 +60,19 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
 
         setupRoutesCarousel();
         setupNewsList();
+
+        // 1. Finde den FloatingActionButton anhand seiner ID im Layout
+        FloatingActionButton fab = findViewById(R.id.fab_filter);
+
+        // 2. Setze einen Klick-Listener auf den Button
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                // 3. Erstelle einen Intent, um die FilterActivity zu starten
+                Intent intent = new Intent(MainActivity.this, FilterActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
     private void setupRoutesCarousel() {

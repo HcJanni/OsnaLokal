@@ -33,7 +33,11 @@
         <activity
             android:name=".FirstStartupActivity"
             android:exported="false"
-            android:theme="@style/Theme.OsnaLokal" />
+            android:theme="@style/Theme.OsnaLokal"
+            />
+        <activity
+            android:name=".FilterActivity"
+            android:exported="false" />
     </application>
 
 </manifest>

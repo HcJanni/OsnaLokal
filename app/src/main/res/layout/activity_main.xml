@@ -235,7 +235,16 @@
             </LinearLayout>
 
         </androidx.core.widget.NestedScrollView>
+
     </LinearLayout>
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/fab_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom|end"
+        android:layout_margin="16dp"
+        android:contentDescription="Filter öffnen"
+        app:srcCompat="@drawable/filter" />
 
     <!-- HIER KOMMT SPÄTER DER RESTLICHE INHALT -->
 
