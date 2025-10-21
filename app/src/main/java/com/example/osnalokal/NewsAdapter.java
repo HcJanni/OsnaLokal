@@ -10,12 +10,16 @@ import androidx.recyclerview.widget.RecyclerView;
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
-
+    public interface OnNewsClickListener {
+        void onNewsClick(NewsItem newsItem);
+    }
     private final List<NewsItem> newsList;
+    private final OnNewsClickListener clickListener;
 
     // Konstruktor: Der Adapter erhält die Liste der anzuzeigenden News
-    public NewsAdapter(List<NewsItem> newsList) {
+    public NewsAdapter(List<NewsItem> newsList, OnNewsClickListener clickListener) {
         this.newsList = newsList;
+        this.clickListener = clickListener;
     }
 
     @NonNull
@@ -29,10 +33,17 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         NewsItem currentItem = newsList.get(position);
-
+        // ... (Daten binden bleibt gleich)
         holder.title.setText(currentItem.getTitle());
         holder.distance.setText(currentItem.getDistance());
         holder.image.setImageResource(currentItem.getImageResource());
+
+        // Klick-Listener auf die ganze Zeile setzen
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onNewsClick(currentItem);
+            }
+        });
     }
 
     @Override

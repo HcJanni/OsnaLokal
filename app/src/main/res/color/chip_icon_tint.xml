@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Farbe für den Haken, WENN der Chip ausgewählt ist -->
+    <item android:color="@color/text_black" android:state_checked="true"/>
+    <!-- Standardfarbe (für nicht-ausgewählte Icons) -->
+    <item android:color="@color/chip_text_default"/>
+</selector>
+    

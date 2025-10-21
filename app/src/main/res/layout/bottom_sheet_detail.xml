@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="?attr/colorSurfaceContainer"
+    android:padding="16dp">
+
+    <!-- Ein kleiner Griff oben, um zu zeigen, dass man es ziehen kann -->
+    <com.google.android.material.bottomsheet.BottomSheetDragHandleView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+    <!-- Bild des Eintrags -->
+    <com.google.android.material.imageview.ShapeableImageView
+        android:id="@+id/bottom_sheet_image"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="centerCrop"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Large"
+        tools:src="@color/button_bg" />
+
+    <!-- Titel -->
+    <TextView
+        android:id="@+id/bottom_sheet_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+        tools:text="Titel des Eintrags" />
+
+    <!-- Beschreibung -->
+    <TextView
+        android:id="@+id/bottom_sheet_description"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textAppearance="@style/TextAppearance.Material3.BodyLarge"
+        tools:text="Hier steht eine längere und detailliertere Beschreibung des ausgewählten Eintrags." />
+
+    <!-- Button, um das Bottom Sheet zu schließen oder eine Aktion auszuführen -->
+    <Button
+        android:id="@+id/bottom_sheet_close_button"
+        style="@style/Widget.Material3.Button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="24dp"
+        android:text="Schließen" />
+
+</LinearLayout>

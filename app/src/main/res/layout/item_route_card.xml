@@ -1,92 +1,110 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.google.android.material.card.MaterialCardView    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="280dp"
+    android:layout_width="320dp"
     android:layout_height="wrap_content"
     android:layout_marginEnd="16dp"
+    android:layout_marginBottom="16dp"
     app:cardCornerRadius="16dp"
-    app:cardElevation="2dp"
+    app:cardElevation="0dp"
     app:strokeWidth="0dp"
-    android:clipChildren="false"
-    android:clipToPadding="false"
     app:cardBackgroundColor="@color/card_bg">
 
-    <LinearLayout
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical">
+        android:minHeight="320dp">
 
-        <!-- Bild mit KM-Anzeige oben rechts -->
-        <androidx.constraintlayout.widget.ConstraintLayout
-            android:layout_width="match_parent"
+        <ImageView
+            android:id="@+id/image_route"
+            android:layout_width="0dp"
             android:layout_height="150dp"
-            android:clipChildren="false">
+            android:scaleType="centerCrop"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:srcCompat="@drawable/rec_tours_testimg" />
 
-            <ImageView
-                android:id="@+id/image_route"
-                android:layout_width="0dp"
-                android:layout_height="0dp"
-                android:scaleType="centerCrop"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                tools:srcCompat="@drawable/rec_tours_testimg" />
-
-            <com.google.android.material.chip.Chip
+        <!-- 1. Der Distanz-Chip (oben rechts) -->
+        <com.google.android.material.chip.Chip
             android:id="@+id/chip_distance"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="12dp"
-            android:layout_marginEnd="12dp"
-            tools:text="4 KM"
+            android:layout_marginTop="0dp"
+            android:layout_marginStart="12dp"
+            android:clickable="false"
+            android:focusable="false"
             android:textColor="@color/text_black"
             app:chipBackgroundColor="@color/primary"
             app:chipStrokeWidth="0dp"
-            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"
-            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:clickable="false"
-            android:focusable="false"/>
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+            app:chipMinHeight="24dp"
+            tools:text="4 KM" />
 
-
-
-        </androidx.constraintlayout.widget.ConstraintLayout>
-
-        <!-- Text-Inhalt der Karte -->
-        <LinearLayout
-            android:layout_width="match_parent"
+        <!-- 2. Der Kategorie-Chip, direkt darunter platziert -->
+        <com.google.android.material.chip.Chip
+            android:id="@+id/chip_category"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="16dp">
+            android:layout_marginTop="-12dp"
+            android:clickable="false"
+            android:focusable="false"
+            android:textColor="@color/text_black"
+            app:chipBackgroundColor="@color/primary"
+            app:layout_constraintStart_toStartOf="@+id/chip_distance"
+            app:layout_constraintTop_toBottomOf="@+id/chip_distance"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"
+            android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+            app:chipMinHeight="24dp"
+            tools:text="Kategorie" />
 
-            <TextView
-                android:id="@+id/text_route_title"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                tools:text="Ein Tag in Osnabrück"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium" />
+        <TextView
+            android:id="@+id/text_route_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="16dp"
+            android:layout_marginEnd="16dp"
+            android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/image_route"
+            tools:text="Ein Tag in Osnabrück mit sehr, sehr, sehr langem Titel" />
 
-            <TextView
-                android:id="@+id/text_route_description"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                tools:text="Frühstück, Aktivitäten und Abendessen"
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                android:textColor="?android:attr/textColorSecondary" />
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/button_view_route"
-                style="@style/Widget.Material3.Button.OutlinedButton"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="16dp"
-                android:text="Route ansehen"
-                android:textColor="@color/primary"
-                app:rippleColor="@color/primary_inactive" />
+        <!-- Beschreibung (unter dem Titel) -->
+        <TextView
+            android:id="@+id/text_route_description"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="4dp"
+            android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+            android:textColor="?android:attr/textColorSecondary"
+            app:layout_constraintEnd_toEndOf="@+id/text_route_title"
+            app:layout_constraintStart_toStartOf="@+id/text_route_title"
+            app:layout_constraintTop_toBottomOf="@+id/text_route_title"
+            tools:text="Frühstück, Aktivitäten und Abendessen und noch mehr Text, um die Zeile umbrechen zu lassen" />
 
-        </LinearLayout>
-    </LinearLayout>
+        <!-- Button (ganz unten) -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_view_route"
+            style="@style/Widget.Material3.Button.OutlinedButton"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="16dp"
+            android:layout_marginEnd="16dp"
+            android:layout_marginBottom="16dp"
+            android:text="Route ansehen"
+            android:textColor="@color/primary"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:rippleColor="@color/primary_inactive"
+            app:strokeColor="@color/primary"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
 </com.google.android.material.card.MaterialCardView>
