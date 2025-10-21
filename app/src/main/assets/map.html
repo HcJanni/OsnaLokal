@@ -4,11 +4,10 @@
     <title>OsnaLokal Map</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.3/dist/leaflet.css" integrity="sha256-kLaT2GOSpHechhsozzB+flnD+zUyjE2LlfWPgU04xyI=" crossorigin="" />
+    <script src="https://unpkg.com/leaflet@1.9.3/dist/leaflet.js" integrity="sha256-WBkoXOwTeyKclOHuWtc+i2uENFpDZ9YPdf5Hf+D7ewM=" crossorigin=""></script>
 
     <style>
-        /* Wichtig: Sorgt dafür, dass die Karte den ganzen Platz einnimmt */
         html, body {
             height: 100%;
             margin: 0;
@@ -19,53 +18,66 @@
         }
     </style>
 </head>
-<body>
+
+
+<h1>test</h1>
 
 <div id="map"></div>
 
 <script>
-    // 1. Karte initialisieren und auf Osnabrück zentrieren
-    // Format: [Latitude, Longitude], Zoom-Level
-    var map = L.map('map').setView([52.275, 8.04], 14); // Etwas zwischen Rathaus & Schloss
+    const map = L.map('map');
+    // Initializes map
 
-    // 2. OpenStreetMap-Kartenebene (die "Kacheln") hinzufügen
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    map.setView([51.505, -0.09], 13);
+    // Sets initial coordinates and zoom level
+
+    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap'
     }).addTo(map);
+    // Sets map data source and associates with map
 
-    // 3. EINEN BEISPIEL-MARKER HINZUFÜGEN (Rathaus)
-    L.marker([52.2772, 8.0417]).addTo(map)
-        .bindPopup('Rathaus Osnabrück');
+    let marker, circle, zoomed;
 
-    // 4. DEINE BEISPIEL-ROUTE ANZEIGEN (Rote Linie)
-    // Das ist eine einfache Linie (Polyline) mit zwei Punkten:
-    var routeCoordinates = [
-        [52.2772, 8.0417], // Start: Rathaus
-        [52.2725, 8.0378]  // Ende: Schloss
-    ];
+    navigator.geolocation.watchPosition(success, error);
 
-    // Erstelle die Linie, gib ihr eine rote Farbe und füge sie zur Karte hinzu
-    var route = L.polyline(routeCoordinates, { color: 'red' }).addTo(map);
+    function success(pos) {
 
-    // Optional: Zoomt die Karte, sodass die ganze Route sichtbar ist
-    map.fitBounds(route.getBounds());
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
+        const accuracy = pos.coords.accuracy;
 
-    // --- HIER KOMMT SPÄTER DEINE DYNAMISCHE ROUTE ---
-    // Wir können eine Funktion erstellen, die wir von Java aus aufrufen
-    function displayRoute(coordinates) {
-        // z.B. coordinates = [[52.27, 8.04], [52.28, 8.05], ... ]
-
-        // Alte Route entfernen, falls vorhanden
-        if (window.currentRoute) {
-            map.removeLayer(window.currentRoute);
+        if (marker) {
+            map.removeLayer(marker);
+            map.removeLayer(circle);
         }
+        // Removes any existing marker and circule (new ones about to be set)
 
-        // Neue Route zeichnen
-        window.currentRoute = L.polyline(coordinates, { color: 'blue', weight: 5 }).addTo(map);
-        map.fitBounds(window.currentRoute.getBounds());
+        marker = L.marker([lat, lng]).addTo(map);
+        circle = L.circle([lat, lng], { radius: accuracy }).addTo(map);
+        // Adds marker to the map and a circle for accuracy
+
+        if (!zoomed) {
+            zoomed = map.fitBounds(circle.getBounds());
+        }
+        // Set zoom to boundaries of accuracy circle
+
+        map.setView([lat, lng]);
+        // Set map focus to current user position
+
     }
 
+    function error(err) {
+
+        if (err.code === 1) {
+            alert("Please allow geolocation access");
+        } else {
+            alert("Cannot get current location");
+        }
+
+    }
+        }
+
 </script>
-</body>
+</h1>
 </html>

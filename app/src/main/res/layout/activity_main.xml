@@ -60,8 +60,8 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Zur Map gehen"
-        tools:layout_editor_absoluteX="122dp"
-        tools:layout_editor_absoluteY="383dp" />
+        tools:layout_editor_absoluteX="143dp"
+        tools:layout_editor_absoluteY="341dp" />
 
     <WebView
         android:id="@+id/webView"
