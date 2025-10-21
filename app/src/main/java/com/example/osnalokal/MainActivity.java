@@ -1,5 +1,7 @@
 package com.example.osnalokal;
 
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
@@ -18,6 +20,20 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
+        boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
+
+        if (isFirstRun) {
+            // Wenn es der erste Start ist, zeige das Onboarding
+            Intent intent = new Intent(this, FirstStartupActivity.class);
+            startActivity(intent);
+            finish(); // Beende die MainActivity, damit sie nicht im Hintergrund liegt
+            return; // Wichtig: Beende die onCreate Methode hier
+        }
+
+        // Wenn es nicht der erste Start ist, lade das normale Layout
+        setContentView(R.layout.activity_main);
+
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_main);
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {

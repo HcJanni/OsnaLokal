@@ -24,6 +24,10 @@
         <activity
             android:name=".MainActivity"
             android:exported="false" />
+        <activity
+            android:name=".FirstStartupActivity"
+            android:exported="false"
+            android:theme="@style/Theme.OsnaLokal" />
     </application>
 
 </manifest>
