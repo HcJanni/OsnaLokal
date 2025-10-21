@@ -48,17 +48,20 @@ public class RouterAdapter extends RecyclerView.Adapter<RouterAdapter.RouteViewH
     // Hält die Referenzen auf die UI-Elemente einer einzelnen Karte
     static class RouteViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
-        MaterialTextView distance;
+        com.google.android.material.chip.Chip distance;
         TextView title;
         TextView description;
+        com.google.android.material.button.MaterialButton viewRouteButton;
 
         public RouteViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image_route);
-            distance = itemView.findViewById(R.id.text_distance);
+            distance = itemView.findViewById(R.id.chip_distance);
             title = itemView.findViewById(R.id.text_route_title);
             description = itemView.findViewById(R.id.text_route_description);
-            // Den Button könntest du hier auch finden, falls er eine Funktion haben soll
+
+            // 2. Den Button anhand seiner ID im Layout finden
+            viewRouteButton = itemView.findViewById(R.id.button_view_route);
         }
     }
 }

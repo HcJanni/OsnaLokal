@@ -33,24 +33,23 @@
                 app:layout_constraintTop_toTopOf="parent"
                 tools:srcCompat="@drawable/rec_tours_testimg" />
 
-            <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/text_distance"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="12dp"
-                android:layout_marginEnd="12dp"
-                android:background="@color/primary"
-                android:paddingStart="12dp"
-                android:paddingTop="6dp"
-                android:paddingEnd="12dp"
-                android:paddingBottom="6dp"
-                tools:text="4 KM"
-                android:textColor="@color/text_black"
-                android:textSize="12sp"
-                android:textStyle="bold"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill" />
+            <com.google.android.material.chip.Chip
+            android:id="@+id/chip_distance"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:layout_marginEnd="12dp"
+            tools:text="4 KM"
+            android:textColor="@color/primary"
+            app:chipBackgroundColor="@color/primary"
+            app:chipStrokeWidth="0dp"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            android:clickable="false"
+            android:focusable="false"/>
+
+
 
         </androidx.constraintlayout.widget.ConstraintLayout>
 
