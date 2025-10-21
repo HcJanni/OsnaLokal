@@ -1,10 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="black">#FF000000</color>
-    <color name="white">#FFFFFFFF</color>
     <color name="primary">#FF00CABE</color>
-    <color name="primary_inactive">#FFBDFAEA</color>
-    <color name="button_bg">#FFEAF2FF</color>
+    <color name="button_bg">#FF494A50</color>
     <color name="chip_text_default">#FF00CABE</color>
     <color name="text_black">#FF1F2024</color>
 </resources>

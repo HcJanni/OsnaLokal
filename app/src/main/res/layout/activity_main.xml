@@ -97,7 +97,8 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical">
+                android:orientation="vertical"
+                android:paddingHorizontal="16dp">
 
                 <!-- 1. Horizontale Scroll-Ansicht, damit die Chips nicht umbrechen -->
                 <HorizontalScrollView
@@ -112,8 +113,8 @@
                         android:layout_height="wrap_content"
                         app:singleLine="true"
                         app:singleSelection="true"
-                        app:chipBackgroundColor="@color/chip_background_color"
-                        app:chipStrokeWidth="0dp"> <!-- Sorgt dafür, dass nur ein Chip aktiv sein kann -->
+                        app:chipStrokeWidth="0dp"
+                        app:chipSpacing="8dp">
 
                         <!-- 3. Die einzelnen Chips -->
                         <com.google.android.material.chip.Chip
@@ -123,7 +124,10 @@
                             android:layout_height="wrap_content"
                             android:checked="true"
                             android:text="Alle Routen"
-                            android:textColor="@color/chip_text_color"/>
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_background_color"
+                            app:chipStrokeWidth="0dp"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chip_restaurants"
@@ -131,7 +135,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Restaurants"
-                            android:textColor="@color/chip_text_color"/>/>
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_background_color"
+                            app:chipStrokeWidth="0dp"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chip_sehenswuerdigkeiten"
@@ -139,7 +146,10 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Sehenswürdigkeiten"
-                            android:textColor="@color/chip_text_color"/>/>
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_background_color"
+                            app:chipStrokeWidth="0dp"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
 
                         <com.google.android.material.chip.Chip
                             android:id="@+id/chip_Bars"
@@ -147,10 +157,51 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Bars"
-                            android:textColor="@color/chip_text_color"/>/>
+                            android:textColor="@color/chip_text_color"
+                            app:chipBackgroundColor="@color/chip_background_color"
+                            app:chipStrokeWidth="0dp"
+                            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
 
                     </com.google.android.material.chip.ChipGroup>
                 </HorizontalScrollView>
+
+                <!-- 1. Titelzeile für "Vorgeschlagene Routen" -->
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="24dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Vorgeschlagene Routen"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Mehr ansehen"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
+                        android:textColor="?attr/colorPrimary"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- 2. Das Karussell (RecyclerView) -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_routen"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:clipToPadding="false"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_route_card" />
 
             </LinearLayout>
 
