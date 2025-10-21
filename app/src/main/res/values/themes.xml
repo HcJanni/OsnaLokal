@@ -1,9 +1,15 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.OsnaLokal" parent="Theme.Material3.DayNight.NoActionBar">
+    <style name="Base.Theme.OsnaLokal" parent="Theme.Material3Expressive.DayNight.NoActionBar">
         <!-- Customize your light theme here. -->
         <!-- <item name="colorPrimary">@color/my_light_primary</item> -->
     </style>
 
     <style name="Theme.OsnaLokal" parent="Base.Theme.OsnaLokal" />
+
+    <style name="Theme.Splash.NoActionBar" parent="Theme.Material3Expressive.DayNight.NoActionBar">
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowBackground">@color/white</item> <!-- oder deine Primärfarbe -->
+    </style>
 </resources>
