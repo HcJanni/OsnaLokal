@@ -56,6 +56,7 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         Log.d("M3CHECK", "colorSurfaceContainer? " + hasSurfaceContainer);
 
         setupRoutesCarousel();
+        setupNewsList();
     }
 
     private void setupRoutesCarousel() {
@@ -83,5 +84,26 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
 
         // Starte die MapActivity
         startActivity(intent);
+    }
+
+    private void setupNewsList() {
+        // RecyclerView im Layout finden
+        RecyclerView recyclerView = findViewById(R.id.recycler_view_news);
+
+        // Beispieldaten für die Neuigkeiten erstellen
+        // HINWEIS: Füge ein Bild namens 'news_placeholder' zu deinem drawable-Ordner hinzu
+        List<NewsItem> newsItems = new ArrayList<>();
+        newsItems.add(new NewsItem("Tag der Niedersachsen", "4 km", R.drawable.rec_tours_testimg));
+        newsItems.add(new NewsItem("Weihnachtsmarkt", "10 km", R.drawable.rec_tours_testimg));
+        newsItems.add(new NewsItem("Maiwoche beginnt", "1 km", R.drawable.rec_tours_testimg));
+
+        // Adapter erstellen und mit den Daten füttern
+        NewsAdapter adapter = new NewsAdapter(newsItems);
+
+        // Adapter dem RecyclerView zuweisen
+        recyclerView.setAdapter(adapter);
+
+        // Wichtig für vertikale Listen in einem NestedScrollView, um Ruckeln zu vermeiden
+        recyclerView.setNestedScrollingEnabled(false);
     }
 }

@@ -185,7 +185,7 @@
                         android:layout_height="wrap_content"
                         android:text="Mehr ansehen"
                         android:textAppearance="@style/TextAppearance.Material3.TitleSmall"
-                        android:textColor="?attr/colorPrimary"
+                        android:textColor="@color/primary"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -202,6 +202,35 @@
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/item_route_card" />
+
+                <androidx.constraintlayout.widget.ConstraintLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="32dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Neuigkeiten"
+                        android:textAppearance="@style/TextAppearance.Material3.TitleLarge"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                    <!-- "Mehr ansehen" ist laut Design hier nicht vorhanden, kann bei Bedarf aber einfach hinzugefügt werden -->
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+
+                <!-- 2. Der vertikale RecyclerView für die Neuigkeiten -->
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recycler_view_news"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="vertical"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:itemCount="2"
+                    tools:listitem="@layout/item_news_row" />
 
             </LinearLayout>
 

@@ -9,7 +9,8 @@
     app:cardElevation="2dp"
     app:strokeWidth="0dp"
     android:clipChildren="false"
-    android:clipToPadding="false">
+    android:clipToPadding="false"
+    app:cardBackgroundColor="@color/card_bg">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -40,7 +41,7 @@
             android:layout_marginTop="12dp"
             android:layout_marginEnd="12dp"
             tools:text="4 KM"
-            android:textColor="@color/primary"
+            android:textColor="@color/text_black"
             app:chipBackgroundColor="@color/primary"
             app:chipStrokeWidth="0dp"
             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"
@@ -82,7 +83,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="16dp"
-                android:text="Route ansehen" />
+                android:text="Route ansehen"
+                android:textColor="@color/primary"
+                app:rippleColor="@color/primary_inactive" />
 
         </LinearLayout>
     </LinearLayout>

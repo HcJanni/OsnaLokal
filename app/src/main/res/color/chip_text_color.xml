@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <selector xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Textfarbe, wenn der Chip ausgewählt ist -->
-    <item android:color="@color/black" android:state_checked="true"/>
+    <item android:color="@color/text_black" android:state_checked="true"/>
 
     <!-- Standard-Textfarbe (nicht ausgewählt) -->
     <item android:color="@color/chip_text_default"/>
