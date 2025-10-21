@@ -20,31 +20,30 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        // 1. Prüfen, ob das Onboarding gezeigt werden muss (diese Logik bleibt)
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         boolean isFirstRun = prefs.getBoolean("isFirstRun", true);
 
         if (isFirstRun) {
-            // Wenn es der erste Start ist, zeige das Onboarding
             Intent intent = new Intent(this, FirstStartupActivity.class);
             startActivity(intent);
-            finish(); // Beende die MainActivity, damit sie nicht im Hintergrund liegt
-            return; // Wichtig: Beende die onCreate Methode hier
+            finish();
+            return;
         }
 
-        // Wenn es nicht der erste Start ist, lade das normale Layout
+        // 2. Edge-to-Edge aktivieren (macht die App bildschirmfüllend)
+        EdgeToEdge.enable(this);
+
+        // 3. Das neue Layout für die Hauptseite setzen
         setContentView(R.layout.activity_main);
 
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_main);
+        // 4. System-Padding anwenden, damit UI-Elemente nicht unter die Statusleiste rutschen
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
             return insets;
         });
-
-        // A) Prüfen, ob <Button> als MaterialButton aufgeblasen wurde
-        Button plain = findViewById(R.id.plainBtn);
-        Log.d("M3CHECK", "Button class = " + (plain != null ? plain.getClass().getName() : "null"));
 
         // Theme-Attribute (M3/Expressive) auflösbar?
         TypedValue tv = new TypedValue();

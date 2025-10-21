@@ -16,7 +16,7 @@ public class OnboardingAdapter extends RecyclerView.Adapter<OnboardingAdapter.On
             "Schaue dir neue Orte an, entdecke neue Lokale und habe Spaß beim entdecken."
     };
     private final int[] images = {
-            R.drawable.ic_launcher_foreground // Ersetze dies mit deinem Logo/Bild
+            R.drawable.startupscreenimg // Ersetze dies mit deinem Logo/Bild
     };
 
 

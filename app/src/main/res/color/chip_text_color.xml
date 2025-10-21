@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Textfarbe, wenn der Chip ausgewählt ist -->
+    <item android:color="#006A60" android:state_checked="true"/>
+    <!-- Standard-Textfarbe -->
+    <item android:color="#45464F"/>
+</selector>
+    
