@@ -5,7 +5,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
-import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,12 +13,10 @@ import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.material.dialog.MaterialAlertDialogBuilder;
-
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRouteClickListener {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,24 +59,29 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setupRoutesCarousel() {
-        // 1. RecyclerView im Layout finden
         RecyclerView recyclerView = findViewById(R.id.recycler_view_routen);
-
-        // 2. Beispieldaten erstellen
-        // WICHTIG: Füge Bilder mit diesen Namen (z.B. os_markt, os_schloss)
-        // zu deinem 'drawable'-Ordner hinzu!
         List<Route> routes = new ArrayList<>();
         routes.add(new Route("Ein Tag in Osnabrück", "Frühstück, Aktivitäten und Abendessen", "4 KM", R.drawable.rec_tours_testimg));
         routes.add(new Route("Schlossgarten & Co.", "Entspannung im Grünen", "2 KM", R.drawable.rec_tours_testimg));
         routes.add(new Route("Historische Altstadt", "Eine Reise in die Vergangenheit", "5 KM", R.drawable.rec_tours_testimg));
 
-        // 3. Adapter erstellen und mit den Daten füttern
-        RouterAdapter adapter = new RouterAdapter(routes);
+        // 2. Adapter-Namen korrigieren und 'this' als Listener übergeben
+        RouteAdapter adapter = new RouteAdapter(routes, this);
 
-        // 4. Adapter dem RecyclerView zuweisen
         recyclerView.setAdapter(adapter);
-
-        // Optional aber empfohlen: Performance-Optimierung
         recyclerView.setHasFixedSize(true);
+    }
+
+    // 3. Implementiere die onRouteClick-Methode, um MapActivity zu starten
+    @Override
+    public void onRouteClick(Route route) {
+        // Erstelle einen Intent, der zur MapActivity navigieren soll
+        Intent intent = new Intent(MainActivity.this, MapActivity.class);
+
+        // Optional: Gib Daten mit, die die MapActivity braucht
+        intent.putExtra("ROUTE_TITLE", route.getTitle());
+
+        // Starte die MapActivity
+        startActivity(intent);
     }
 }
