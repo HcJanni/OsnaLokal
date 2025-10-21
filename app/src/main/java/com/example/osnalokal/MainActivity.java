@@ -3,8 +3,10 @@ package com.example.osnalokal;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.TypedValue;
+import android.webkit.WebView;
 import android.widget.Button;
-
+import android.content.Intent;
+import android.view.View;
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
@@ -14,6 +16,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 
 public class MainActivity extends AppCompatActivity {
+
+    private WebView webView;
+    private Button btnZurMap;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,5 +50,25 @@ public class MainActivity extends AppCompatActivity {
                 .setMessage("Sieht modern aus?")
                 .setPositiveButton("OK", null)
                 .show();
+
+        btnZurMap = findViewById(R.id.btnZurMap);
+
+        btnZurMap.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Hier starten wir die MapActivity
+                Intent intent = new Intent(MainActivity.this, MapActivity.class);
+                startActivity(intent);
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (webView.canGoBack()) {
+            webView.goBack();
+        } else {
+            super.onBackPressed();
+        }
     }
 }

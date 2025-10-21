@@ -12,6 +12,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.OsnaLokal">
         <activity
+            android:name=".MapActivity"
+            android:exported="false" />
+        <activity
             android:name=".SplashActivity"
             android:exported="true"
             android:theme="@style/Theme.Splash.NoActionBar">

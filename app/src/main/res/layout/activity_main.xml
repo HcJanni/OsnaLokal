@@ -9,19 +9,22 @@
     tools:context=".MainActivity">
 
     <!-- A1) Plain Button (wird via M3-Theme zu MaterialButton aufgeblasen) -->
+
+    <!-- A2) TextInputLayout (ohne expliziten Style) -->
+
     <Button
         android:id="@+id/plainBtn"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:text="@string/btn_plain"
         android:layout_marginStart="16dp"
+        android:layout_marginTop="44dp"
         android:layout_marginEnd="16dp"
-        android:layout_marginTop="24dp"
-        app:layout_constraintStart_toStartOf="parent"
+        android:text="@string/btn_plain"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <!-- A2) TextInputLayout (ohne expliziten Style) -->
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/tilEmail"
         android:layout_width="0dp"
@@ -51,5 +54,19 @@
         android:layout_marginTop="16dp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/tilEmail" />
+
+    <Button
+        android:id="@+id/btnZurMap"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Zur Map gehen"
+        tools:layout_editor_absoluteX="122dp"
+        tools:layout_editor_absoluteY="383dp" />
+
+    <WebView
+        android:id="@+id/webView"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
