@@ -17,6 +17,12 @@
         <!-- Setzt den Eck-Stil auf "rund" -->
         <item name="cornerFamily">rounded</item>
         <!-- Setzt den Radius auf 50% der Höhe, was eine Pillenform ergibt -->
-        <item name="cornerSize">50%</item>
+        <item name="cornerSize">35%</item>
+    </style>
+
+    <style name="ShapeAppearance.App.Button.Pill" parent="">
+        <item name="cornerFamily">rounded</item>
+        <!-- 50% sorgt immer für die perfekte Pillenform, egal wie hoch der Button ist -->
+        <item name="cornerSize">25%</item>
     </style>
 </resources>
