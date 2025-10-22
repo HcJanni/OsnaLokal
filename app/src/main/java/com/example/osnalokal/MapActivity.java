@@ -7,7 +7,6 @@ import android.webkit.GeolocationPermissions;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
-import android.webkit.WebViewClient;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -29,7 +28,6 @@ import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import android.webkit.JavascriptInterface;
 
@@ -278,25 +276,22 @@ public class MapActivity extends AppCompatActivity {
         public void onMarkerClick(int locationId) {
             Location clickedLocation = findLocationById(locationId);
 
-            if (clickedLocation != null) {
-                runOnUiThread(() -> {
-                    // 1. Erstelle das Bottom Sheet
-                    DetailBottomSheetFragment bottomSheet = DetailBottomSheetFragment.newInstance(
-                            clickedLocation.getName(),
-                            "Bewertung: " + clickedLocation.getBewertungen() + "\n" + clickedLocation.getOeffnungszeiten(),
-                            R.drawable.rec_tours_testimg
-                    );
+            if (clickedLocation != null) {runOnUiThread(() -> {
+                DetailBottomSheetFragment bottomSheet = DetailBottomSheetFragment.newInstance(
+                        clickedLocation.getName(),                 // title
+                        clickedLocation.getArt(),                  // type
+                        clickedLocation.getBeschreibung(),        // description
+                        String.valueOf(clickedLocation.getBewertungen()), // rating
+                        clickedLocation.getOeffnungszeiten(),      // openingTimes
+                        clickedLocation.getBudgetAsEuroString(),          // budget
+                        R.drawable.rec_tours_testimg               // imageRes
+                );
 
-                    // 2. Setze einen Listener, der auf das Schließen reagiert
-                    bottomSheet.setOnDismissListener(() -> {
-                        // Wenn das Sheet geschlossen wird, rufe eine JS-Funktion auf,
-                        // um alle Marker zurückzusetzen.
-                        webView.post(() -> webView.evaluateJavascript("javascript:resetAllMarkers()", null));
-                    });
-
-                    // 3. Zeige das Bottom Sheet an
-                    bottomSheet.show(getSupportFragmentManager(), "DetailBottomSheetFromMap");
+                bottomSheet.setOnDismissListener(() -> {
+                    webView.post(() -> webView.evaluateJavascript("javascript:resetAllMarkers()", null));
                 });
+                bottomSheet.show(getSupportFragmentManager(), "DetailBottomSheetFromMap");
+            });
             }
         }
 

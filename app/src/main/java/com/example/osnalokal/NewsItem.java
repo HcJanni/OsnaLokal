@@ -3,12 +3,12 @@ package com.example.osnalokal;
 public class NewsItem {
 
     private final String title;
-    private final String distance;
     private final int imageResource;
+    private final String description;
 
-    public NewsItem(String title, String distance, int imageResource) {
+    public NewsItem(String title, String description, int imageResource) {
         this.title = title;
-        this.distance = distance;
+        this.description = description;
         this.imageResource = imageResource;
     }
 
@@ -17,8 +17,8 @@ public class NewsItem {
         return title;
     }
 
-    public String getDistance() {
-        return distance;
+    public String getDescription() {
+        return description;
     }
 
     public int getImageResource() {

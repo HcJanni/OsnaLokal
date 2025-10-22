@@ -7,6 +7,7 @@ public class Location {
     private final String art; // "Restaurant", "Bar", etc.
     private final double bewertungen;
     private final int preisspanne;
+    private int budget;
     private final boolean barrierefrei;
     private final String telefonnummer;
     private final String essensart; // "Asiatisch", "Italienisch", etc.
@@ -14,11 +15,12 @@ public class Location {
     private final boolean vegan;
     private final double breitengrad;
     private final double laengengrad;
-    private final String oeffnungszeiten; // <-- 1. NEUES FELD HINZUGEFÜGT
+    private final String oeffnungszeiten;
+    private final String beschreibung;// <-- 1. NEUES FELD HINZUGEFÜGT
 
     // Konstruktor, um neue Location-Objekte zu erstellen
     // 2. KONSTRUKTOR UM DAS NEUE FELD ERWEITERT
-    public Location(int id, String name, String art, double bewertungen, int preisspanne, boolean barrierefrei, String telefonnummer, String essensart, boolean vegetarisch, boolean vegan, double breitengrad, double laengengrad, String oeffnungszeiten) {
+    public Location(int id, String name, String art, double bewertungen, int preisspanne, boolean barrierefrei, String telefonnummer, String essensart, boolean vegetarisch, boolean vegan, double breitengrad, double laengengrad, String oeffnungszeiten, String beschreibung) {
         this.id = id;
         this.name = name;
         this.art = art;
@@ -32,6 +34,7 @@ public class Location {
         this.breitengrad = breitengrad;
         this.laengengrad = laengengrad;
         this.oeffnungszeiten = oeffnungszeiten; // Zuweisung für das neue Feld
+        this.beschreibung = beschreibung;
     }
 
     // Getter-Methoden, damit andere Teile der App auf die Daten zugreifen können
@@ -53,6 +56,18 @@ public class Location {
 
     public int getPreisspanne() {
         return preisspanne;
+    }
+
+    public String getBudgetAsEuroString() {
+        if (preisspanne <= 0) {
+            return "-"; // Falls kein Wert gesetzt ist
+        } else if (preisspanne < 10) {
+            return "€";
+        } else if (preisspanne < 20) {
+            return "€€";
+        } else {
+            return "€€€";
+        }
     }
 
     public boolean isBarrierefrei() {
@@ -86,5 +101,9 @@ public class Location {
     // 3. NEUER GETTER FÜR DIE ÖFFNUNGSZEITEN HINZUGEFÜGT
     public String getOeffnungszeiten() {
         return oeffnungszeiten;
+    }
+
+    public String getBeschreibung() {
+        return beschreibung;
     }
 }

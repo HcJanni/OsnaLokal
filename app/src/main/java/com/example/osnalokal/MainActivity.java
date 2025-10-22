@@ -212,8 +212,18 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
     private void setupNewsList() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_news);
         List<NewsItem> newsItems = new ArrayList<>();
-        newsItems.add(new NewsItem("Tag der Niedersachsen", "4 km", R.drawable.rec_tours_testimg));
-        newsItems.add(new NewsItem("Weihnachtsmarkt", "10 km", R.drawable.rec_tours_testimg));
+
+        // --- HIER DIE DATEN ANPASSEN ---
+        newsItems.add(new NewsItem(
+                "Tag der Niedersachsen",
+                "Ein großes Fest mit vielen Attraktionen in der Innenstadt. Erfahre hier mehr über das Programm.", // Beschreibung statt "4 km"
+                R.drawable.rec_tours_testimg
+        ));
+        newsItems.add(new NewsItem(
+                "Historischer Weihnachtsmarkt",
+                "Der Weihnachtsmarkt vor dem Rathaus und der Marienkirche öffnet wieder seine Tore.", // Beschreibung statt "10 km"
+                R.drawable.rec_tours_testimg
+        ));
 
         NewsAdapter newsAdapter = new NewsAdapter(newsItems, this);
         recyclerView.setAdapter(newsAdapter);
@@ -233,9 +243,10 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
 
     @Override
     public void onNewsClick(NewsItem newsItem) {
+        // --- HIER DIE DATEN KORREKT ÜBERGEBEN ---
         DetailBottomSheetFragment.newInstance(
                 newsItem.getTitle(),
-                newsItem.getDistance(),
+                newsItem.getDescription(),
                 newsItem.getImageResource()
         ).show(getSupportFragmentManager(), "DetailBottomSheet");
     }

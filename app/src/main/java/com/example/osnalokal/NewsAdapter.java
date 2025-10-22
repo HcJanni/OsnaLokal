@@ -35,7 +35,7 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         NewsItem currentItem = newsList.get(position);
         // ... (Daten binden bleibt gleich)
         holder.title.setText(currentItem.getTitle());
-        holder.distance.setText(currentItem.getDistance());
+        holder.distance.setText(currentItem.getDescription());
         holder.image.setImageResource(currentItem.getImageResource());
 
         // Klick-Listener auf die ganze Zeile setzen
