@@ -14,10 +14,13 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
 import com.google.maps.model.DirectionsResult;
+import com.google.maps.model.TravelMode;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,6 +118,12 @@ public class MapActivity extends AppCompatActivity {
 
         webView.loadUrl("file:///android_asset/map.html");
         requestLocationPermission();
+
+        FloatingActionButton fab = findViewById(R.id.fab_center_on_user);
+        fab.setOnClickListener(v -> {
+            // Rufe die neue JavaScript-Funktion auf
+            webView.evaluateJavascript("javascript:centerOnUserLocation()", null);
+        });
     }
 
     private void calculateAndDrawRoute(List<Location> waypoints) {        // Die Route muss mindestens einen Start- und einen Endpunkt haben
@@ -149,6 +158,7 @@ public class MapActivity extends AppCompatActivity {
                         // Verwende Breitengrad UND Laengengrad für das Ziel
                         .destination(new com.google.maps.model.LatLng(end.getBreitengrad(), end.getLaengengrad()))
                         .waypoints(intermediatePoints)
+                        .mode(TravelMode.WALKING)
                         .await();
 
                 // Extrahiere die kodierte Pfad-Linie aus dem Ergebnis

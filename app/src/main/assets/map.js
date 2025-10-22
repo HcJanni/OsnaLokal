@@ -147,11 +147,14 @@ function updateLocation(pos) {
         userMarker = L.marker([lat, lng], {icon: userPin}).addTo(map);
         userMarker.bindPopup("<b>Dein Standort</b>");
     }
+}
 
-    // Beim allerersten erfolgreichen Standort-Update: Fliege elegant zur Position des Nutzers.
-    if (!hasZoomedToUser) {
-        map.flyTo([lat, lng], 17); // Zoomt nah an die Position
-        hasZoomedToUser = true;
+function centerOnUserLocation() {
+    if (userMarker) {
+        map.flyTo(userMarker.getLatLng(), 17); // Fliege elegant zur Position
+    } else {
+        console.log("User-Position ist noch nicht bekannt.");
+        // Optional: Hier könnte man eine Toast-Nachricht über das Android-Interface anzeigen
     }
 }
 
