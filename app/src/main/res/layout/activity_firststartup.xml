@@ -13,24 +13,20 @@
         android:id="@+id/onboarding_container"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        app:layout_constraintBottom_toTopOf="@+id/buttonFinish"
+        app:layout_constraintBottom_toTopOf="@+id/navigation_buttons_container"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
-    <Button
-        android:id="@+id/buttonFinish"
+    <include
+        android:id="@+id/navigation_buttons_container"
+        layout="@layout/reusable_navigation_buttons"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="24dp"
-        android:layout_marginBottom="24dp"
-        android:backgroundTint="@color/primary"
-        android:text="Los geht's!"
-        android:textColor="@color/black"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Button.Pill" />
+        app:layout_constraintStart_toStartOf="parent" />
+
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

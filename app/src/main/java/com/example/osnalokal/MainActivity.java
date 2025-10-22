@@ -31,6 +31,10 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
     private List<Route> allRoutes = new ArrayList<>();
     private RouteAdapter allRoutesAdapter; // Dieser Adapter ist wichtig für die Filter
 
+    private List<Location> allLocations = new ArrayList<>();
+    private LocationAdapter allLocationsAdapter; // Adapter für die "Alle Routen"-Liste
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,16 +47,13 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
             return;
         }
 
-        // 2. Layout und Edge-to-Edge setzen (unverändert)
         setContentView(R.layout.activity_main);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
-        });
+        setupEdgeToEdge();
 
         // 3. Alle Daten erstellen und UI-Komponenten initialisieren
         this.allRoutes = createAllRoutes(); // Füllt die Klassenvariable mit allen Routen
+
+        this.allLocations = LocationsData.getAllLocations(this);
 
         setupSuggestedRoutes();
         setupNewsList();
@@ -61,6 +62,13 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         setupFloatingActionButtons();
     }
 
+    private void setupEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
+    }
     // --- Setup-Methoden für eine saubere onCreate ---
 
     private List<Route> createAllRoutes() {

@@ -20,6 +20,7 @@ public class FirstStartupActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_firststartup);
 
+        // Edge-to-Edge Handling (bleibt unverändert)
         View mainView = findViewById(R.id.firststartup);
         ViewCompat.setOnApplyWindowInsetsListener(mainView, (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
@@ -27,20 +28,24 @@ public class FirstStartupActivity extends AppCompatActivity {
             return insets;
         });
 
-        Button finishButton = findViewById(R.id.buttonFinish);
+        // Lade den Inhalt der Onboarding-Seite (bleibt unverändert)
         FrameLayout container = findViewById(R.id.onboarding_container);
+        LayoutInflater.from(this).inflate(R.layout.onboarding_page, container, true);
 
-        // --- HIER LADEN WIR MANUELL DIE EINE SEITE ---
-        OnboardingAdapter adapter = new OnboardingAdapter();
-        // Erzeuge einen ViewHolder, der das Layout der Seite enthält
-        OnboardingAdapter.OnboardingViewHolder viewHolder = adapter.onCreateViewHolder(container, 0);
-        // Binde die Daten (Titel, Text) an die Ansicht
-        adapter.onBindViewHolder(viewHolder, 0);
-        // Füge die fertige Ansicht dem Container hinzu
-        container.addView(viewHolder.itemView);
-        // -------------------------------------------
+        // ==========================================================
+        // HIER IST DIE KORREKTUR
+        // ==========================================================
 
-        // Klick-Listener für den "Fertig"-Button
+        // 1. Finde den Container des wiederverwendbaren Layouts
+        View navigationButtonsContainer = findViewById(R.id.navigation_buttons_container);
+
+        // 2. Finde die Buttons INNERHALB dieses Containers
+        Button finishButton = navigationButtonsContainer.findViewById(R.id.reusable_button_finish);
+
+        // 3. Steuere die Sichtbarkeit (bleibt gleich)
+        finishButton.setVisibility(View.VISIBLE);
+
+        // 4. Setze den Klick-Listener (bleibt gleich)
         finishButton.setOnClickListener(v -> {
             markOnboardingAsFinished();
             Intent intent = new Intent(FirstStartupActivity.this, MainActivity.class);
@@ -48,7 +53,6 @@ public class FirstStartupActivity extends AppCompatActivity {
             finish();
         });
     }
-
     private void markOnboardingAsFinished() {
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
         SharedPreferences.Editor editor = prefs.edit();
