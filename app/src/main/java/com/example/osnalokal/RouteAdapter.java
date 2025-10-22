@@ -7,33 +7,27 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import com.google.android.material.chip.Chip;
 import java.util.List;
 
-// 1. Tippfehler im Klassennamen korrigiert (Router -> Route)
 public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHolder> {
 
-    // 2. Interface für den Klick-Mechanismus hinzugefügt
     public interface OnRouteClickListener {
         void onRouteClick(Route route);
     }
 
     private List<Route> routeList;
-    private final OnRouteClickListener clickListener; // Variable für den Listener
+    private final OnRouteClickListener clickListener;
 
-    // 3. Konstruktor angepasst: Er braucht jetzt den Listener
     public RouteAdapter(List<Route> routeList, OnRouteClickListener clickListener) {
         this.routeList = routeList;
         this.clickListener = clickListener;
     }
 
-    public void filterList(List<Route> filteredList) {
-        this.routeList = filteredList;
-        notifyDataSetChanged(); // Sagt dem RecyclerView, dass er sich neu zeichnen soll
-    }
-
     @NonNull
     @Override
     public RouteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        // Wir verwenden weiterhin das 'item_route_card.xml' Layout
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_route_card, parent, false);
         return new RouteViewHolder(view);
@@ -42,15 +36,21 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
     @Override
     public void onBindViewHolder(@NonNull RouteViewHolder holder, int position) {
         Route currentRoute = routeList.get(position);
-        holder.title.setText(currentRoute.getTitle());
-        holder.description.setText(currentRoute.getDescription());
-        holder.distance.setText(currentRoute.getDistance());
-        holder.image.setImageResource(currentRoute.getImageResource());
-        holder.categoryTag.setText(currentRoute.getCategory());
 
-        // 4. Klick-Listener auf den Button setzen
-        holder.viewRouteButton.setOnClickListener(v -> {
-            clickListener.onRouteClick(currentRoute);
+        // Binde die Daten des Route-Objekts an die Views der Karte
+        holder.title.setText(currentRoute.getName());
+        holder.description.setText(currentRoute.getDescription());
+        holder.image.setImageResource(currentRoute.getImageResource());
+
+        // Wir können die kleinen Chips für andere Infos nutzen, z.B. die Anzahl der Stationen
+        holder.categoryChip.setText("Route");
+        holder.distanceChip.setText(currentRoute.getLocationIds().size() + " Stationen");
+
+        // Mache die ganze Karte klickbar
+        holder.itemView.setOnClickListener(v -> {
+            if (clickListener != null) {
+                clickListener.onRouteClick(currentRoute);
+            }
         });
     }
 
@@ -59,23 +59,26 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         return routeList.size();
     }
 
+    // Die Filter-Methode, falls du später Routen filtern willst
+    public void filterList(List<Route> filteredList) {
+        this.routeList = filteredList;
+        notifyDataSetChanged();
+    }
+
     static class RouteViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
-        com.google.android.material.chip.Chip distance;
         TextView title;
         TextView description;
-        com.google.android.material.button.MaterialButton viewRouteButton;
-        com.google.android.material.chip.Chip categoryTag;
+        Chip distanceChip;
+        Chip categoryChip;
 
         public RouteViewHolder(@NonNull View itemView) {
             super(itemView);
             image = itemView.findViewById(R.id.image_route);
-            // 5. ID korrigiert (chip_distance -> text_distance)
-            distance = itemView.findViewById(R.id.chip_distance);
             title = itemView.findViewById(R.id.text_route_title);
             description = itemView.findViewById(R.id.text_route_description);
-            viewRouteButton = itemView.findViewById(R.id.button_view_route);
-            categoryTag = itemView.findViewById(R.id.chip_category);
+            distanceChip = itemView.findViewById(R.id.chip_distance);
+            categoryChip = itemView.findViewById(R.id.chip_category);
         }
     }
 }

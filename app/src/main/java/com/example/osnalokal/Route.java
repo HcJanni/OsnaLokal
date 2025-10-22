@@ -1,43 +1,43 @@
-package com.example.osnalokal;public class Route {
+package com.example.osnalokal;
 
-    private final String title;
+import java.util.List;
+
+public class Route {
+
+    // --- ANGEPASSTE FELDER FÜR DAS NEUE KONZEPT ---
+    private final int id;
+    private final String name; // 'title' wurde zu 'name' für Konsistenz
     private final String description;
-    private final String distance;
-    private final int imageResource; // Wir verwenden erstmal lokale Bilder aus 'drawable'
-    private final String category;
-    private final boolean isSuggested;
+    private final int imageResource;
+    private final List<Integer> locationIds; // <-- Das ist das entscheidende neue Feld!
 
-    public Route(String title, String description, String distance, int imageResource, String category, boolean isSuggested) {
-        this.title = title;
+    // --- ANGEPASSTER KONSTRUKTOR ---
+    public Route(int id, String name, String description, int imageResource, List<Integer> locationIds) {
+        this.id = id;
+        this.name = name;
         this.description = description;
-        this.distance = distance;
         this.imageResource = imageResource;
-        this.category = category;
-        this.isSuggested = isSuggested;
+        this.locationIds = locationIds;
     }
 
-    // Getter-Methoden, damit der Adapter die Daten auslesen kann
-    public String getTitle() {
-        return title;
+    // --- ANGEPASSTE GETTER ---
+    public int getId() {
+        return id;
+    }
+
+    public String getName() {
+        return name;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public String getDistance() {
-        return distance;
-    }
-
     public int getImageResource() {
         return imageResource;
     }
 
-    public String getCategory() {
-        return category;
-    }
-
-    public boolean isSuggested() {
-        return isSuggested;
+    public List<Integer> getLocationIds() {
+        return locationIds;
     }
 }
