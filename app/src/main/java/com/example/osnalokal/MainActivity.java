@@ -1,14 +1,21 @@
 package com.example.osnalokal;
 
+import android.Manifest;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.view.View;
+
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -17,6 +24,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors; // Neuer, moderner Import für's Filtern
+
 import androidx.core.widget.NestedScrollView;
 import androidx.transition.AutoTransition;
 import androidx.transition.Fade;
@@ -26,6 +34,7 @@ import android.view.ViewGroup;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.animation.ObjectAnimator;
+import android.widget.Toast;
 
 // WICHTIG: Nur noch die Interfaces implementieren, die wir wirklich brauchen
 public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRouteClickListener, NewsAdapter.OnNewsClickListener {
@@ -33,10 +42,17 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
     // --- Klassenvariablen nur noch für Routen ---
     private List<Route> allRoutes = new ArrayList<>();
     private RouteAdapter allRoutesAdapter;
+    private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
+    private LocationManager locationManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        //Initialisiere den LocationManager als Singleton
+        locationManager = LocationManager.getInstance(this);
+        // Frage nach der Berechtigung, falls noch nicht vorhanden
+        requestLocationPermission();
 
         // 1. Onboarding-Check (unverändert)
         SharedPreferences prefs = getSharedPreferences("AppPrefs", MODE_PRIVATE);
@@ -60,7 +76,44 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         setupFloatingActionButtons();
     }
 
-    private void setupEdgeToEdge() {
+    private void requestLocationPermission() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Wenn keine Berechtigung, frage den Nutzer
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        } else {
+            // Wenn Berechtigung da ist, starte die Hintergrund-Updates
+            locationManager.startLocationUpdates(this);
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Nutzer hat zugestimmt, starte Hintergrund-Updates
+                locationManager.startLocationUpdates(this);
+            } else {
+                Toast.makeText(this, "Ohne Standortberechtigung können einige Kartenfunktionen nicht genutzt werden.", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
+
+    // Optional, aber guter Stil: Updates stoppen, wenn die App nicht sichtbar ist
+    @Override
+    protected void onPause() {
+        super.onPause();
+        locationManager.stopLocationUpdates();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume
+                ();requestLocationPermission(); // Starte Updates wieder, wenn App in den Vordergrund kommt
+    }
+
+
+        private void setupEdgeToEdge() {
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
             Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
@@ -110,9 +163,27 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         // KORRIGIERTER LISTENER: Es gibt nur EINEN Listener
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
             if (allRoutesAdapter == null) return;
-            // TODO: Diese Filterung muss noch an die Routen angepasst werden.
-            // Aktuell wird bei jedem Klick die volle Liste angezeigt und gescrollt.
-            allRoutesAdapter.filterList(this.allRoutes);
+
+            // Wenn kein Chip ausgewählt ist, zeige alle Routen
+            if (checkedIds.isEmpty()) {
+                allRoutesAdapter.filterList(this.allRoutes);
+                return;
+            }
+
+            // Finde den Text des ausgewählten Chips
+            Chip selectedChip = group.findViewById(checkedIds.get(0));
+            String selectedCategory = selectedChip.getText().toString();
+
+            // "Alle Routen" ist ein Sonderfall
+            if (selectedCategory.equalsIgnoreCase("Alle Routen")) {
+                allRoutesAdapter.filterList(this.allRoutes);
+            } else {
+                // Filtere die Routenliste basierend auf der neuen 'category'-Eigenschaft
+                List<Route> filteredRoutes = this.allRoutes.stream()
+                        .filter(route -> route.getCategory().equalsIgnoreCase(selectedCategory))
+                        .collect(Collectors.toList());
+                allRoutesAdapter.filterList(filteredRoutes);
+            }
 
             // Scroll-Logik
             int targetY = listContainer.getTop() + allRoutesTitle.getTop() - ((ViewGroup.MarginLayoutParams) allRoutesTitle.getLayoutParams()).topMargin;
@@ -123,8 +194,6 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
             animator.start();
         });
     }
-
-    // --- Klick-Listener-Implementierungen ---
 
     // Dies ist jetzt der einzige Klick-Listener für die Routen/Location-Karten
     @Override

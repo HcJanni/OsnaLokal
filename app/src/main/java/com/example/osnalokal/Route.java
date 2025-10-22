@@ -8,14 +8,16 @@ public class Route {
     private final int id;
     private final String name; // 'title' wurde zu 'name' für Konsistenz
     private final String description;
+    private final String category;
     private final int imageResource;
     private final List<Integer> locationIds; // <-- Das ist das entscheidende neue Feld!
 
     // --- ANGEPASSTER KONSTRUKTOR ---
-    public Route(int id, String name, String description, int imageResource, List<Integer> locationIds) {
+    public Route(int id, String name, String description, String category, int imageResource, List<Integer> locationIds) {
         this.id = id;
         this.name = name;
         this.description = description;
+        this.category = category;
         this.imageResource = imageResource;
         this.locationIds = locationIds;
     }
@@ -27,6 +29,10 @@ public class Route {
 
     public String getName() {
         return name;
+    }
+
+    public String getCategory() {
+        return category;
     }
 
     public String getDescription() {

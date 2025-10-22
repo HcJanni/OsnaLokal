@@ -38,8 +38,6 @@ function initializeMap() {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors, © CARTO'
     }).addTo(map);
-
-    startGeolocation();
 }
 
 function loadLocationsFromApp(jsonString) {
@@ -99,56 +97,6 @@ function addMarkersForLocations() {
     });
 }
 
-
-function startGeolocation() {
-    console.log("Starte Standortüberwachung...");
-
-    if ('geolocation' in navigator) {
-        // Definiere die Optionen für die Standortabfrage
-        const options = {
-            enableHighAccuracy: true, // Fordere eine hohe Genauigkeit an, wenn möglich
-            timeout: 1000,            // Gib nach 8 Sekunden auf (verhindert endloses Warten)
-            maximumAge: 0             // Erzwinge eine frische Positionsabfrage
-        };
-
-        // 1. Hole zuerst eine schnelle, einmalige Position
-        navigator.geolocation.getCurrentPosition(
-            (pos) => { // Erfolgs-Callback
-                console.log("Erste schnelle Position gefunden!");
-                updateLocation(pos);
-            },
-            (err) => { // Fehler-Callback
-                console.warn("Fehler bei der ersten schnellen Positionsabfrage.", err);
-                // Wenn die schnelle Abfrage fehlschlägt, ist es nicht schlimm,
-                // da die kontinuierliche Überwachung trotzdem läuft.
-            },
-            options // Übergib die Optionen
-        );
-
-        // 2. Starte DANACH die kontinuierliche Überwachung
-        navigator.geolocation.watchPosition(updateLocation, handleLocationError, options);
-
-    } else {
-        console.log("Geolocation wird von diesem Browser nicht unterstützt.");
-    }
-}
-
-// Wird aufgerufen, wenn eine neue Position erfolgreich ermittelt wurde
-function updateLocation(pos) {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    console.log(`Neue Position: ${lat}, ${lng}`);
-
-    // Wenn schon ein Marker existiert, wird nur seine Position aktualisiert
-    if (userMarker) {
-        userMarker.setLatLng([lat, lng]);
-    } else {
-        // Erstelle den Marker nur, wenn er noch nicht existiert
-        userMarker = L.marker([lat, lng], {icon: userPin}).addTo(map);
-        userMarker.bindPopup("<b>Dein Standort</b>");
-    }
-}
-
 function centerOnUserLocation() {
     if (userMarker) {
         map.flyTo(userMarker.getLatLng(), 17); // Fliege elegant zur Position
@@ -158,16 +106,24 @@ function centerOnUserLocation() {
     }
 }
 
-// Wird aufgerufen, wenn die Standort-Ermittlung fehlschlägt
-function handleLocationError(err) {
-    if (err.code === 1) { // 1 = PERMISSION_DENIED
-        console.warn("Nutzer hat die Standortfreigabe verweigert.");
-    } else if (err.code === 2) { // 2 = POSITION_UNAVAILABLE
-        console.warn("Standortinformationen sind nicht verfügbar.");
-    } else if (err.code === 3) { // 3 = TIMEOUT
-        console.warn("Timeout bei der Standortabfrage.");
+function updateUserLocationFromApp(lat, lng) {
+    console.log(`User-Position von App empfangen: ${lat}, ${lng}`);
+    const userLatLng = [lat, lng];
+
+    if (userMarker) {
+        userMarker.setLatLng(userLatLng);
     } else {
-        console.error(`Unbekannter Fehler bei der Standort-Ermittlung: ${err.message}`);
+        userMarker = L.marker(userLatLng, {icon: userPin}).addTo(map);
+        userMarker.bindPopup("<b>Dein Standort</b>");
+    }
+}
+
+// Passe die centerOnUserLocation-Funktion an. Der Fallback ist jetzt unwahrscheinlicher.
+function centerOnUserLocation() {
+    if (userMarker) {
+        map.flyTo(userMarker.getLatLng(), 17);
+    } else {
+        console.log("User-Position ist noch nicht bekannt. Bitte warte einen Moment.");
     }
 }
 

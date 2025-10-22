@@ -31,6 +31,7 @@ import android.webkit.JavascriptInterface;
 public class MapActivity extends AppCompatActivity {
 
     private WebView webView;
+    private LocationManager locationManager;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1;
 
     private String geolocationOrigin;
@@ -42,23 +43,21 @@ public class MapActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
+        locationManager = LocationManager.getInstance(this);
+
+        // --- 1. WebView initialisieren ---
         webView = findViewById(R.id.mapWebView);
         WebSettings webSettings = webView.getSettings();
-
         webSettings.setJavaScriptEnabled(true);
-        webSettings.setGeolocationEnabled(true); // Wichtig für die Standort-API in JS
+        webSettings.setGeolocationEnabled(true);
         webSettings.setDomStorageEnabled(true);
-        webSettings.setDatabaseEnabled(true);
 
-        // 1. Lade IMMER die komplette Liste aller Orte. Das ist unsere Master-Datenbank.
+        // --- 2. Daten laden und filtern ---
         List<Location> allLocations = LocationsData.getAllLocations(this);
-
-        // 2. Prüfe, ob eine Liste von IDs mit dem Intent übergeben wurde.
         List<Integer> receivedLocationIds = (List<Integer>) getIntent().getSerializableExtra("LOCATION_IDS");
         List<Location> waypoints = new ArrayList<>();
 
         if (receivedLocationIds != null && !receivedLocationIds.isEmpty()) {
-            // Behalte die Reihenfolge der IDs bei!
             for (Integer id : receivedLocationIds) {
                 for (Location loc : allLocations) {
                     if (loc.getId() == id) {
@@ -68,60 +67,51 @@ public class MapActivity extends AppCompatActivity {
                 }
             }
         } else {
-            // FALL B (Fallback): Wenn keine IDs übergeben wurden, zeige einfach alle Orte an.
-            waypoints.addAll(allLocations);
+            waypoints.addAll(allLocations); // Fallback
         }
 
-        Gson gson = new Gson();
-        final String waypointsJsonString = gson.toJson(waypoints);
+        // --- 3. JavaScript-Brücke einrichten ---
+        webView.addJavascriptInterface(new WebAppInterface(waypoints), "Android");
 
-        // 4. Starte die Routenberechnung im Hintergrund
-        calculateAndDrawRoute(waypoints);
-
-        // 5. Übergib die PINS an die WebView, sobald die Seite geladen ist
+        // --- 4. WebChromeClient (KORRIGIERT: Nur noch EIN Client) ---
+        final String waypointsJsonString = new Gson().toJson(waypoints);
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
                 if (newProgress == 100) {
-                    // Nur die Pins der Route übergeben
-                    String javascript = "javascript:loadLocationsFromApp('" + waypointsJsonString.replace("'", "\\'") + "')";
-                    webView.evaluateJavascript(javascript, null);
-                }
-            }
-        });
+                    // Übergib die Pins der Route (unverändert)
+                    String javascriptPins = "javascript:loadLocationsFromApp('" + waypointsJsonString.replace("'", "\\'") + "')";
+                    webView.evaluateJavascript(javascriptPins, null);
 
-
-        // Erstelle eine Instanz der Brücken-Klasse und übergib die Daten
-        WebAppInterface webAppInterface = new WebAppInterface(allLocations);
-        // Füge das Interface zur WebView hinzu und gib ihm einen Namen ("Android")
-        webView.addJavascriptInterface(webAppInterface, "Android");
-
-
-        // 3. Setze einen WebChromeClient, der die Daten an JS übergibt,
-        //    sobald die Seite FERTIG geladen ist.
-        webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                // Wenn die Seite komplett geladen ist (100%)
-                if (newProgress == 100) {
-                    // Nur die Pins der Route übergeben
-                    String javascript = "javascript:loadLocationsFromApp('" + waypointsJsonString.replace("'", "\\'") + "')";
-                    webView.evaluateJavascript(javascript, null);
+                    // --- NEU: SOFORTIGE STANDORT-ÜBERGABE ---
+                    // Hole die letzte bekannte Position und übergib sie an eine neue JS-Funktion
+                    android.location.Location lastLocation = locationManager.getLastKnownLocation();
+                    if (lastLocation != null) {
+                        String javascriptUserPos = "javascript:updateUserLocationFromApp(" + lastLocation.getLatitude() + ", " + lastLocation.getLongitude() + ")";
+                        webView.evaluateJavascript(javascriptUserPos, null);
+                    }
                 }
             }
 
+            // Die onGeolocationPermissionsShowPrompt wird nicht mehr benötigt!
+            // Du kannst den Inhalt löschen, um den Code sauberer zu machen.
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, true, false);
+                // Nicht mehr nötig, da der Standort von der nativen App kommt.
+                // Man kann es als Fallback drinlassen oder den Inhalt leeren.
+                callback.invoke(origin, false, false); // Sicherstellen, dass JS nicht selbst fragt
             }
         });
 
-        webView.loadUrl("file:///android_asset/map.html");
-        requestLocationPermission();
+        // --- 5. Routenberechnung starten ---
+        calculateAndDrawRoute(waypoints);
 
+        // --- 6. WebView laden ---
+        webView.loadUrl("file:///android_asset/map.html");
+
+        // --- 7. FAB einrichten ---
         FloatingActionButton fab = findViewById(R.id.fab_center_on_user);
         fab.setOnClickListener(v -> {
-            // Rufe die neue JavaScript-Funktion auf
             webView.evaluateJavascript("javascript:centerOnUserLocation()", null);
         });
     }

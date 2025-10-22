@@ -19,8 +19,8 @@
         android:layout_alignParentBottom="true"
         android:layout_margin="16dp"
         android:contentDescription="Auf eigenen Standort zentrieren"
-        app:backgroundTint="@color/white"
+        app:backgroundTint="@color/primary"
         app:srcCompat="@drawable/current_location_icon"
-        app:tint="@color/black" />
+        app:tint="@color/text_black" />
 
 </RelativeLayout>
