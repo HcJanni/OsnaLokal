@@ -25,6 +25,7 @@ public class MapActivity extends AppCompatActivity {
 
     private String geolocationOrigin;
     private GeolocationPermissions.Callback geolocationCallback;
+    private final String GOOGLE_API_KEY = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,6 +62,9 @@ public class MapActivity extends AppCompatActivity {
                     // Wir ersetzen Anführungszeichen, um Fehler im JS zu vermeiden.
                     String javascript = "javascript:loadLocationsFromApp('" + locationsJsonString.replace("'", "\\'") + "')";
                     webView.evaluateJavascript(javascript, null);
+
+                    //Für Test Route zeichnen
+                    drawTestRouteInWebView();
                 }
             }
 
@@ -80,6 +84,22 @@ public class MapActivity extends AppCompatActivity {
             // Wenn nicht, frage den Nutzer nach der Berechtigung
             ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
         }
+    }
+
+    private void drawTestRouteInWebView() {
+        String startPoint = "52.2726,8.0449"; // Schloss
+        String endPoint = "52.2799,8.0422";   // Dom
+
+        // Escape der Anführungszeichen für den JavaScript-Aufruf
+        String startPointJs = "'" + startPoint + "'";
+        String endPointJs = "'" + endPoint + "'";
+        String apiKeyJs = "'" + GOOGLE_API_KEY + "'";
+
+        // Erstelle den JavaScript-Aufruf
+        String javascript = "javascript:drawRouteFromApp(" + startPointJs + ", " + endPointJs + ", " + apiKeyJs + ")";
+
+        // Führe den Code in der WebView aus
+        webView.post(() -> webView.evaluateJavascript(javascript, null));
     }
 
     @Override
