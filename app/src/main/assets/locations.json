@@ -316,18 +316,6 @@
   },
   {
     "id": 54,
-    "name": "Trash",
-    "art": "Kneipe",
-    "oeffnungszeiten": "Mo. - So. : 19:00 - 03:00",
-    "bewertungen": 4.5,
-    "preisspanne": 10,
-    "barrierefrei": false,
-    "telefonnummer": "05418141304",
-    "breitengrad": 52.2340276,
-    "laengengrad": 8.1712107
-  },
-  {
-    "id": 55,
     "name": "Unikeller",
     "art": "Kneipe",
     "oeffnungszeiten": "Mo. - So. : 19:00 - 00:00",
