@@ -15,6 +15,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.google.gson.Gson;
+import com.google.maps.DirectionsApi;
+import com.google.maps.GeoApiContext;
+import com.google.maps.model.DirectionsResult;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -49,25 +52,41 @@ public class MapActivity extends AppCompatActivity {
 
         // 2. Prüfe, ob eine Liste von IDs mit dem Intent übergeben wurde.
         List<Integer> receivedLocationIds = (List<Integer>) getIntent().getSerializableExtra("LOCATION_IDS");
-
-        // 3. Erstelle die finale Liste der Orte, die angezeigt werden sollen.
-        List<Location> locationsToShow;
-
-        List<Integer> locationIds = (List<Integer>) getIntent().getSerializableExtra("LOCATION_IDS");
+        List<Location> waypoints = new ArrayList<>();
 
         if (receivedLocationIds != null && !receivedLocationIds.isEmpty()) {
-            // FALL A: Wenn IDs übergeben wurden, filtere die 'allLocations'-Liste.
-            // Wir suchen alle Orte, deren ID in der empfangenen Liste enthalten ist.
-            locationsToShow = allLocations.stream()
-                    .filter(location -> receivedLocationIds.contains(location.getId()))
-                    .collect(Collectors.toList());
+            // Behalte die Reihenfolge der IDs bei!
+            for (Integer id : receivedLocationIds) {
+                for (Location loc : allLocations) {
+                    if (loc.getId() == id) {
+                        waypoints.add(loc);
+                        break;
+                    }
+                }
+            }
         } else {
             // FALL B (Fallback): Wenn keine IDs übergeben wurden, zeige einfach alle Orte an.
-            locationsToShow = allLocations;
+            waypoints.addAll(allLocations);
         }
 
         Gson gson = new Gson();
-        final String locationsJsonString = gson.toJson(locationsToShow);
+        final String waypointsJsonString = gson.toJson(waypoints);
+
+        // 4. Starte die Routenberechnung im Hintergrund
+        calculateAndDrawRoute(waypoints);
+
+        // 5. Übergib die PINS an die WebView, sobald die Seite geladen ist
+        webView.setWebChromeClient(new WebChromeClient() {
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100) {
+                    // Nur die Pins der Route übergeben
+                    String javascript = "javascript:loadLocationsFromApp('" + waypointsJsonString.replace("'", "\\'") + "')";
+                    webView.evaluateJavascript(javascript, null);
+                }
+            }
+        });
+
 
         // Erstelle eine Instanz der Brücken-Klasse und übergib die Daten
         WebAppInterface webAppInterface = new WebAppInterface(allLocations);
@@ -82,13 +101,9 @@ public class MapActivity extends AppCompatActivity {
             public void onProgressChanged(WebView view, int newProgress) {
                 // Wenn die Seite komplett geladen ist (100%)
                 if (newProgress == 100) {
-                    // Rufe eine neue JS-Funktion auf und übergib den JSON-String.
-                    // Wir ersetzen Anführungszeichen, um Fehler im JS zu vermeiden.
-                    String javascript = "javascript:loadLocationsFromApp('" + locationsJsonString.replace("'", "\\'") + "')";
+                    // Nur die Pins der Route übergeben
+                    String javascript = "javascript:loadLocationsFromApp('" + waypointsJsonString.replace("'", "\\'") + "')";
                     webView.evaluateJavascript(javascript, null);
-
-                    //Für Test Route zeichnen
-                    //drawTestRouteInWebView();
                 }
             }
 
@@ -100,6 +115,54 @@ public class MapActivity extends AppCompatActivity {
 
         webView.loadUrl("file:///android_asset/map.html");
         requestLocationPermission();
+    }
+
+    private void calculateAndDrawRoute(List<Location> waypoints) {
+        if (waypoints.size() < 2) {
+            android.util.Log.d("MapActivity", "Nicht genügend Wegpunkte für eine Route.");
+            return;
+        }
+
+        // Führe die Netzwerkanfrage in einem neuen Thread aus
+        new Thread(() -> {
+            try {
+                GeoApiContext context = new GeoApiContext.Builder()
+                        .apiKey(GOOGLE_API_KEY)
+                        .build();
+
+                Location start = waypoints.get(0);
+                Location end = waypoints.get(waypoints.size() - 1);
+
+                // --- KORREKTUR 1: Verwende die richtige LatLng-Klasse aus der services-Bibliothek ---
+                com.google.maps.model.LatLng[] intermediatePoints = new com.google.maps.model.LatLng[waypoints.size() - 2];
+                for (int i = 1; i < waypoints.size() - 1; i++) {
+                    Location loc = waypoints.get(i);
+                    intermediatePoints[i - 1] = new com.google.maps.model.LatLng(loc.getBreitengrad(), loc.getLaengengrad());
+                }
+
+                // Führe die Anfrage an die Directions API aus
+                // --- KORREKTUR 2: Auch hier die richtige LatLng-Klasse verwenden ---
+                DirectionsResult result = DirectionsApi.newRequest(context)
+                        .origin(new com.google.maps.model.LatLng(start.getBreitengrad(), start.getLaengengrad()))
+                        .destination(new com.google.maps.model.LatLng(end.getBreitengrad(), end.getLaengengrad()))
+                        .waypoints(intermediatePoints)
+                        .await();
+
+                // Extrahiere die kodierte Pfad-Linie aus dem Ergebnis
+                String encodedPath = result.routes[0].overviewPolyline.getEncodedPath();
+
+                // Übergib den Pfad an das JavaScript, um ihn zu zeichnen
+                // Wichtig: Muss auf dem UI-Thread passieren!
+                runOnUiThread(() -> {
+                    String javascript = "javascript:drawRouteFromEncodedPath('" + encodedPath + "')";
+                    webView.evaluateJavascript(javascript, null);
+                });
+
+            } catch (Exception e) {
+                android.util.Log.e("MapActivity", "Fehler bei der Routenberechnung: " + e.getMessage());
+                e.printStackTrace();
+            }
+        }).start();
     }
 
     private void requestLocationPermission() {
