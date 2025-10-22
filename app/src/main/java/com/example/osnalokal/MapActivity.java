@@ -35,7 +35,7 @@ public class MapActivity extends AppCompatActivity {
 
     private String geolocationOrigin;
     private GeolocationPermissions.Callback geolocationCallback;
-    private final String GOOGLE_API_KEY = "";
+    private final String GOOGLE_API_KEY = "AIzaSyAnOJX2k6RMbKDlkzhlPHZq8pD8cBeHh60";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
