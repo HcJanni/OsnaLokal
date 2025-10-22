@@ -11,10 +11,10 @@ function initializeMap() {
     //Default View auf Osnabrück
     map.setView([52.2790, 8.0425], 15);
 
-    // Fügt die Kartenkacheln von OpenStreetMap hinzu
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Fügt die Kartenkacheln hinzu
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
-        attribution: '© OpenStreetMap'
+        attribution: '© OpenStreetMap contributors, © CARTO'
     }).addTo(map);
 
     // Startet die Standortüberwachung
@@ -45,8 +45,9 @@ function updateLocation(pos) {
     if (userMarker) {
         userMarker.setLatLng([lat, lng]);
     } else {
-        // Erstellt den Marker und den Kreis beim ersten Mal
-        userMarker = L.marker([lat, lng]).addTo(map);
+        //userMarker = L.marker([lat, lng]).addTo(map);
+        userMarker = L.marker([lat, lng], {icon: userPin}).addTo(map);
+
     }
 
     // Beim allerersten erfolgreichen Standort-Update: Fliege elegant zur Position des Nutzers.
@@ -95,11 +96,28 @@ const osnaLocations = [
     }
 ];
 
+//Funktion definiert eigene Pin Icons
+const allPins = L.icon({
+    iconUrl: 'file:///android_res/drawable/mappin.png',
+
+    iconSize:     [38, 38],
+    iconAnchor:   [19, 38],
+    popupAnchor:  [0, -38]
+});
+
+const userPin = L.icon({
+    iconUrl: 'file:///android_res/drawable/logopin.png',
+
+    iconSize:     [38, 38],
+    iconAnchor:   [19, 38],
+    popupAnchor:  [0, -38]
+});
+
 // Funktion, die die Pins aus dem Array zur Karte hinzufügt
 function addOsnabrueckMarkers() {
     console.log("Füge Osnabrück-Marker hinzu...");
     osnaLocations.forEach(location => {
-        const marker = L.marker([location.lat, location.lng]).addTo(map);
+        const marker = L.marker([location.lat, location.lng], {icon: allPins}).addTo(map);
         marker.bindPopup(`<b>${location.name}</b><br>${location.description}`);
     });
 }
