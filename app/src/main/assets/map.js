@@ -19,6 +19,26 @@ const selectedPin = L.icon({
     iconAnchor:   [19, 38]
 });
 
+//Jetziger Standort Pin wird mit Logo angezeigt
+//const userPin = L.icon({
+//    iconUrl: 'file:///android_res/drawable/logopin.png',
+//    iconSize:     [38, 38],
+//    iconAnchor:   [19, 38],
+//    popupAnchor:  [0, -38]
+//});
+//
+//function updateLocation(pos) {
+//    const lat = pos.coords.latitude;
+//    const lng = pos.coords.longitude;
+//    const accuracy = pos.coords.accuracy;
+//    console.log(`Neue Position: ${lat}, ${lng} (Genauigkeit: ${accuracy}m)`);
+//
+//    if (userMarker) {
+//        userMarker.setLatLng([lat, lng]);
+//    } else {
+//        // Verwende dein User-Icon
+//        userMarker = L.marker([lat, lng], {icon: userPin}).addTo(map);
+//    }
 
 function initializeMap() {
     console.log("Initialisiere die Karte...");
