@@ -20,10 +20,9 @@ public class FilterActivity extends AppCompatActivity {
 
     // Sektionen (zum Ein-/Ausklappen und Checkboxen)
     private TextView tvRestaurant, tvBudget;
-    private CheckBox cbAktivitaeten, cbBarsKneipen;
-    private LinearLayout restaurantContent;
+    private CheckBox cbAktivitaeten, cbSehenswuerdigkeiten, cbBarsKneipen, cbParks;
     private ChipGroup chipGroupRestaurant, chipGroupBudget;
-    private LinearLayout budgetContentWrapper;
+    private LinearLayout restaurantContent, budgetContentWrapper;
 
     // Footer
     private Button btnSuggestRoutes;
@@ -48,17 +47,20 @@ public class FilterActivity extends AppCompatActivity {
         etDauerBis = findViewById(R.id.et_dauer_bis);
 
         cbAktivitaeten = findViewById(R.id.cb_aktivitaten);
+        cbSehenswuerdigkeiten = findViewById(R.id.cb_sehenswuerdigkeiten);
+        cbBarsKneipen = findViewById(R.id.cb_bars_kneipen);
+        cbParks = findViewById(R.id.cb_parks);
 
         tvRestaurant = findViewById(R.id.tv_restaurant);
         tvBudget = findViewById(R.id.tv_budget);
 
         restaurantContent = findViewById(R.id.restaurant_content_wrapper);
-        chipGroupRestaurant = findViewById(R.id.chip_group_restaurant);
         budgetContentWrapper = findViewById(R.id.budget_content_wrapper);
+
+        chipGroupRestaurant = findViewById(R.id.chip_group_restaurant);
         chipGroupBudget = findViewById(R.id.chip_group_budget);
 
-        cbBarsKneipen = findViewById(R.id.cb_bars_kneipen);
-        btnSuggestRoutes = findViewById(R.id.btn_suggest_routes);
+        btnSuggestRoutes = findViewById(R.id.reusable_button_next);
 
         // Standardmäßig einklappen
         restaurantContent.setVisibility(View.GONE);
@@ -107,7 +109,10 @@ public class FilterActivity extends AppCompatActivity {
         cbAktivitaeten.setChecked(false);
         chipGroupRestaurant.clearCheck();
         chipGroupBudget.clearCheck();
+        cbAktivitaeten.setChecked(false);
+        cbSehenswuerdigkeiten.setChecked(false);
         cbBarsKneipen.setChecked(false);
+        cbParks.setChecked(false);
     }
 
     /**

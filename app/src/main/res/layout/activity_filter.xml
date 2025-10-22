@@ -52,25 +52,24 @@
         android:background="#E0E0E0"
         app:layout_constraintTop_toBottomOf="@+id/tv_title" />
 
-    <Button
-        android:id="@+id/btn_suggest_routes"
-        android:layout_width="match_parent"
+    <include
+        android:id="@+id/reusable_button"
+        layout="@layout/reusable_navigation_buttons"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
-        android:backgroundTint="@color/primary"
-        android:text="Routen vorschlagen"
-        android:textColor="@android:color/white"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
+
 
     <ScrollView
         android:id="@+id/scroll_view"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         app:layout_constraintTop_toBottomOf="@+id/divider_top"
-        app:layout_constraintBottom_toTopOf="@+id/btn_suggest_routes">
+        app:layout_constraintBottom_toTopOf="@+id/reusable_button">
 
         <LinearLayout
             android:layout_width="match_parent"

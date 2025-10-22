@@ -247,6 +247,14 @@
 
     </LinearLayout>
 
+    <include
+        android:id="@+id/reusable_button"
+        layout="@layout/reusable_navigation_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="16dp" />
+
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_filter_filter"
         android:layout_width="wrap_content"
