@@ -29,7 +29,7 @@ public class MapActivity extends AppCompatActivity {
 
     private String geolocationOrigin;
     private GeolocationPermissions.Callback geolocationCallback;
-    private final String GOOGLE_API_KEY = "";
+    private final String GOOGLE_API_KEY = "AIzaSyAnOJX2k6RMbKDlkzhlPHZq8pD8cBeHh60";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -67,7 +67,7 @@ public class MapActivity extends AppCompatActivity {
         }
 
         Gson gson = new Gson();
-        final String locationsJsonString = gson.toJson(allLocations);
+        final String locationsJsonString = gson.toJson(locationsToShow);
 
         // Erstelle eine Instanz der Brücken-Klasse und übergib die Daten
         WebAppInterface webAppInterface = new WebAppInterface(allLocations);
@@ -88,7 +88,7 @@ public class MapActivity extends AppCompatActivity {
                     webView.evaluateJavascript(javascript, null);
 
                     //Für Test Route zeichnen
-                    drawTestRouteInWebView();
+                    //drawTestRouteInWebView();
                 }
             }
 
