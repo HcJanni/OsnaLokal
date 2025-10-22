@@ -1,5 +1,6 @@
 package com.example.osnalokal;
 
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -27,6 +28,28 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment {
         args.putInt(ARG_IMAGE_RES, imageRes);
         fragment.setArguments(args);
         return fragment;
+    }
+
+    // 1. Definiere das Interface, das die Activity implementieren kann
+    public interface OnDismissListener {
+        void onBottomSheetDismissed();
+    }
+
+    private OnDismissListener dismissListener;
+
+    // 2. Methode, damit die Activity den Listener setzen kann
+    public void setOnDismissListener(OnDismissListener listener) {
+        this.dismissListener = listener;
+    }
+
+    // 3. Diese Methode wird automatisch aufgerufen, wenn das Fragment geschlossen wird
+    @Override
+    public void onDismiss(@NonNull DialogInterface dialog) {
+        super.onDismiss(dialog);
+        // Benachrichtige den Listener, falls einer gesetzt ist
+        if (dismissListener != null) {
+            dismissListener.onBottomSheetDismissed();
+        }
     }
 
     @Nullable

@@ -25,8 +25,7 @@ import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.animation.ObjectAnimator;
 
-public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRouteClickListener, NewsAdapter.OnNewsClickListener {
-
+public class MainActivity extends AppCompatActivity implements LocationAdapter.OnLocationClickListener, NewsAdapter.OnNewsClickListener {
     // --- Klassenvariablen für die Master-Daten und den einen wichtigen Adapter ---
     private List<Route> allRoutes = new ArrayList<>();
     private RouteAdapter allRoutesAdapter; // Dieser Adapter ist wichtig für die Filter
@@ -50,9 +49,7 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         setContentView(R.layout.activity_main);
         setupEdgeToEdge();
 
-        // 3. Alle Daten erstellen und UI-Komponenten initialisieren
-        this.allRoutes = createAllRoutes(); // Füllt die Klassenvariable mit allen Routen
-
+        // 1. LADE DIE DATEN AUS DER JSON-DATEI
         this.allLocations = LocationsData.getAllLocations(this);
 
         setupSuggestedRoutes();
@@ -69,42 +66,23 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
             return insets;
         });
     }
-    // --- Setup-Methoden für eine saubere onCreate ---
-
-    private List<Route> createAllRoutes() {
-        List<Route> routes = new ArrayList<>();
-        //               Titel, Beschreibung, Distanz, Bild, Kategorie, isSuggested?
-        routes.add(new Route("Pizza-Tour", "Die besten Pizzen", "3 KM", R.drawable.rec_tours_testimg, "Restaurants", true));
-        routes.add(new Route("Pizza-Tour", "Die besten Pizzen", "3 KM", R.drawable.rec_tours_testimg, "Restaurants", false));
-        routes.add(new Route("Ein Tag in Osnabrück", "Frühstück, Aktivitäten...", "4 KM", R.drawable.rec_tours_testimg, "Sehenswürdigkeiten", true));
-        routes.add(new Route("Ein Tag in Osnabrück", "Frühstück, Aktivitäten...", "4 KM", R.drawable.rec_tours_testimg, "Sehenswürdigkeiten", false));
-        routes.add(new Route("Cocktail-Nacht", "Die angesagtesten Bars", "1 KM", R.drawable.rec_tours_testimg, "Bars", true));
-        routes.add(new Route("Cocktail-Nacht", "Die angesagtesten Bars", "1 KM", R.drawable.rec_tours_testimg, "Bars", false));
-        routes.add(new Route("Burger-Meile", "Saftige Burger", "2 KM", R.drawable.rec_tours_testimg, "Restaurants", false));
-        routes.add(new Route("Schlossgarten & Co.", "Entspannung im Grünen", "2 KM", R.drawable.rec_tours_testimg, "Sehenswürdigkeiten", false));
-        routes.add(new Route("Biergarten-Hopping", "Kühle Drinks", "4 KM", R.drawable.rec_tours_testimg, "Bars", false));
-        return routes;
-    }
-
     private void setupSuggestedRoutes() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_suggested_routes);
-        // Filtere die Liste, um nur vorgeschlagene Routen zu bekommen
-        List<Route> suggestedList = new ArrayList<>();
-        for (Route route : this.allRoutes) {
-            if (route.isSuggested()) {
-                suggestedList.add(route);
-            }
-        }
-        // Dieser Adapter ist nur lokal, da er sich nicht ändert
-        RouteAdapter suggestedAdapter = new RouteAdapter(suggestedList, this);
+
+        // Filtere die Liste für "Vorgeschlagene"
+        // TODO: Füge ein "suggested" Flag zur Location.java und locations.json hinzu.
+        // Fürs Erste nehmen wir einfach die ersten 3 Einträge.
+        List<Location> suggestedList = new ArrayList<>(this.allLocations.subList(0, Math.min(3, this.allLocations.size())));
+
+        LocationAdapter suggestedAdapter = new LocationAdapter(suggestedList, this);
         recyclerView.setAdapter(suggestedAdapter);
     }
 
     private void setupAllRoutesList() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_all_routes);
         // Initialisiere den Klassen-Adapter mit der vollen Liste
-        this.allRoutesAdapter = new RouteAdapter(new ArrayList<>(this.allRoutes), this);
-        recyclerView.setAdapter(this.allRoutesAdapter);
+        this.allLocationsAdapter = new LocationAdapter(new ArrayList<>(this.allLocations), this);
+        recyclerView.setAdapter(this.allLocationsAdapter);
         recyclerView.setNestedScrollingEnabled(false);
     }
 
@@ -141,35 +119,26 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         });
 
         chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            if (allRoutesAdapter == null) return; // Sicherheitscheck
+            if (allLocationsAdapter == null) return;
 
-            // ... (deine komplette Filter-Logik bleibt hier unverändert) ...
             if (checkedIds.isEmpty()) {
-                allRoutesAdapter.filterList(this.allRoutes);
+                allLocationsAdapter.filterList(this.allLocations);
                 return;
             }
+
             Chip selectedChip = group.findViewById(checkedIds.get(0));
-            if (selectedChip == null) {
-                allRoutesAdapter.filterList(this.allRoutes);
-                return;
-            }
             String selectedCategory = selectedChip.getText().toString();
+
             if (selectedCategory.equalsIgnoreCase("Alle Routen")) {
-                allRoutesAdapter.filterList(this.allRoutes);
+                allLocationsAdapter.filterList(this.allLocations);
             } else {
-                List<Route> filteredRoutes = this.allRoutes.stream()
-                        .filter(route -> route.getCategory().equalsIgnoreCase(selectedCategory))
+                // Filtere die neue allLocations-Liste nach dem Feld "art"
+                List<Location> filteredLocations = this.allLocations.stream()
+                        .filter(location -> location.getArt().equalsIgnoreCase(selectedCategory))
                         .collect(Collectors.toList());
-                allRoutesAdapter.filterList(filteredRoutes);
+                allLocationsAdapter.filterList(filteredLocations);
             }
 
-            // --- Logik zum Scrollen (wird jetzt immer ausgeführt) ---
-
-            // ==========================================================
-            // HIER IST DIE KORREKTE BERECHNUNG
-            // ==========================================================
-            // Wir ziehen den oberen Margin des Titels von der Zielposition ab,
-            // um den kleinen "Übersprung" zu korrigieren.
             int targetY = listContainer.getTop() + allRoutesTitle.getTop() - ((ViewGroup.MarginLayoutParams) allRoutesTitle.getLayoutParams()).topMargin;
 
             int offset = 50;
@@ -198,20 +167,21 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
     // --- Klick-Listener-Implementierungen ---
 
     @Override
-    public void onRouteClick(Route route) {
-        DetailBottomSheetFragment.newInstance(
-                route.getTitle(),
-                route.getDescription(),
-                route.getImageResource()
-        ).show(getSupportFragmentManager(), "DetailBottomSheet");
-    }
-
-    @Override
     public void onNewsClick(NewsItem newsItem) {
         DetailBottomSheetFragment.newInstance(
                 newsItem.getTitle(),
                 newsItem.getDistance(),
                 newsItem.getImageResource()
+        ).show(getSupportFragmentManager(), "DetailBottomSheet");
+    }
+
+    @Override
+    public void onLocationClick(Location location) {
+        // Wir verwenden die neuen, reichhaltigeren Daten für das BottomSheet
+        DetailBottomSheetFragment.newInstance(
+                location.getName(),
+                "Bewertung: " + location.getBewertungen() + "\n" + location.getOeffnungszeiten(),
+                R.drawable.rec_tours_testimg // Platzhalter-Bild
         ).show(getSupportFragmentManager(), "DetailBottomSheet");
     }
 }

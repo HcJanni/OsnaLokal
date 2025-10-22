@@ -14,6 +14,9 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import com.google.gson.Gson;
+import java.util.List;
+import android.webkit.JavascriptInterface;
 
 public class MapActivity extends AppCompatActivity {
 
@@ -36,27 +39,49 @@ public class MapActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setDatabaseEnabled(true);
 
-        webView.setWebViewClient(new WebViewClient());
+        List<Location> allLocations = LocationsData.getAllLocations(this);
 
-        //Anfragen von JS an die App weiterzuleiten
+        Gson gson = new Gson();
+        final String locationsJsonString = gson.toJson(allLocations);
+
+        // Erstelle eine Instanz der Brücken-Klasse und übergib die Daten
+        WebAppInterface webAppInterface = new WebAppInterface(allLocations);
+        // Füge das Interface zur WebView hinzu und gib ihm einen Namen ("Android")
+        webView.addJavascriptInterface(webAppInterface, "Android");
+
+
+        // 3. Setze einen WebChromeClient, der die Daten an JS übergibt,
+        //    sobald die Seite FERTIG geladen ist.
         webView.setWebChromeClient(new WebChromeClient() {
-            //Für Bestätigung der Verwendung von Standort
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                // Wenn die Seite komplett geladen ist (100%)
+                if (newProgress == 100) {
+                    // Rufe eine neue JS-Funktion auf und übergib den JSON-String.
+                    // Wir ersetzen Anführungszeichen, um Fehler im JS zu vermeiden.
+                    String javascript = "javascript:loadLocationsFromApp('" + locationsJsonString.replace("'", "\\'") + "')";
+                    webView.evaluateJavascript(javascript, null);
+                }
+            }
+
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                if (ContextCompat.checkSelfPermission(MapActivity.this, Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-                    callback.invoke(origin, true, false);
-                } else {
-                    geolocationOrigin = origin;
-                    geolocationCallback = callback;
-                    ActivityCompat.requestPermissions(MapActivity.this,
-                            new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION},
-                            LOCATION_PERMISSION_REQUEST_CODE);
-                }
+                callback.invoke(origin, true, false);
             }
         });
 
         webView.loadUrl("file:///android_asset/map.html");
+        requestLocationPermission();
     }
+
+    private void requestLocationPermission() {
+        // Prüfe, ob die Berechtigung bereits erteilt wurde
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            // Wenn nicht, frage den Nutzer nach der Berechtigung
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
+        }
+    }
+
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
@@ -89,5 +114,52 @@ public class MapActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
         webView.onResume();
+    }
+
+    public class WebAppInterface {
+        private List<Location> locations;
+
+        WebAppInterface(List<Location> locations) {
+            this.locations = locations;
+        }
+
+        /**
+         * Diese Methode wird von JavaScript aus aufgerufen, wenn ein Pin geklickt wird.
+         * @param locationId Die ID des angeklickten Ortes.
+         */
+        @JavascriptInterface
+        public void onMarkerClick(int locationId) {
+            Location clickedLocation = findLocationById(locationId);
+
+            if (clickedLocation != null) {
+                runOnUiThread(() -> {
+                    // 1. Erstelle das Bottom Sheet
+                    DetailBottomSheetFragment bottomSheet = DetailBottomSheetFragment.newInstance(
+                            clickedLocation.getName(),
+                            "Bewertung: " + clickedLocation.getBewertungen() + "\n" + clickedLocation.getOeffnungszeiten(),
+                            R.drawable.rec_tours_testimg
+                    );
+
+                    // 2. Setze einen Listener, der auf das Schließen reagiert
+                    bottomSheet.setOnDismissListener(() -> {
+                        // Wenn das Sheet geschlossen wird, rufe eine JS-Funktion auf,
+                        // um alle Marker zurückzusetzen.
+                        webView.post(() -> webView.evaluateJavascript("javascript:resetAllMarkers()", null));
+                    });
+
+                    // 3. Zeige das Bottom Sheet an
+                    bottomSheet.show(getSupportFragmentManager(), "DetailBottomSheetFromMap");
+                });
+            }
+        }
+
+        private Location findLocationById(int id) {
+            for (Location loc : locations) {
+                if (loc.getId() == id) {
+                    return loc;
+                }
+            }
+            return null; // Wenn keine Location mit der ID gefunden wurde
+        }
     }
 }

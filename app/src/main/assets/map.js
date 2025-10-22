@@ -1,126 +1,98 @@
 // --- Globale Variablen ---
 let map;
-let userMarker = null;
-let hasZoomedToUser = false;
+let userMarker = null;let hasZoomedToUser = false;
+let allLocations = []; // Hier speichern wir alle Orte aus der JSON-Datei
+let locationMarkers = []; // NEU: Hier speichern wir alle Marker-Objekte
+
+// ==========================================================
+// NEU: Definiere die beiden Pin-Icons
+// ==========================================================
+const defaultPin = L.icon({
+    iconUrl: 'file:///android_res/drawable/mappin.png',
+    iconSize:     [38, 38],
+    iconAnchor:   [19, 38]
+});
+
+const selectedPin = L.icon({
+    iconUrl: 'file:///android_res/drawable/mappin_selected.png',
+    iconSize:     [38, 38],
+    iconAnchor:   [19, 38]
+});
+
 
 function initializeMap() {
     console.log("Initialisiere die Karte...");
 
     map = L.map('map');
+    map.setView([52.2790, 8.0425], 15); // Default View auf Osnabrück
 
-    //Default View auf Osnabrück
-    map.setView([52.2790, 8.0425], 15);
-
-    // Fügt die Kartenkacheln hinzu
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
         attribution: '© OpenStreetMap contributors, © CARTO'
     }).addTo(map);
 
-    // Startet die Standortüberwachung
     startGeolocation();
-
-    // Fügt die vordefinierten Pins für Osnabrück hinzu
-    addOsnabrueckMarkers();
 }
 
-function startGeolocation() {
-    console.log("Starte Standortüberwachung...");
-    // Prüft, ob Geolocation im Browser verfügbar ist
-    if (navigator.geolocation) {
-        // "watchPosition" aktualisiert die Position, wenn der Nutzer sich bewegt
-        navigator.geolocation.watchPosition(updateLocation, handleLocationError);
-    }
-}
-
-// Wird aufgerufen, wenn eine neue Position erfolgreich ermittelt wurde
-function updateLocation(pos) {
-    const lat = pos.coords.latitude;
-    const lng = pos.coords.longitude;
-    const accuracy = pos.coords.accuracy;
-
-    console.log(`Neue Position: ${lat}, ${lng} (Genauigkeit: ${accuracy}m)`);
-
-    // Wenn schon ein Marker existiert, wird nur seine Position aktualisiert
-    if (userMarker) {
-        userMarker.setLatLng([lat, lng]);
-    } else {
-        //userMarker = L.marker([lat, lng]).addTo(map);
-        userMarker = L.marker([lat, lng], {icon: userPin}).addTo(map);
-
-    }
-
-    // Beim allerersten erfolgreichen Standort-Update: Fliege elegant zur Position des Nutzers.
-    if (!hasZoomedToUser) {
-        map.flyTo([lat, lng], 17); // Zoomt nah an die Position
-        hasZoomedToUser = true;
+function loadLocationsFromApp(jsonString) {
+    console.log("Externe Orte werden geladen...");
+    try {
+        allLocations = JSON.parse(jsonString);
+        addMarkersForLocations();
+    } catch (e) {
+        console.error("Fehler beim Parsen des JSON-Strings:", e);
     }
 }
 
-// Wird aufgerufen, wenn die Standort-Ermittlung fehlschlägt
-function handleLocationError(err) {
-    if (err.code === 1) {
-        console.warn("Nutzer hat die Standortfreigabe verweigert.");
-        // Die Karte bleibt auf der Standard-Ansicht (Osnabrück)
-    } else {
-        console.error(`Fehler bei der Standort-Ermittlung: ${err.message}`);
-    }
+// ==========================================================
+// NEU: Funktion zum Zurücksetzen aller Marker
+// ==========================================================
+function resetAllMarkers() {
+    locationMarkers.forEach(m => m.setIcon(defaultPin));
 }
 
+// ==========================================================
+// ANGEPASSTE FUNKTION: Fügt Marker hinzu und speichert sie
+// ==========================================================
+function addMarkersForLocations() {
+    console.log(`Füge ${allLocations.length} Marker hinzu...`);
+    if (!map || !allLocations) return;
 
-//Paar Beispiel Pins für Innenstadt
-const osnaLocations = [
-    {
-        lat: 52.2775,
-        lng: 8.0416,
-        name: "Rathaus des Westfälischen Friedens",
-        description: "Historischer Ort des Friedensschlusses von 1648."
-    },
-    {
-        lat: 52.2790,
-        lng: 8.0425,
-        name: "Dom St. Peter",
-        description: "Das Herz der Osnabrücker Altstadt."
-    },
-    {
-        lat: 52.2766,
-        lng: 8.0375,
-        name: "Heger Tor",
-        description: "Ein imposantes Stadttor und Denkmal."
-    },
-    {
-        lat: 52.2758,
-        lng: 8.0445,
-        name: "L&T Markthalle",
-        description: "Moderne Gastronomie trifft auf Shopping."
-    }
-];
+    // Leere die alte Marker-Liste, falls die Funktion erneut aufgerufen wird
+    locationMarkers.forEach(m => map.removeLayer(m));
+    locationMarkers = [];
 
-//Funktion definiert eigene Pin Icons
-const allPins = L.icon({
-    iconUrl: 'file:///android_res/drawable/mappin.png',
+    allLocations.forEach(location => {
+        if (location.breitengrad && location.laengengrad) {
+            // Erstelle den Marker mit dem Standard-Pin
+            const marker = L.marker([location.breitengrad, location.laengengrad], {icon: defaultPin}).addTo(map);
 
-    iconSize:     [38, 38],
-    iconAnchor:   [19, 38],
-    popupAnchor:  [0, -38]
-});
+            // Speichere den Marker im Array
+            locationMarkers.push(marker);
 
-const userPin = L.icon({
-    iconUrl: 'file:///android_res/drawable/logopin.png',
+            // Füge den Klick-Listener hinzu
+            marker.on('click', function() {
+                // 1. Setze alle Marker auf den Standard-Pin zurück
+                resetAllMarkers();
 
-    iconSize:     [38, 38],
-    iconAnchor:   [19, 38],
-    popupAnchor:  [0, -38]
-});
+                // 2. Setze NUR den geklickten Marker auf den ausgewählten Pin
+                marker.setIcon(selectedPin);
 
-// Funktion, die die Pins aus dem Array zur Karte hinzufügt
-function addOsnabrueckMarkers() {
-    console.log("Füge Osnabrück-Marker hinzu...");
-    osnaLocations.forEach(location => {
-        const marker = L.marker([location.lat, location.lng], {icon: allPins}).addTo(map);
-        marker.bindPopup(`<b>${location.name}</b><br>${location.description}`);
+                map.panTo(marker.getLatLng());
+
+                // 3. Rufe die Java-Methode auf, um das Bottom Sheet zu öffnen
+                if (window.Android && typeof window.Android.onMarkerClick === 'function') {
+                    window.Android.onMarkerClick(location.id);
+                } else {
+                    console.log("Android-Interface nicht gefunden.");
+                }
+            });
+        }
     });
 }
 
-//Initialisiere die Karte
+// --- Geolocation-Funktionen (bleiben unverändert) ---
+// ... (startGeolocation, updateLocation, handleLocationError) ...
+
+// --- Initialisierung ---
 initializeMap();
