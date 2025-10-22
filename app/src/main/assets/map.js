@@ -11,10 +11,10 @@ function initializeMap() {
     //Default View auf Osnabrück
     map.setView([52.2790, 8.0425], 15);
 
-    // Fügt die Kartenkacheln von OpenStreetMap hinzu
-    L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    // Fügt die Kartenkacheln hinzu
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
-        attribution: '© OpenStreetMap'
+        attribution: '© OpenStreetMap contributors, © CARTO'
     }).addTo(map);
 
     // Startet die Standortüberwachung
