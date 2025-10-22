@@ -117,7 +117,7 @@ public class MapActivity extends AppCompatActivity {
         requestLocationPermission();
     }
 
-    private void calculateAndDrawRoute(List<Location> waypoints) {
+    private void calculateAndDrawRoute(List<Location> waypoints) {        // Die Route muss mindestens einen Start- und einen Endpunkt haben
         if (waypoints.size() < 2) {
             android.util.Log.d("MapActivity", "Nicht genügend Wegpunkte für eine Route.");
             return;
@@ -133,30 +133,37 @@ public class MapActivity extends AppCompatActivity {
                 Location start = waypoints.get(0);
                 Location end = waypoints.get(waypoints.size() - 1);
 
-                // --- KORREKTUR 1: Verwende die richtige LatLng-Klasse aus der services-Bibliothek ---
+                // --- KORREKTUR BEI DEN ZWISCHENPUNKTEN ---
                 com.google.maps.model.LatLng[] intermediatePoints = new com.google.maps.model.LatLng[waypoints.size() - 2];
                 for (int i = 1; i < waypoints.size() - 1; i++) {
                     Location loc = waypoints.get(i);
+                    // Verwende Breitengrad UND Laengengrad
                     intermediatePoints[i - 1] = new com.google.maps.model.LatLng(loc.getBreitengrad(), loc.getLaengengrad());
                 }
 
                 // Führe die Anfrage an die Directions API aus
-                // --- KORREKTUR 2: Auch hier die richtige LatLng-Klasse verwenden ---
+                // --- KORREKTUR BEI START- UND ENDPUNKT ---
                 DirectionsResult result = DirectionsApi.newRequest(context)
+                        // Verwende Breitengrad UND Laengengrad für den Start
                         .origin(new com.google.maps.model.LatLng(start.getBreitengrad(), start.getLaengengrad()))
+                        // Verwende Breitengrad UND Laengengrad für das Ziel
                         .destination(new com.google.maps.model.LatLng(end.getBreitengrad(), end.getLaengengrad()))
                         .waypoints(intermediatePoints)
                         .await();
 
                 // Extrahiere die kodierte Pfad-Linie aus dem Ergebnis
-                String encodedPath = result.routes[0].overviewPolyline.getEncodedPath();
+                if (result.routes != null && result.routes.length > 0) {
+                    String encodedPath = result.routes[0].overviewPolyline.getEncodedPath();
 
-                // Übergib den Pfad an das JavaScript, um ihn zu zeichnen
-                // Wichtig: Muss auf dem UI-Thread passieren!
-                runOnUiThread(() -> {
-                    String javascript = "javascript:drawRouteFromEncodedPath('" + encodedPath + "')";
-                    webView.evaluateJavascript(javascript, null);
-                });
+                    // Übergib den Pfad an das JavaScript, um ihn zu zeichnen
+                    runOnUiThread(() -> {
+                        String escapedEncodedPath = encodedPath.replace("\\", "\\\\");
+
+                        // Baue den JavaScript-Aufruf mit dem sauber escapeten String
+                        String javascript = "javascript:drawRouteFromEncodedPath('" + escapedEncodedPath + "')";
+                        webView.evaluateJavascript(javascript, null);
+                    });
+                }
 
             } catch (Exception e) {
                 android.util.Log.e("MapActivity", "Fehler bei der Routenberechnung: " + e.getMessage());

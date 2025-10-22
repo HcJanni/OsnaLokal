@@ -48,7 +48,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         holder.distanceChip.setText(currentRoute.getLocationIds().size() + " Stationen");
 
         // Mache die ganze Karte klickbar
-        holder.itemView.setOnClickListener(v -> {
+        holder.viewLocationButton.setOnClickListener(v -> {
             if (clickListener != null) {
                 clickListener.onRouteClick(currentRoute);
             }
