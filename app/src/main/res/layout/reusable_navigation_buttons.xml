@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Dieses Layout enthält alle möglichen Navigations-Buttons -->
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="16dp">
+
+    <!-- 1. Der "Zurück"-Button (links) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reusable_button_back"
+        style="@style/Widget.Material3.Button.OutlinedButton"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="8dp"
+        android:text="Zurück"
+        app:layout_constraintEnd_toStartOf="@+id/reusable_button_next"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Button.Pill" />
+
+    <!-- 2. Der "Weiter"-Button (rechts) -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reusable_button_next"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="8dp"
+        android:text="Weiter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toEndOf="@+id/reusable_button_back"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Button.Pill" />
+
+    <!-- 3. Der bildschirmfüllende "Los geht's!"-Button -->
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/reusable_button_finish"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Los geht's!"
+        android:backgroundTint="@color/primary"
+        android:textColor="@color/black"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Button.Pill"
+        />
+
+</androidx.constraintlayout.widget.ConstraintLayout>

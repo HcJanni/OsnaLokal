@@ -18,13 +18,12 @@ public class FilterActivity extends AppCompatActivity {
     // Dauer
     private EditText etDauerVon, etDauerBis;
 
-    // Sektionen (zum Ein-/Ausklappen)
-    private TextView tvAktivitaeten, tvKultur, tvBudget;
-    private LinearLayout aktivitatenContent, kulturContent;
+    // Sektionen (zum Ein-/Ausklappen und Checkboxen)
+    private TextView tvRestaurant, tvBudget;
+    private CheckBox cbAktivitaeten, cbBarsKneipen;
+    private LinearLayout restaurantContent;
     private ChipGroup chipGroupRestaurant, chipGroupBudget;
-
-    // Bars
-    private CheckBox cbBarsKneipen;
+    private LinearLayout budgetContentWrapper;
 
     // Footer
     private Button btnSuggestRoutes;
@@ -48,63 +47,55 @@ public class FilterActivity extends AppCompatActivity {
         etDauerVon = findViewById(R.id.et_dauer_von);
         etDauerBis = findViewById(R.id.et_dauer_bis);
 
-        tvAktivitaeten = findViewById(R.id.tv_aktivitaten);
-        tvKultur = findViewById(R.id.tv_kultur);
+        cbAktivitaeten = findViewById(R.id.cb_aktivitaten);
+
+        tvRestaurant = findViewById(R.id.tv_restaurant);
         tvBudget = findViewById(R.id.tv_budget);
 
-        aktivitatenContent = findViewById(R.id.aktivitaten_content_wrapper); // Standardmäßig sichtbar
-        kulturContent = findViewById(R.id.kultur_content_wrapper); // Standardmäßig 'gone'
+        restaurantContent = findViewById(R.id.restaurant_content_wrapper);
         chipGroupRestaurant = findViewById(R.id.chip_group_restaurant);
+        budgetContentWrapper = findViewById(R.id.budget_content_wrapper);
         chipGroupBudget = findViewById(R.id.chip_group_budget);
 
         cbBarsKneipen = findViewById(R.id.cb_bars_kneipen);
         btnSuggestRoutes = findViewById(R.id.btn_suggest_routes);
 
-        // Da tvBudget einen Pfeil hat, verstecken wir die Budget-Group standardmäßig
-        chipGroupBudget.setVisibility(View.GONE);
+        // Standardmäßig einklappen
+        restaurantContent.setVisibility(View.GONE);
+        budgetContentWrapper.setVisibility(View.GONE);
     }
 
     /**
      * Weist allen interaktiven Elementen ihre Klick-Funktionen zu.
      */
     private void setupClickListeners() {
-        // --- Header ---
+        // Header
         tvCancel.setOnClickListener(v -> {
-            // Activity beenden, ohne Filter anzuwenden
             setResult(RESULT_CANCELED);
             finish();
         });
 
         tvClearAll.setOnClickListener(v -> clearFilters());
 
-        // --- Sektionen (Collapsible) ---
-        tvAktivitaeten.setOnClickListener(v -> toggleSectionVisibility(aktivitatenContent, tvAktivitaeten));
-        tvKultur.setOnClickListener(v -> toggleSectionVisibility(kulturContent, tvKultur));
-        tvBudget.setOnClickListener(v -> toggleSectionVisibility(chipGroupBudget, tvBudget)); // ChipGroup direkt umschalten
+        // Sektionen
+        tvRestaurant.setOnClickListener(v -> toggleSectionVisibility(restaurantContent, tvRestaurant));
+        tvBudget.setOnClickListener(v -> toggleSectionVisibility(budgetContentWrapper, tvBudget));
 
-        // --- Footer ---
+        // Footer
         btnSuggestRoutes.setOnClickListener(v -> applyFilters());
     }
 
     /**
      * Schaltet die Sichtbarkeit einer Sektion (View) um und dreht den Pfeil (Drawable).
-     *
-     * @param section Die View, die ein- oder ausgeblendet werden soll (z.B. ein LinearLayout).
-     * @param header  Der TextView, der als Header dient und den Pfeil enthält.
      */
     private void toggleSectionVisibility(View section, TextView header) {
         if (section.getVisibility() == View.GONE) {
             section.setVisibility(View.VISIBLE);
-            // Ändert das Drawable auf "Pfeil nach oben"
-            header.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_up, 0); // (Du musst ic_arrow_up zu deinen Drawables hinzufügen)
+            header.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_up, 0);
         } else {
             section.setVisibility(View.GONE);
-            // Ändert das Drawable auf "Pfeil nach unten"
             header.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_down, 0);
         }
-        // Falls du kein 'ic_arrow_up' hast, kannst du den Pfeil auch einfach drehen:
-        // header.animate().rotationBy(180f).setDuration(200).start();
-        // ODER einfach die Zeilen mit 'setCompoundDrawablesWithIntrinsicBounds' weglassen.
     }
 
     /**
@@ -113,16 +104,16 @@ public class FilterActivity extends AppCompatActivity {
     private void clearFilters() {
         etDauerVon.setText("");
         etDauerBis.setText("");
+        cbAktivitaeten.setChecked(false);
         chipGroupRestaurant.clearCheck();
         chipGroupBudget.clearCheck();
         cbBarsKneipen.setChecked(false);
     }
 
     /**
-     * Sammelt alle ausgewählten Filter, packt sie in ein Intent
-     * und sendet sie als Ergebnis an die aufrufende Activity (MainActivity) zurück.
+     * Sammelt alle ausgewählten Filter und sendet sie zurück.
      */
     private void applyFilters() {
-
+        // Hier kommt deine Logik zum Anwenden der Filter hin.
     }
 }
