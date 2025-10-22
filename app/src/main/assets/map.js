@@ -20,11 +20,11 @@ const selectedPin = L.icon({
 });
 
 const userPin = L.icon({
-    iconUrl: 'file:///android_res/drawable/logopin.png',
+    iconUrl: 'file:///android_res/drawable/locationmarker.png',
 
     iconSize:     [38, 38],
-    iconAnchor:   [19, 38],
-    popupAnchor:  [0, -38]
+    iconAnchor:   [19, 19],
+    popupAnchor:  [0, -19]
 });
 
 
