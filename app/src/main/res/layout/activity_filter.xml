@@ -135,42 +135,32 @@
                 android:layout_marginTop="16dp"
                 android:background="#E0E0E0" />
 
-
             <TextView
-                android:id="@+id/tv_aktivitaten"
+                android:id="@+id/tv_restaurant"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:drawableEnd="@drawable/ic_arrow_down"
-                android:text="Aktivitäten"
-                android:textStyle="bold"
-                android:textSize="16sp"
                 android:paddingTop="16dp"
-                android:paddingBottom="16dp" />
-
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0" />
+                android:paddingBottom="16dp"
+                android:text="Restaurant"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <LinearLayout
-                android:id="@+id/aktivitaten_content_wrapper"
+                android:id="@+id/restaurant_content_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:paddingTop="16dp"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:paddingStart="16dp"
                 android:paddingBottom="16dp">
-                <TextView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:text="Restaurant"
-                    android:textStyle="bold"
-                    android:textSize="16sp" />
 
                 <com.google.android.material.chip.ChipGroup
                     android:id="@+id/chip_group_restaurant"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp">
+                    android:layout_marginTop="2dp">
 
                     <com.google.android.material.chip.Chip
                         style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -205,22 +195,6 @@
                 </com.google.android.material.chip.ChipGroup>
             </LinearLayout>
 
-            <View
-                android:layout_width="match_parent"
-                android:layout_height="1dp"
-                android:background="#E0E0E0" />
-
-
-            <TextView
-                android:id="@+id/tv_kultur"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Kultur"
-                android:textStyle="bold"
-                android:textSize="16sp"
-                android:paddingTop="16dp"
-                android:paddingBottom="16dp"
-                app:drawableEndCompat="@drawable/ic_arrow_down" />
 
             <View
                 android:layout_width="match_parent"
@@ -228,18 +202,58 @@
                 android:background="#E0E0E0" />
 
             <LinearLayout
-                android:id="@+id/kultur_content_wrapper"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:visibility="gone"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="16dp"
                 android:paddingBottom="16dp">
+
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:text="Kultur-Filter hier..."
-                    android:layout_marginTop="8dp" />
+                    android:layout_weight="1"
+                    android:text="Aktivitäten"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_aktivitaten"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Sehenswürdigkeiten"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+
+                <CheckBox
+                    android:id="@+id/cb_sehenswuerdigkeiten"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0" />
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -266,23 +280,57 @@
                 android:layout_height="1dp"
                 android:background="#E0E0E0" />
 
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingTop="16dp"
+                android:paddingBottom="16dp">
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Parks"
+                    android:textStyle="bold"
+                    android:textSize="16sp" />
+                <CheckBox
+                    android:id="@+id/cb_parks"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:background="#E0E0E0" />
+
             <TextView
                 android:id="@+id/tv_budget"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="Budget"
-                android:textStyle="bold"
-                android:textSize="16sp"
+                android:drawableEnd="@drawable/ic_arrow_down"
                 android:paddingTop="16dp"
                 android:paddingBottom="16dp"
-                app:drawableEndCompat="@drawable/ic_arrow_down" />
+                android:text="Budget"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <LinearLayout
+                android:id="@+id/budget_content_wrapper"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:visibility="gone"
+                tools:visibility="visible"
+                android:paddingStart="16dp"
+                android:paddingBottom="16dp">
 
             <com.google.android.material.chip.ChipGroup
                 android:id="@+id/chip_group_budget"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
-                android:layout_marginBottom="16dp">
+                android:layout_height="wrap_content">
+                <!-- margins sind hier nicht mehr nötig -->
 
                 <com.google.android.material.chip.Chip
                     style="@style/Widget.MaterialComponents.Chip.Choice"
@@ -300,7 +348,7 @@
                     android:layout_height="wrap_content"
                     android:text="€€€" />
             </com.google.android.material.chip.ChipGroup>
-
+        </LinearLayout>
         </LinearLayout>
     </ScrollView>
 
