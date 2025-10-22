@@ -48,6 +48,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="24dp"
-        android:text="Schließen" />
+        android:backgroundTint="@color/primary"
+        android:text="Schließen"
+        android:textColor="@color/black"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Button.Pill" />
 
 </LinearLayout>

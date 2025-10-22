@@ -92,6 +92,7 @@
         <!-- Button (ganz unten) -->
         <com.google.android.material.button.MaterialButton
             android:id="@+id/button_view_route"
+            app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Button.Pill"
             style="@style/Widget.Material3.Button.OutlinedButton"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
