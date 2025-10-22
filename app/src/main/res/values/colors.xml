@@ -8,4 +8,5 @@
     <color name="chip_text_default">#FF00CABE</color>
     <color name="text_black">#FF1F2024</color>
     <color name="card_bg">#FFEAF2FF</color>
+    <color name="icon_color_on_bg">#FF1F2024</color>
 </resources>

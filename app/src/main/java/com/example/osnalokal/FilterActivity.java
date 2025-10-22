@@ -1,13 +1,20 @@
 package com.example.osnalokal;
 
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
+
 import com.google.android.material.chip.ChipGroup;
 
 public class FilterActivity extends AppCompatActivity {
@@ -31,9 +38,19 @@ public class FilterActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_filter);
+        setupEdgeToEdge();
 
         initViews();
+        setupDurationValidation();
         setupClickListeners();
+    }
+
+    private void setupEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.filter), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
+        });
     }
 
     /**
@@ -65,6 +82,49 @@ public class FilterActivity extends AppCompatActivity {
         // Standardmäßig einklappen
         restaurantContent.setVisibility(View.GONE);
         budgetContentWrapper.setVisibility(View.GONE);
+    }
+
+    private void setupDurationValidation() {
+        // Definiere die Grenzwerte für die Dauer
+        final int MAX_HOURS = 12;
+        final int MIN_HOURS = 1;
+
+        TextWatcher durationWatcher = new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {}
+
+            @Override
+            public void afterTextChanged(Editable s) {
+                if (!s.toString().isEmpty()) {
+                    try {
+                        int value = Integer.parseInt(s.toString());
+                        EditText currentEditText = getCurrentFocus() instanceof EditText ? (EditText) getCurrentFocus() : null;
+
+                        if (currentEditText != null) {
+                            if (value > MAX_HOURS) {
+                                currentEditText.setError("Maximal " + MAX_HOURS + " Stunden erlaubt");
+                            } else if (value < MIN_HOURS) {
+                                // Erlaube die Eingabe von "0", aber markiere es nicht als Fehler,
+                                // da der Nutzer vielleicht "01" oder "05" tippen will.
+                                if (value != 0) {
+                                    currentEditText.setError("Minimal " + MIN_HOURS + " Stunde erlaubt");
+                                }
+                            } else {
+                                currentEditText.setError(null); // Wert ist gültig
+                            }
+                        }
+                    } catch (NumberFormatException e) {
+                        // Ignoriere den Fehler, falls die Eingabe temporär ungültig ist (z.B. leer)
+                    }
+                }
+            }
+        };
+
+        etDauerVon.addTextChangedListener(durationWatcher);
+        etDauerBis.addTextChangedListener(durationWatcher);
     }
 
     /**

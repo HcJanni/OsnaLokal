@@ -8,12 +8,17 @@ import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
+import androidx.core.graphics.Insets;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
@@ -56,6 +61,11 @@ public class MapActivity extends AppCompatActivity {
         List<Location> allLocations = LocationsData.getAllLocations(this);
         List<Integer> receivedLocationIds = (List<Integer>) getIntent().getSerializableExtra("LOCATION_IDS");
         List<Location> waypoints = new ArrayList<>();
+        String routeName = getIntent().getStringExtra("ROUTE_NAME");
+
+        TextView tvRouteTitle = findViewById(R.id.tv_route_title);
+        TextView tvStopsCount = findViewById(R.id.tv_stops_count);
+        ImageView iconBack = findViewById(R.id.icon_back);
 
         if (receivedLocationIds != null && !receivedLocationIds.isEmpty()) {
             for (Integer id : receivedLocationIds) {
@@ -69,6 +79,19 @@ public class MapActivity extends AppCompatActivity {
         } else {
             waypoints.addAll(allLocations); // Fallback
         }
+
+        // --- Toolbar Texte setzen ---
+        if (routeName != null) {
+            tvRouteTitle.setText(routeName);
+        } else {
+            tvRouteTitle.setText("Karte"); // Fallback-Titel
+        }
+        int stopsCount = (receivedLocationIds != null) ? receivedLocationIds.size() : 0;
+        tvStopsCount.setText(stopsCount + " Stopps");
+
+        iconBack.setOnClickListener(v -> {
+            finish(); // Beendet die MapActivity und kehrt zum vorherigen Bildschirm zurück
+        });
 
         // --- 3. JavaScript-Brücke einrichten ---
         webView.addJavascriptInterface(new WebAppInterface(waypoints), "Android");
@@ -113,6 +136,16 @@ public class MapActivity extends AppCompatActivity {
         FloatingActionButton fab = findViewById(R.id.fab_center_on_user);
         fab.setOnClickListener(v -> {
             webView.evaluateJavascript("javascript:centerOnUserLocation()", null);
+        });
+
+        setupEdgeToEdge();
+    }
+
+    private void setupEdgeToEdge() {
+        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.map), (v, insets) -> {
+            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
+            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
+            return insets;
         });
     }
 

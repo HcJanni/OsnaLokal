@@ -198,12 +198,13 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
     // Dies ist jetzt der einzige Klick-Listener für die Routen/Location-Karten
     @Override
     public void onRouteClick(Route route) {
-        // Wenn eine Route geklickt wird, starten wir die MapActivity
-        // und übergeben die Liste der Location-IDs, die angezeigt werden sollen.
         Intent intent = new Intent(this, MapActivity.class);
 
-        // WICHTIG: Die Liste der IDs wird als "Extra" mit dem Schlüssel "LOCATION_IDS" hinzugefügt.
+        //1. Die IDs der Orte (hast du schon)
         intent.putExtra("LOCATION_IDS", (Serializable) route.getLocationIds());
+
+        // --- 2. HIER DEN NAMEN DER ROUTE HINZUFÜGEN ---
+        intent.putExtra("ROUTE_NAME", route.getName());
 
         startActivity(intent);
     }
