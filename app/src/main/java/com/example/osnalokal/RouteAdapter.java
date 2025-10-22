@@ -3,6 +3,7 @@ package com.example.osnalokal;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
@@ -71,6 +72,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         TextView description;
         Chip distanceChip;
         Chip categoryChip;
+        Button viewLocationButton;
 
         public RouteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -79,6 +81,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             description = itemView.findViewById(R.id.text_route_description);
             distanceChip = itemView.findViewById(R.id.chip_distance);
             categoryChip = itemView.findViewById(R.id.chip_category);
+            viewLocationButton = itemView.findViewById(R.id.button_view_route);
         }
     }
 }

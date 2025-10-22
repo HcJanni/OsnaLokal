@@ -15,7 +15,11 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.app.ActivityCompat;
 import androidx.core.content.ContextCompat;
 import com.google.gson.Gson;
+
+import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+
 import android.webkit.JavascriptInterface;
 
 public class MapActivity extends AppCompatActivity {
@@ -39,7 +43,27 @@ public class MapActivity extends AppCompatActivity {
         webSettings.setDomStorageEnabled(true);
         webSettings.setDatabaseEnabled(true);
 
+        // 1. Lade IMMER die komplette Liste aller Orte. Das ist unsere Master-Datenbank.
         List<Location> allLocations = LocationsData.getAllLocations(this);
+
+        // 2. Prüfe, ob eine Liste von IDs mit dem Intent übergeben wurde.
+        List<Integer> receivedLocationIds = (List<Integer>) getIntent().getSerializableExtra("LOCATION_IDS");
+
+        // 3. Erstelle die finale Liste der Orte, die angezeigt werden sollen.
+        List<Location> locationsToShow;
+
+        List<Integer> locationIds = (List<Integer>) getIntent().getSerializableExtra("LOCATION_IDS");
+
+        if (receivedLocationIds != null && !receivedLocationIds.isEmpty()) {
+            // FALL A: Wenn IDs übergeben wurden, filtere die 'allLocations'-Liste.
+            // Wir suchen alle Orte, deren ID in der empfangenen Liste enthalten ist.
+            locationsToShow = allLocations.stream()
+                    .filter(location -> receivedLocationIds.contains(location.getId()))
+                    .collect(Collectors.toList());
+        } else {
+            // FALL B (Fallback): Wenn keine IDs übergeben wurden, zeige einfach alle Orte an.
+            locationsToShow = allLocations;
+        }
 
         Gson gson = new Gson();
         final String locationsJsonString = gson.toJson(allLocations);

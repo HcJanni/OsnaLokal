@@ -19,26 +19,14 @@ const selectedPin = L.icon({
     iconAnchor:   [19, 38]
 });
 
-//Jetziger Standort Pin wird mit Logo angezeigt
-//const userPin = L.icon({
-//    iconUrl: 'file:///android_res/drawable/logopin.png',
-//    iconSize:     [38, 38],
-//    iconAnchor:   [19, 38],
-//    popupAnchor:  [0, -38]
-//});
-//
-//function updateLocation(pos) {
-//    const lat = pos.coords.latitude;
-//    const lng = pos.coords.longitude;
-//    const accuracy = pos.coords.accuracy;
-//    console.log(`Neue Position: ${lat}, ${lng} (Genauigkeit: ${accuracy}m)`);
-//
-//    if (userMarker) {
-//        userMarker.setLatLng([lat, lng]);
-//    } else {
-//        // Verwende dein User-Icon
-//        userMarker = L.marker([lat, lng], {icon: userPin}).addTo(map);
-//    }
+const userPin = L.icon({
+    iconUrl: 'file:///android_res/drawable/logopin.png',
+
+    iconSize:     [38, 38],
+    iconAnchor:   [19, 38],
+    popupAnchor:  [0, -38]
+});
+
 
 function initializeMap() {
     console.log("Initialisiere die Karte...");
@@ -111,8 +99,74 @@ function addMarkersForLocations() {
     });
 }
 
-// --- Geolocation-Funktionen (bleiben unverändert) ---
-// ... (startGeolocation, updateLocation, handleLocationError) ...
+
+function startGeolocation() {
+    console.log("Starte Standortüberwachung...");
+
+    if ('geolocation' in navigator) {
+        // Definiere die Optionen für die Standortabfrage
+        const options = {
+            enableHighAccuracy: true, // Fordere eine hohe Genauigkeit an, wenn möglich
+            timeout: 1000,            // Gib nach 8 Sekunden auf (verhindert endloses Warten)
+            maximumAge: 0             // Erzwinge eine frische Positionsabfrage
+        };
+
+        // 1. Hole zuerst eine schnelle, einmalige Position
+        navigator.geolocation.getCurrentPosition(
+            (pos) => { // Erfolgs-Callback
+                console.log("Erste schnelle Position gefunden!");
+                updateLocation(pos);
+            },
+            (err) => { // Fehler-Callback
+                console.warn("Fehler bei der ersten schnellen Positionsabfrage.", err);
+                // Wenn die schnelle Abfrage fehlschlägt, ist es nicht schlimm,
+                // da die kontinuierliche Überwachung trotzdem läuft.
+            },
+            options // Übergib die Optionen
+        );
+
+        // 2. Starte DANACH die kontinuierliche Überwachung
+        navigator.geolocation.watchPosition(updateLocation, handleLocationError, options);
+
+    } else {
+        console.log("Geolocation wird von diesem Browser nicht unterstützt.");
+    }
+}
+
+// Wird aufgerufen, wenn eine neue Position erfolgreich ermittelt wurde
+function updateLocation(pos) {
+    const lat = pos.coords.latitude;
+    const lng = pos.coords.longitude;
+    console.log(`Neue Position: ${lat}, ${lng}`);
+
+    // Wenn schon ein Marker existiert, wird nur seine Position aktualisiert
+    if (userMarker) {
+        userMarker.setLatLng([lat, lng]);
+    } else {
+        // Erstelle den Marker nur, wenn er noch nicht existiert
+        userMarker = L.marker([lat, lng], {icon: userPin}).addTo(map);
+        userMarker.bindPopup("<b>Dein Standort</b>");
+    }
+
+    // Beim allerersten erfolgreichen Standort-Update: Fliege elegant zur Position des Nutzers.
+    if (!hasZoomedToUser) {
+        map.flyTo([lat, lng], 17); // Zoomt nah an die Position
+        hasZoomedToUser = true;
+    }
+}
+
+// Wird aufgerufen, wenn die Standort-Ermittlung fehlschlägt
+function handleLocationError(err) {
+    if (err.code === 1) { // 1 = PERMISSION_DENIED
+        console.warn("Nutzer hat die Standortfreigabe verweigert.");
+    } else if (err.code === 2) { // 2 = POSITION_UNAVAILABLE
+        console.warn("Standortinformationen sind nicht verfügbar.");
+    } else if (err.code === 3) { // 3 = TIMEOUT
+        console.warn("Timeout bei der Standortabfrage.");
+    } else {
+        console.error(`Unbekannter Fehler bei der Standort-Ermittlung: ${err.message}`);
+    }
+}
 
 // --- Initialisierung ---
 initializeMap();

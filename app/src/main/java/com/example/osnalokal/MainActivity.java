@@ -12,6 +12,8 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors; // Neuer, moderner Import für's Filtern
@@ -25,14 +27,12 @@ import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.animation.ObjectAnimator;
 
-public class MainActivity extends AppCompatActivity implements LocationAdapter.OnLocationClickListener, NewsAdapter.OnNewsClickListener {
-    // --- Klassenvariablen für die Master-Daten und den einen wichtigen Adapter ---
+// WICHTIG: Nur noch die Interfaces implementieren, die wir wirklich brauchen
+public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRouteClickListener, NewsAdapter.OnNewsClickListener {
+
+    // --- Klassenvariablen nur noch für Routen ---
     private List<Route> allRoutes = new ArrayList<>();
-    private RouteAdapter allRoutesAdapter; // Dieser Adapter ist wichtig für die Filter
-
-    private List<Location> allLocations = new ArrayList<>();
-    private LocationAdapter allLocationsAdapter; // Adapter für die "Alle Routen"-Liste
-
+    private RouteAdapter allRoutesAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +49,14 @@ public class MainActivity extends AppCompatActivity implements LocationAdapter.O
         setContentView(R.layout.activity_main);
         setupEdgeToEdge();
 
-        // 1. LADE DIE DATEN AUS DER JSON-DATEI
-        this.allLocations = LocationsData.getAllLocations(this);
+        // 2. LADE DIE NEUEN ROUTEN-DATEN
+        this.allRoutes = RoutesData.getAllRoutes();
 
-        setupSuggestedRoutes();
+        // 3. Initialisiere die UI-Komponenten (Aufrufe bereinigt)
+        setupRoutesCarousel();
         setupNewsList();
         setupAllRoutesList();
-        setupFilterChips();
+        setupFilterLogic();
         setupFloatingActionButtons();
     }
 
@@ -66,24 +67,76 @@ public class MainActivity extends AppCompatActivity implements LocationAdapter.O
             return insets;
         });
     }
-    private void setupSuggestedRoutes() {
+
+    // Passt das Karussell an, um Routen anzuzeigen
+    private void setupRoutesCarousel() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_suggested_routes);
-
-        // Filtere die Liste für "Vorgeschlagene"
-        // TODO: Füge ein "suggested" Flag zur Location.java und locations.json hinzu.
-        // Fürs Erste nehmen wir einfach die ersten 3 Einträge.
-        List<Location> suggestedList = new ArrayList<>(this.allLocations.subList(0, Math.min(3, this.allLocations.size())));
-
-        LocationAdapter suggestedAdapter = new LocationAdapter(suggestedList, this);
+        // Wir nehmen einfach die ersten 1-2 Routen als "vorgeschlagen"
+        List<Route> suggestedList = new ArrayList<>(this.allRoutes.subList(0, Math.min(2, this.allRoutes.size())));
+        // Verwende den neuen RouteAdapter
+        RouteAdapter suggestedAdapter = new RouteAdapter(suggestedList, this);
         recyclerView.setAdapter(suggestedAdapter);
     }
 
+    // Zeigt ALLE Routen in der vertikalen Liste an
     private void setupAllRoutesList() {
         RecyclerView recyclerView = findViewById(R.id.recycler_view_all_routes);
-        // Initialisiere den Klassen-Adapter mit der vollen Liste
-        this.allLocationsAdapter = new LocationAdapter(new ArrayList<>(this.allLocations), this);
-        recyclerView.setAdapter(this.allLocationsAdapter);
+        this.allRoutesAdapter = new RouteAdapter(new ArrayList<>(this.allRoutes), this);
+        recyclerView.setAdapter(this.allRoutesAdapter);
         recyclerView.setNestedScrollingEnabled(false);
+    }
+
+    // Die Methode für die Filter-Logik (umbenannt für Klarheit)
+    private void setupFilterLogic() {
+        final HorizontalScrollView filterBar = findViewById(R.id.filter_scroll_view);
+        final View filterClickArea = findViewById(R.id.filter_click_area);
+        final ViewGroup sceneRoot = findViewById(R.id.main);
+
+        // Logik zum Ein- und Ausblenden der Filterleiste
+        filterClickArea.setOnClickListener(view -> {
+            AutoTransition transition = new AutoTransition();
+            transition.setDuration(250);
+            TransitionManager.beginDelayedTransition(sceneRoot, transition);
+            boolean isVisible = filterBar.getVisibility() == View.VISIBLE;
+            filterBar.setVisibility(isVisible ? View.GONE : View.VISIBLE);
+        });
+
+        // Logik für die Chips selbst (Filterung und Scrollen)
+        final ChipGroup chipGroup = findViewById(R.id.chip_group_filters);
+        final NestedScrollView scrollView = findViewById(R.id.main_scroll_view);
+        final View listContainer = findViewById(R.id.all_routes_section_container);
+        final TextView allRoutesTitle = findViewById(R.id.title_all_routes);
+
+        // KORRIGIERTER LISTENER: Es gibt nur EINEN Listener
+        chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
+            if (allRoutesAdapter == null) return;
+            // TODO: Diese Filterung muss noch an die Routen angepasst werden.
+            // Aktuell wird bei jedem Klick die volle Liste angezeigt und gescrollt.
+            allRoutesAdapter.filterList(this.allRoutes);
+
+            // Scroll-Logik
+            int targetY = listContainer.getTop() + allRoutesTitle.getTop() - ((ViewGroup.MarginLayoutParams) allRoutesTitle.getLayoutParams()).topMargin;
+            int offset = 50;
+            targetY += offset;
+            ObjectAnimator animator = ObjectAnimator.ofInt(scrollView, "scrollY", scrollView.getScrollY(), targetY);
+            animator.setDuration(400);
+            animator.start();
+        });
+    }
+
+    // --- Klick-Listener-Implementierungen ---
+
+    // Dies ist jetzt der einzige Klick-Listener für die Routen/Location-Karten
+    @Override
+    public void onRouteClick(Route route) {
+        // Wenn eine Route geklickt wird, starten wir die MapActivity
+        // und übergeben die Liste der Location-IDs, die angezeigt werden sollen.
+        Intent intent = new Intent(this, MapActivity.class);
+
+        // WICHTIG: Die Liste der IDs wird als "Extra" mit dem Schlüssel "LOCATION_IDS" hinzugefügt.
+        intent.putExtra("LOCATION_IDS", (Serializable) route.getLocationIds());
+
+        startActivity(intent);
     }
 
     private void setupNewsList() {
@@ -95,64 +148,6 @@ public class MainActivity extends AppCompatActivity implements LocationAdapter.O
         NewsAdapter newsAdapter = new NewsAdapter(newsItems, this);
         recyclerView.setAdapter(newsAdapter);
         recyclerView.setNestedScrollingEnabled(false);
-    }
-
-    private void setupFilterChips() {
-        final ChipGroup chipGroup = findViewById(R.id.chip_group_filters);
-        final HorizontalScrollView filterBar = findViewById(R.id.filter_scroll_view);
-        final View filterClickArea = findViewById(R.id.filter_click_area);
-        final NestedScrollView scrollView = findViewById(R.id.main_scroll_view);
-        final View listContainer = findViewById(R.id.all_routes_section_container);
-        final TextView allRoutesTitle = findViewById(R.id.title_all_routes);
-        final ViewGroup parent = (ViewGroup) filterBar.getParent();
-        final ViewGroup sceneRoot = findViewById(R.id.main);
-
-        filterClickArea.setOnClickListener(view -> {
-
-            AutoTransition transition = new AutoTransition();
-            transition.setDuration(250); // Eine schnelle, knackige Dauer
-
-            TransitionManager.beginDelayedTransition(sceneRoot, transition);
-
-            boolean isVisible = filterBar.getVisibility() == View.VISIBLE;
-            filterBar.setVisibility(isVisible ? View.GONE : View.VISIBLE);
-        });
-
-        chipGroup.setOnCheckedStateChangeListener((group, checkedIds) -> {
-            if (allLocationsAdapter == null) return;
-
-            if (checkedIds.isEmpty()) {
-                allLocationsAdapter.filterList(this.allLocations);
-                return;
-            }
-
-            Chip selectedChip = group.findViewById(checkedIds.get(0));
-            String selectedCategory = selectedChip.getText().toString();
-
-            if (selectedCategory.equalsIgnoreCase("Alle Routen")) {
-                allLocationsAdapter.filterList(this.allLocations);
-            } else {
-                // Filtere die neue allLocations-Liste nach dem Feld "art"
-                List<Location> filteredLocations = this.allLocations.stream()
-                        .filter(location -> location.getArt().equalsIgnoreCase(selectedCategory))
-                        .collect(Collectors.toList());
-                allLocationsAdapter.filterList(filteredLocations);
-            }
-
-            int targetY = listContainer.getTop() + allRoutesTitle.getTop() - ((ViewGroup.MarginLayoutParams) allRoutesTitle.getLayoutParams()).topMargin;
-
-            int offset = 50;
-            targetY += offset;
-            ObjectAnimator animator = ObjectAnimator.ofInt(
-                    scrollView,
-                    "scrollY",
-                    scrollView.getScrollY(),
-                    targetY
-            );
-            animator.setDuration(400);
-            animator.start();
-        });
-
     }
 
     private void setupFloatingActionButtons() {
@@ -172,16 +167,6 @@ public class MainActivity extends AppCompatActivity implements LocationAdapter.O
                 newsItem.getTitle(),
                 newsItem.getDistance(),
                 newsItem.getImageResource()
-        ).show(getSupportFragmentManager(), "DetailBottomSheet");
-    }
-
-    @Override
-    public void onLocationClick(Location location) {
-        // Wir verwenden die neuen, reichhaltigeren Daten für das BottomSheet
-        DetailBottomSheetFragment.newInstance(
-                location.getName(),
-                "Bewertung: " + location.getBewertungen() + "\n" + location.getOeffnungszeiten(),
-                R.drawable.rec_tours_testimg // Platzhalter-Bild
         ).show(getSupportFragmentManager(), "DetailBottomSheet");
     }
 }
