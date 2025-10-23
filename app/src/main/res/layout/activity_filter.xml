@@ -422,14 +422,16 @@
 
         </androidx.core.widget.NestedScrollView>
 
-        <include
-            android:id="@+id/reusable_button"
-            layout="@layout/reusable_navigation_buttons"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp" />
+
 
     </LinearLayout>
+
+    <include
+        android:id="@+id/reusable_button"
+        layout="@layout/reusable_navigation_buttons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:layout_margin="0dp" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
