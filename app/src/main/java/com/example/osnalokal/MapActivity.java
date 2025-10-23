@@ -1,6 +1,8 @@
 package com.example.osnalokal;
 
 import android.content.Intent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.os.Bundle;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
@@ -15,7 +17,9 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
@@ -30,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MapActivity extends AppCompatActivity {
+public class MapActivity extends AppCompatActivity implements SensorEventListener {
 
     private WebView webView;
     private LocationManager locationManager;
@@ -39,11 +43,19 @@ public class MapActivity extends AppCompatActivity {
     private List<List<Location>> inactiveWaypointsToLoad = new ArrayList<>();
     private boolean isPageLoaded = false;
 
+    // VARIABLEN FÜR DEN KOMPASS
+    private SensorManager sensorManager;
+    private final float[] accelerometerReading = new float[3];
+    private final float[] magnetometerReading = new float[3];
+    private final float[] rotationMatrix = new float[9];
+    private final float[] orientationAngles = new float[3];
+    private long lastHeadingUpdateTime = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         locationManager = LocationManager.getInstance(this);
 
         // --- 1. WebView und UI initialisieren ---
@@ -101,6 +113,69 @@ public class MapActivity extends AppCompatActivity {
         }
 
         setupEdgeToEdge();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Registriere die Listener für die Sensoren
+        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+        Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        if (magneticField != null) {
+            sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        // Deregistriere die Listener, um Akku zu sparen, wenn die App im Hintergrund ist
+        sensorManager.unregisterListener(this);
+    }
+
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
+            System.arraycopy(event.values, 0, accelerometerReading, 0, accelerometerReading.length);
+        } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
+            System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.length);
+        }
+
+        // Aktualisiere die Richtung nur alle 100ms, um das System nicht zu überlasten
+        long currentTime = System.currentTimeMillis();
+        if (currentTime - lastHeadingUpdateTime > 100) {
+            updateOrientationAngles();
+            lastHeadingUpdateTime = currentTime;
+        }
+    }
+
+    public void updateOrientationAngles() {
+        // Berechne die Rotationsmatrix
+        SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
+
+        // Erhalte die Orientierungswinkel
+        SensorManager.getOrientation(rotationMatrix, orientationAngles);
+
+        // Der Azimut (die Richtung) ist der erste Wert. Er ist in Radian.
+        // Konvertiere ihn in Grad.
+        float azimuthInDegrees = (float) Math.toDegrees(orientationAngles[0]);
+
+        // Normalisiere den Wert auf 0-360 Grad (Norden = 0)
+        azimuthInDegrees = (azimuthInDegrees + 360) % 360;
+
+        // Sende den Wert an das WebView
+        if (webView != null && isPageLoaded) {
+            String javascript = "javascript:updateUserHeading(" + azimuthInDegrees + ")";
+            webView.evaluateJavascript(javascript, null);
+        }
+    }
+
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Kann ignoriert werden, ist aber für das Interface notwendig
     }
 
     private void setupEdgeToEdge() {
