@@ -26,7 +26,29 @@
             app:layout_constraintTop_toTopOf="parent"
             tools:srcCompat="@drawable/rec_tours_testimg" />
 
-        <!-- 1. Der Distanz-Chip (oben rechts) -->
+        <!-- Nachhaltigkeits-Icon (oben rechts) -->
+        <com.google.android.material.chip.Chip
+        android:id="@+id/chip_sustainability"
+        android:layout_width="32dp"
+        android:layout_height="36dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginEnd="12dp"
+        android:clickable="false"
+        android:focusable="false"
+        android:text=""
+        app:chipBackgroundColor="@color/primary"
+        app:chipIcon="@drawable/ic_leaf"
+        app:chipIconSize="18dp"
+        app:chipStartPadding="6dp"
+        app:chipEndPadding="6dp"
+        app:chipStrokeWidth="0dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"
+        tools:visibility="visible" />
+
+
+        <!-- 1. Der Distanz-Chip (oben links) -->
         <com.google.android.material.chip.Chip
             android:id="@+id/chip_distance"
             android:layout_width="wrap_content"

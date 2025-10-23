@@ -47,6 +47,14 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         holder.categoryChip.setText("Route");
         holder.distanceChip.setText(currentRoute.getLocationIds().size() + " Stationen");
 
+        // Lese den Wert aus dem Route-Objekt
+        boolean isSustainable = currentRoute.isSustainable();
+        if (isSustainable) {
+            holder.sustainabilityChip.setVisibility(View.VISIBLE);
+        } else {
+            holder.sustainabilityChip.setVisibility(View.GONE);
+        }
+
         // Mache die ganze Karte klickbar
         holder.viewLocationButton.setOnClickListener(v -> {
             if (clickListener != null) {
@@ -72,6 +80,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         TextView description;
         Chip distanceChip;
         Chip categoryChip;
+        Chip sustainabilityChip;
         Button viewLocationButton;
 
         public RouteViewHolder(@NonNull View itemView) {
@@ -82,6 +91,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             distanceChip = itemView.findViewById(R.id.chip_distance);
             categoryChip = itemView.findViewById(R.id.chip_category);
             viewLocationButton = itemView.findViewById(R.id.button_view_route);
+            sustainabilityChip = itemView.findViewById(R.id.chip_sustainability);
         }
     }
 }

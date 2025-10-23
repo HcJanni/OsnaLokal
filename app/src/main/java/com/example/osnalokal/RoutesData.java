@@ -24,8 +24,9 @@ public class RoutesData {
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(11, 12, 18), // Location IDs
                 150, // Dauer: 2,5 Stunden (150 Minuten)
-                "mittel", // Budget
-                new HashSet<>(Arrays.asList("asiatisch", "vegetarisch", "vegan")) // Tags
+                "mittel", // budget
+                new HashSet<>(Arrays.asList("asiatisch", "vegetarisch", "vegan")), // Tags
+                true // sustainable
         ));
 
         // --- Bars / Kneipen Routen ---
@@ -38,7 +39,7 @@ public class RoutesData {
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(52, 54), // Location IDs
                 180, // Dauer: 3 Stunden
-                "günstig" // Budget
+                "günstig" // budget
         ));
 
         // --- Sehenswürdigkeitsrouten ---
@@ -51,8 +52,32 @@ public class RoutesData {
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(31, 42, 45), // Location IDs
                 120, // Dauer: 2 Stunden
-                "günstig" // Budget
+                "günstig"
         ));
+
+        routes.add(new Route(
+                1003,
+                "Eine nachhaltige Kulturreise",
+                "Begib dich auf eine Entdeckungstour zu den kulturellen Schätzen und nachhaltigen Orten, die im Herzen Osnabrücks verborgen liegen.",
+                "mix", // Kategorie
+                R.drawable.rec_tours_testimg,
+                Arrays.asList(21,11, 41, 17), // Location IDs
+                120,
+                "günstig"
+        ));
+
+        routes.add(new Route(
+                1003,
+                "Eine nicht nachhaltige Kulturreise",
+                "Begib dich auf eine Entdeckungstour zu den kulturellen Schätzen und nachhaltigen Orten, die im Herzen Osnabrücks verborgen liegen.",
+                "mix", // Kategorie
+                R.drawable.rec_tours_testimg,
+                Arrays.asList(21,11, 41, 17), // Location IDs
+                120,
+                "mittel"
+        ));
+
+
 
         // -- Aktivitätsrouten ---
 
