@@ -8,116 +8,130 @@
     android:layout_height="match_parent"
     tools:context=".MapActivity">
 
+    <!-- WebView und Toolbar -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-    <com.google.android.material.appbar.AppBarLayout
-        android:id="@+id/appBarLayout"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@android:color/transparent"
-        app:elevation="0dp">
-
-        <com.google.android.material.appbar.MaterialToolbar
-            android:id="@+id/toolbar"
+        <com.google.android.material.appbar.AppBarLayout
+            android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            app:contentInsetStart="0dp"
-            app:contentInsetEnd="0dp">
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            app:elevation="0dp">
 
-            <androidx.constraintlayout.widget.ConstraintLayout
+            <com.google.android.material.appbar.MaterialToolbar
+                android:id="@+id/toolbar"
                 android:layout_width="match_parent"
-                android:layout_height="match_parent">
+                android:layout_height="?attr/actionBarSize"
+                app:contentInsetStart="0dp"
+                app:contentInsetEnd="0dp">
 
-                <ImageView
-                    android:id="@+id/icon_back"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:padding="8dp"
-                    android:src="@drawable/ic_arrow_left"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:tint="@color/primary" />
-
-                <TextView
-                    android:id="@+id/tv_route_title"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="8dp"
-                    android:layout_marginEnd="8dp"
-                    android:gravity="start"
-                    android:ellipsize="end"
-                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                    android:textColor="?android:attr/textColorSecondary"
-                    android:maxLines="1"
-                    android:textSize="18sp"
-                    android:textStyle="bold"
-                    tools:text="Name der Route"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_stops_count"
-                    app:layout_constraintStart_toEndOf="@+id/icon_back"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-                <TextView
-                    android:id="@+id/tv_route_details"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:textSize="12sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="@id/tv_route_title"
-                    app:layout_constraintStart_toStartOf="@id/tv_route_title"
-                    app:layout_constraintTop_toBottomOf="@id/tv_route_title"
-                    tools:text="3,5 km | ca. 45 Min." />
-
-                <TextView
-                    android:id="@+id/tv_stops_count"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:textColor="?attr/colorOnSurface"
-                    android:textSize="14sp"
-                    tools:text="3 Stopps"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
-
-            </androidx.constraintlayout.widget.ConstraintLayout>
-
-        </com.google.android.material.appbar.MaterialToolbar>
-    </com.google.android.material.appbar.AppBarLayout>
-
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:orientation="vertical">
-
-                <WebView
-                    android:id="@+id/mapWebView"
+                <androidx.constraintlayout.widget.ConstraintLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
-            </LinearLayout>
+                    android:layout_height="match_parent">
+
+                    <!-- KORREKTUR: Zurück-Pfeil hinzugefügt -->
+                    <ImageView
+                        android:id="@+id/icon_back"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:src="@drawable/ic_arrow_left"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintStart_toStartOf="parent"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:tint="?attr/colorOnSurface"
+                        android:contentDescription="Zurück" />
+
+                    <!-- KORREKTUR: TextView für Titel hinzugefügt -->
+                    <TextView
+                        android:id="@+id/tv_route_title"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="16dp"
+                        android:layout_marginEnd="8dp"
+                        android:ellipsize="end"
+                        android:maxLines="1"
+                        android:textAppearance="@style/TextAppearance.MaterialComponents.Headline6"
+                        app:layout_constraintStart_toEndOf="@id/icon_back"
+                        app:layout_constraintEnd_toStartOf="@+id/toolbar_title_label"
+                        app:layout_constraintTop_toTopOf="parent"
+                        app:layout_constraintBottom_toTopOf="@id/tv_stops_count"
+                        app:layout_constraintVertical_chainStyle="packed"
+                        tools:text="Ein schöner Tag in Osnabrück" />
+
+                    <!-- KORREKTUR: TextView für Stopps hinzugefügt -->
+                    <TextView
+                        android:id="@+id/tv_stops_count"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        app:layout_constraintStart_toStartOf="@id/tv_route_title"
+                        app:layout_constraintTop_toBottomOf="@id/tv_route_title"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        tools:text="5 Stopps" />
+
+                    <!-- Bestehender TextView (ggf. anpassen) -->
+                    <TextView
+                        android:id="@+id/toolbar_title_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Routenvorschlag"
+                        android:layout_marginEnd="16dp"
+                        app:layout_constraintBottom_toBottomOf="parent"
+                        app:layout_constraintEnd_toEndOf="parent"
+                        app:layout_constraintTop_toTopOf="parent" />
+
+                </androidx.constraintlayout.widget.ConstraintLayout>
+            </com.google.android.material.appbar.MaterialToolbar>
+        </com.google.android.material.appbar.AppBarLayout>
+
+        <WebView
+            android:id="@+id/mapWebView"
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
 
     </LinearLayout>
 
-    <include
-        android:id="@+id/reusable_button"
-        layout="@layout/reusable_navigation_buttons"
+    <!-- Container für die Routenliste und den Button -->
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
-        android:layout_margin="0dp" />
+        android:orientation="vertical">
 
+        <!-- RecyclerView für die horizontal scrollbare Routenliste -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recycler_view_route_suggestions"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:clipToPadding="false"
+            android:paddingHorizontal="8dp"
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            tools:listitem="@layout/item_route_suggestion"
+            tools:visibility="visible"
+            android:visibility="gone" />
+
+        <include
+            android:id="@+id/reusable_button"
+            layout="@layout/reusable_navigation_buttons"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="0dp" />
+    </LinearLayout>
+
+    <!-- FAB bleibt unverändert -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_center_on_user"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
         android:layout_marginHorizontal="16dp"
-        android:layout_marginVertical="80dp"
+        android:layout_marginVertical="120dp"
         android:contentDescription="Auf eigenen Standort zentrieren"
         app:backgroundTint="@color/primary"
         app:srcCompat="@drawable/current_location_icon"

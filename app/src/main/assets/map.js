@@ -229,6 +229,42 @@ function addStartEndMarkers(origin, destination) {
     startEndMarkers.push(startMarker, endMarker);
 }
 
+// Füge diese globale Variable am Anfang der Datei hinzu
+let currentDrawnMarkers = [];
+
+// Diese Funktion löscht alle Marker, die von loadLocationsFromApp erstellt wurden
+function clearAllMarkers() {
+    currentDrawnMarkers.forEach(marker => {
+        map.removeLayer(marker);
+    });
+    currentDrawnMarkers = [];
+}
+
+// Passe deine 'loadLocationsFromApp' Funktion leicht an
+function loadLocationsFromApp(jsonString, isActive) {
+    console.log(`Lade Locations. Aktiv: ${isActive}`);
+    try {
+        const locations = JSON.parse(jsonString);
+        const pinIcon = isActive ? defaultPin : greyPin;
+
+        locations.forEach(location => {
+            const marker = L.marker([location.breitengrad, location.laengengrad], { icon: pinIcon })
+                .addTo(map)
+                .on('click', () => {
+                    // Marker-Klick an Android senden
+                    if (window.Android && typeof window.Android.onMarkerClick === 'function') {
+                       window.Android.onMarkerClick(location.id);
+                    }
+                });
+            // Füge den neuen Marker zur Liste hinzu, um ihn später löschen zu können
+            currentDrawnMarkers.push(marker);
+        });
+    } catch (e) {
+        console.error("Fehler beim Parsen der Location-Daten:", e, jsonString);
+    }
+}
+
+
 
 function decodeGooglePolyline(encoded) {
     let points = [];

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Breite für den normalen, nicht ausgewählten Rahmen -->
+    <dimen name="route_card_stroke_normal">1dp</dimen>
+
+    <!-- Breite für den dicken, ausgewählten Rahmen -->
+    <dimen name="route_card_stroke_selected">2.5dp</dimen>
+
+    <!-- DIESE ZEILE IST ENTSCHEIDEND -->
+    <dimen name="fab_margin_bottom">80dp</dimen>
+</resources>

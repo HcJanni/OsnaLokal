@@ -178,7 +178,10 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
     public void onRouteClick(Route route) {
         Intent intent = new Intent(this, MapActivity.class);
 
-        intent.putExtra("SINGLE_ROUTE_IDS", (Serializable) route.getLocationIds());
+        // KORREKTUR: Verwende putIntegerArrayListExtra für Typsicherheit.
+        // Dies verhindert ClassCastExceptions in der MapActivity.
+        ArrayList<Integer> locationIds = new ArrayList<>(route.getLocationIds());
+        intent.putIntegerArrayListExtra("SINGLE_ROUTE_IDS", locationIds);
         intent.putExtra("ROUTE_NAME", route.getName());
 
         startActivity(intent);
