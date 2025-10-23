@@ -14,11 +14,13 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
+        <!-- ===== HIER IST DIE EINZIGE ÄNDERUNG ===== -->
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appBarLayout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:background="@android:color/transparent"
+            android:fitsSystemWindows="true"
             app:elevation="0dp">
 
             <com.google.android.material.appbar.MaterialToolbar
@@ -32,7 +34,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="match_parent">
 
-                    <!-- KORREKTUR: Zurück-Pfeil hinzugefügt -->
+                    <!-- Dein gesamter Toolbar-Inhalt bleibt unverändert -->
                     <ImageView
                         android:id="@+id/icon_back"
                         android:layout_width="wrap_content"
@@ -45,7 +47,6 @@
                         app:tint="?attr/colorOnSurface"
                         android:contentDescription="Zurück" />
 
-                    <!-- KORREKTUR: TextView für Titel hinzugefügt -->
                     <TextView
                         android:id="@+id/tv_route_title"
                         android:layout_width="0dp"
@@ -62,7 +63,6 @@
                         app:layout_constraintVertical_chainStyle="packed"
                         tools:text="Ein schöner Tag in Osnabrück" />
 
-                    <!-- KORREKTUR: TextView für Stopps hinzugefügt -->
                     <TextView
                         android:id="@+id/tv_stops_count"
                         android:layout_width="wrap_content"
@@ -72,7 +72,6 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         tools:text="5 Stopps" />
 
-                    <!-- Bestehender TextView (ggf. anpassen) -->
                     <TextView
                         android:id="@+id/toolbar_title_label"
                         android:layout_width="wrap_content"
@@ -95,14 +94,12 @@
 
     </LinearLayout>
 
-    <!-- Container für die Routenliste und den Button -->
+    <!-- Der Rest der Datei (Routenliste, Buttons) bleibt unverändert -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:orientation="vertical">
-
-        <!-- RecyclerView für die horizontal scrollbare Routenliste -->
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/recycler_view_route_suggestions"
             android:layout_width="match_parent"
@@ -114,7 +111,6 @@
             tools:listitem="@layout/item_route_suggestion"
             tools:visibility="visible"
             android:visibility="gone" />
-
         <include
             android:id="@+id/reusable_button"
             layout="@layout/reusable_navigation_buttons"
@@ -124,7 +120,6 @@
             android:layout_margin="0dp" />
     </LinearLayout>
 
-    <!-- FAB bleibt unverändert -->
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/fab_center_on_user"
         android:layout_width="wrap_content"

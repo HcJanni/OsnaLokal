@@ -1,6 +1,5 @@
 package com.example.osnalokal;
 
-// ... (alle imports bleiben gleich)
 import android.content.Context;
 import android.content.Intent;
 import android.hardware.Sensor;
@@ -8,7 +7,6 @@ import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
-import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.webkit.GeolocationPermissions;
@@ -21,9 +19,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
@@ -35,7 +30,6 @@ import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.TravelMode;
 
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -47,11 +41,11 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     private final String GOOGLE_API_KEY = BuildConfig.GOOGLE_MAPS_API_KEY;
     private boolean isMapReady = false;
 
-    // *** KORREKTUR 1: Lade die Locations EINMAL und halte sie hier. ***
+    // Lade die Locations und Routen EINMAL und halte sie hier.
     private List<Location> allLocations;
     private List<Route> allRoutes;
 
-    // ... (Rest der Member-Variablen bleibt gleich)
+    // Sensor- und UI-Variablen
     private SensorManager sensorManager;
     private final float[] accelerometerReading = new float[3];
     private final float[] magnetometerReading = new float[3];
@@ -69,9 +63,10 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        // *** KORREKTUR 2: Lade ALLE Daten hier und nur hier. ***
-        this.allLocations = LocationsData.getAllLocations(this);
-        this.allRoutes = RoutesData.getAllRoutes(); // Angenommen, diese braucht keinen Context.
+        // Lade ALLE Daten hier und nur hier, um wiederholtes Laden zu vermeiden.
+        // DataManager ist ein Singleton, das die Daten nach dem ersten Laden zwischenspeichert.
+        this.allLocations = DataManager.getInstance().getAllLocations();
+        this.allRoutes = DataManager.getInstance().getAllRoutes();
 
         locationManager = LocationManager.getInstance(this);
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
@@ -81,9 +76,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
         webSettings.setDomStorageEnabled(true);
-        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
-        webSettings.setAllowFileAccess(true);
-        WebView.setWebContentsDebuggingEnabled(true);
+        WebView.setWebContentsDebuggingEnabled(true); // Wichtig für die Fehlersuche
 
         routeSuggestionsRecyclerView = findViewById(R.id.recycler_view_route_suggestions);
         ImageView iconBack = findViewById(R.id.icon_back);
@@ -91,69 +84,156 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         FloatingActionButton fab = findViewById(R.id.fab_center_on_user);
         fab.setOnClickListener(v -> webView.evaluateJavascript("javascript:centerOnUserLocation()", null));
 
-        webView.addJavascriptInterface(new WebAppInterface(), "Android");
+        // Richte die Schnittstelle für die Kommunikation von JS nach Java ein
+        webView.addJavascriptInterface(new WebAppInterface(this), "Android");
+
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
                 callback.invoke(origin, true, false);
             }
+
+            // Dieser Callback wird verwendet, um zu wissen, wann die Karte fertig geladen ist
+            @Override
+            public void onProgressChanged(WebView view, int newProgress) {
+                if (newProgress == 100 && !isMapReady) {
+                    isMapReady = true;
+                    // Sobald die Karte geladen ist, verarbeite die Intent-Daten
+                    prepareDataFromIntent();
+                }
+            }
         });
 
         webView.loadUrl("file:///android_asset/map.html");
-        setupEdgeToEdge();
     }
 
+    /**
+     * Zentrale Methode, die entscheidet, was auf der Karte angezeigt wird,
+     * basierend auf den Daten, die von der vorherigen Activity kommen.
+     */
     private void prepareDataFromIntent() {
         Log.d("MapActivity", "prepareDataFromIntent aufgerufen, da die Karte bereit ist.");
         Intent intent = getIntent();
+
         if (intent.hasExtra("FILTER_CRITERIA")) {
             FilterCriteria criteria = (FilterCriteria) intent.getSerializableExtra("FILTER_CRITERIA");
-            handleFilteredRoutes(criteria);
+            if (criteria != null) {
+                if (criteria.isSingleCategoryMode()) {
+                    // Szenario 1: Nur eine Kategorie -> Zeige alle passenden Orte an
+                    displaySingleLocations(criteria);
+                } else {
+                    // Szenario 2: Mehrere Kategorien -> Generiere und zeige Routen
+                    generateAndDisplayRoutes(criteria);
+                }
+            }
         } else if (intent.hasExtra("SINGLE_ROUTE_IDS")) {
+            // Szenario 3: Bestehende Logik für vordefinierte Routen funktioniert weiterhin
             ArrayList<Integer> locationIds = intent.getIntegerArrayListExtra("SINGLE_ROUTE_IDS");
             String routeName = intent.getStringExtra("ROUTE_NAME");
             handleSingleRoute(locationIds, routeName);
         } else {
-            Log.e("MapActivity", "Keine Routen-Daten im Intent gefunden!");
             Toast.makeText(this, "Keine Routendaten gefunden.", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
 
-    public class WebAppInterface {
-        @JavascriptInterface
-        public void onMapReady() {
+    /**
+     * Szenario 1: Filtert Orte nach einer einzelnen Kategorie und zeigt sie als Marker auf der Karte an.
+     */
+    private void displaySingleLocations(FilterCriteria criteria) {
+        routeSuggestionsRecyclerView.setVisibility(View.GONE); // Routenleiste ausblenden
+
+        // KORREKTUR: Wir verwenden jetzt die schlaue Filter-Methode aus dem RouteGenerator
+        // anstatt der simplen, alten Logik.
+        List<Location> matchingLocations = RouteGenerator.findMatchingLocations(criteria);
+
+        // Der Toolbar-Titel sollte jetzt generischer sein, da es auch Sub-Filter gibt
+        String title = "Gefilterte Orte";
+        if (!criteria.categories.isEmpty()) {
+            title = criteria.categories.iterator().next();
+        }
+        updateToolbar(title, -1); // Toolbar-Titel anpassen
+
+        // Update die Anzahl im Titel
+        ((TextView) findViewById(R.id.tv_stops_count)).setText(matchingLocations.size() + " Orte gefunden");
+
+        if (matchingLocations.isEmpty()) {
+            Toast.makeText(this, "Keine Orte für diese Filterkombination gefunden.", Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        // Der Rest der Methode zum Anzeigen der Marker bleibt unverändert
+        Gson gson = new Gson();
+        String locationsJson = gson.toJson(matchingLocations);
+
+        webView.evaluateJavascript("javascript:clearAll(); showLocationsAsMarkers('" + locationsJson.replace("'", "\\'") + "');", null);
+    }
+
+    /**
+     * Szenario 2: Startet den RouteGenerator, um Routenvorschläge zu erstellen und anzuzeigen.
+     */
+    private void generateAndDisplayRoutes(FilterCriteria criteria) {
+        routeSuggestionsRecyclerView.setVisibility(View.VISIBLE); // Routenleiste einblenden
+        Toast.makeText(this, "Suche nach passenden Routen...", Toast.LENGTH_SHORT).show();
+
+        new Thread(() -> {
+            RouteGenerator generator = new RouteGenerator(GOOGLE_API_KEY);
+            // Rufe die neue Methode auf, die eine Liste zurückgibt
+            List<Route> generatedRoutes = generator.generateRoutesFromFilter(criteria);
+
             runOnUiThread(() -> {
-                Log.d("MapActivity", "JavaScript meldet: Karte ist initialisiert. Setze isMapReady=true.");
-                isMapReady = true;
-                android.location.Location lastLocation = locationManager.getLastKnownLocation();
-                if (lastLocation != null) {
-                    String js = String.format(java.util.Locale.US, "javascript:updateUserLocationFromApp(%f, %f)", lastLocation.getLatitude(), lastLocation.getLongitude());
-                    webView.evaluateJavascript(js, null);
+                if (generatedRoutes.isEmpty()) {
+                    Toast.makeText(this, "Keine Route für diese Kriterien gefunden.", Toast.LENGTH_LONG).show();
+                    finish();
+                } else {
+                    this.filteredRoutes.clear();
+                    this.filteredRoutes.addAll(generatedRoutes);
+
+                    currentSuggestions.clear();
+                    for (Route r : this.filteredRoutes) {
+                        currentSuggestions.add(new MapRouteSuggestion(r, getLocationsString(r), "...", "..."));
+                    }
+
+                    setupRouteSuggestionsList();
+                    if (!this.filteredRoutes.isEmpty()) {
+                        handleRouteSelection(this.filteredRoutes.get(0));
+                    }
                 }
-                prepareDataFromIntent();
+            });
+        }).start();
+    }
+
+
+    /**
+     * Die Schnittstelle, die es JavaScript (aus der WebView) erlaubt, Java-Methoden aufzurufen.
+     */
+    public class WebAppInterface {
+        Context mContext;
+
+        WebAppInterface(Context c) {
+            mContext = c;
+        }
+
+        @JavascriptInterface
+        public void onLocationClicked(String locationJson) {
+            runOnUiThread(() -> {
+                Gson gson = new Gson();
+                Location clickedLocation = gson.fromJson(locationJson, Location.class);
+                DetailBottomSheetFragment.newInstance(clickedLocation).show(getSupportFragmentManager(), "DetailBottomSheet");
             });
         }
 
         @JavascriptInterface
         public void onMarkerClick(int locationId) {
-            // *** KORREKTUR 3: Greife auf die bereits geladene Liste zu. ***
             Location clickedLocation = findLocationById(locationId);
             if (clickedLocation != null) {
-                runOnUiThread(() -> DetailBottomSheetFragment.newInstance(
-                        clickedLocation.getName(),
-                        clickedLocation.getBeschreibung(),
-                        clickedLocation.getArt(),
-                        String.valueOf(clickedLocation.getBewertungen()),
-                        clickedLocation.getOeffnungszeiten(),
-                        clickedLocation.getBudgetAsEuroString(),
-                        R.drawable.rec_tours_testimg
-                ).show(getSupportFragmentManager(), "DetailBottomSheetFromMap"));
+                runOnUiThread(() -> DetailBottomSheetFragment.newInstance(clickedLocation)
+                        .show(getSupportFragmentManager(), "DetailBottomSheetFromMap"));
             }
         }
     }
 
-    // *** KORREKTUR 4: Diese Methoden greifen jetzt auf die Member-Variable 'allLocations' zu. ***
+    // Hilfsmethoden zum Finden von Orten
     private Location findLocationById(int id) {
         if (this.allLocations == null) return null;
         return this.allLocations.stream()
@@ -178,8 +258,9 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         return waypoints;
     }
 
-    // --- Der Rest der Datei ist logisch korrekt und bleibt unverändert. ---
-    // (Hier folgt der Code für onRouteSuggestionClick, handleSingleRoute, handleFilteredRoutes etc. wie in deiner Datei)
+
+    // --- Bestehende Logik für Routenanzeige ---
+    // (Diese Methoden sind größtenteils unverändert, aber hier zur Vollständigkeit)
 
     @Override
     public void onRouteSuggestionClick(MapRouteSuggestion routeSuggestion, int position) {
@@ -191,48 +272,23 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     }
 
     private void handleSingleRoute(List<Integer> locationIds, String routeName) {
-        Log.d("MapActivity", "Verarbeite einzelne Route: " + routeName);
         updateToolbar(routeName, locationIds.size());
         List<Location> waypoints = findWaypointsByIds(locationIds);
-        loadLocationsIntoWebView(waypoints, true);
+        loadLocationsIntoWebView(waypoints, true); // Stellt alle Marker dar (aktiv)
         calculateAndDrawRoute(waypoints, -1);
     }
 
-    private void handleFilteredRoutes(FilterCriteria criteria) {
-        Log.d("MapActivity", "Verarbeite gefilterte Routen.");
-        // Greift jetzt auf die Member-Variable 'allRoutes' zu
-        this.filteredRoutes = this.allRoutes.stream()
-                .filter(route -> criteria.minDurationHours == null || (route.getDurationInMinutes() / 60.0) >= criteria.minDurationHours)
-                .filter(route -> criteria.maxDurationHours == null || (route.getDurationInMinutes() / 60.0) <= criteria.maxDurationHours)
-                .filter(route -> criteria.budget == null)
-                .filter(route -> criteria.categories == null || criteria.categories.isEmpty() || criteria.categories.contains(route.getCategory()))
-                .filter(route -> {
-                    if (criteria.restaurantTags == null || criteria.restaurantTags.isEmpty()) return true;
-                    if (route.getTags() == null) return false;
-                    return route.getTags().stream().anyMatch(criteria.restaurantTags::contains);
-                })
-                .collect(Collectors.toList());
-
-        if (this.filteredRoutes.isEmpty()) {
-            Toast.makeText(this, "Keine Routen für diese Filter gefunden.", Toast.LENGTH_LONG).show();
-            finish();
-            return;
-        }
-
-        currentSuggestions.clear();
-        for (Route r : this.filteredRoutes) {
-            currentSuggestions.add(new MapRouteSuggestion(r, getLocationsString(r), "...", "..."));
-        }
-
-        setupRouteSuggestionsList();
-        Route activeRoute = this.filteredRoutes.get(0);
-        handleRouteSelection(activeRoute);
-    }
-
     private void handleRouteSelection(Route route) {
+        // 1. Aktualisiere die Toolbar mit dem Namen und der Anzahl der Stopps der Route
         updateToolbar(route.getName(), route.getLocationIds().size());
+
+        // 2. Aktualisiere die Marker auf der Karte (aktive/inaktive Darstellung)
         updateMapMarkersForSelection(route);
+
+        // 3. Finde die Location-Objekte für die Route
         List<Location> waypoints = findWaypointsByIds(route.getLocationIds());
+
+        // 4. Berechne und zeichne die Polyline für die Route auf der Karte
         int routeIndex = filteredRoutes.indexOf(route);
         calculateAndDrawRoute(waypoints, routeIndex);
     }
@@ -289,16 +345,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         }).start();
     }
 
-    private void setupRouteSuggestionsList() {
-        if (currentSuggestions.size() > 1) {
-            routeSuggestionAdapter = new RouteSuggestionAdapter(currentSuggestions, this);
-            routeSuggestionsRecyclerView.setAdapter(routeSuggestionAdapter);
-            routeSuggestionsRecyclerView.setVisibility(View.VISIBLE);
-        } else {
-            routeSuggestionsRecyclerView.setVisibility(View.GONE);
-        }
-    }
-
     private void updateMapMarkersForSelection(Route selectedRoute) {
         if (!isMapReady) return;
         List<Location> activeWaypoints = findWaypointsByIds(selectedRoute.getLocationIds());
@@ -314,78 +360,92 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         loadLocationsIntoWebView(activeWaypoints, true);
     }
 
-    private String getLocationsString(Route route) {
-        List<Location> locations = findWaypointsByIds(route.getLocationIds());
-        return locations.stream().map(Location::getName).collect(Collectors.joining(", "));
-    }
-
-    private void updateToolbar(String title, int stops) {
-        TextView tvRouteTitle = findViewById(R.id.tv_route_title);
-        TextView tvStopsCount = findViewById(R.id.tv_stops_count);
-        tvRouteTitle.setText(title);
-        tvStopsCount.setText(stops + " Stopps");
-    }
-
-    private void loadLocationsIntoWebView(List<Location> waypoints, boolean isActive) {
-        if (waypoints == null || waypoints.isEmpty() || !isMapReady) {
-            Log.d("MapActivity", "loadLocationsIntoWebView übersprungen: waypoints=" + (waypoints == null ? "null" : waypoints.size()) + ", isMapReady=" + isMapReady);
-            return;
-        }
-
-        String json = new Gson().toJson(waypoints);
-        String base64 = Base64.encodeToString(json.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
-
-        String javascript = String.format("javascript:loadLocationsFromAppBase64('%s', %b)", base64, isActive);
-        Log.d("MapActivity", "Sende " + waypoints.size() + " Pins an JavaScript (Aktiv: " + isActive + ")");
+    private void loadLocationsIntoWebView(List<Location> locations, boolean isActive) {
+        if (locations.isEmpty() || !isMapReady) return;
+        Gson gson = new Gson();
+        String json = gson.toJson(locations);
+        String javascript = String.format("javascript:loadLocationsFromAppBase64('%s', %b)",
+                android.util.Base64.encodeToString(json.getBytes(), android.util.Base64.NO_WRAP),
+                isActive);
         webView.evaluateJavascript(javascript, null);
     }
 
+    private void setupRouteSuggestionsList() {
+        if (currentSuggestions.size() > 1) {
+            routeSuggestionAdapter = new RouteSuggestionAdapter(currentSuggestions, this);
+            routeSuggestionsRecyclerView.setAdapter(routeSuggestionAdapter);
+            routeSuggestionsRecyclerView.setVisibility(View.VISIBLE);
+        } else {
+            routeSuggestionsRecyclerView.setVisibility(View.GONE);
+        }
+    }
+
+    private String getLocationsString(Route route) {
+        List<Location> locations = findWaypointsByIds(route.getLocationIds());
+        return locations.stream().map(Location::getName).collect(Collectors.joining(" • "));
+    }
+
+    private void updateToolbar(String title, int stops) {
+        ((TextView) findViewById(R.id.tv_route_title)).setText(title);
+        TextView stopsTv = findViewById(R.id.tv_stops_count);
+        if (stops >= 0) {
+            stopsTv.setText(stops + (stops == 1 ? " Stop" : " Stops"));
+            stopsTv.setVisibility(View.VISIBLE);
+        } else {
+            stopsTv.setVisibility(View.GONE); // Wird für den Einzel-Punkte-Modus versteckt
+        }
+    }
+
+
+    // --- Lebenszyklus- und Sensor-Methoden ---
     @Override
     protected void onResume() {
         super.onResume();
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
-        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_UI);
+        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        if (accelerometer != null) {
+            sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+        Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+        if (magneticField != null) {
+            sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_UI);
+        }
+        locationManager.startLocationUpdates(this, location -> { // "this" ist der Context
+            if (isMapReady) {
+                webView.evaluateJavascript(String.format(java.util.Locale.US, "javascript:updateUserLocationFromApp(%f, %f)",
+                                location.getLatitude(),
+                                location.getLongitude()),
+                        null);
+            }
+        });
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         sensorManager.unregisterListener(this);
+        locationManager.stopLocationUpdates();
     }
 
     @Override
     public void onSensorChanged(SensorEvent event) {
+        if (System.currentTimeMillis() - lastHeadingUpdateTime < 100) return;
         if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER) {
             System.arraycopy(event.values, 0, accelerometerReading, 0, accelerometerReading.length);
         } else if (event.sensor.getType() == Sensor.TYPE_MAGNETIC_FIELD) {
             System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.length);
         }
-        long currentTime = System.currentTimeMillis();
-        if (currentTime - lastHeadingUpdateTime > 100) {
-            updateOrientationAngles();
-            lastHeadingUpdateTime = currentTime;
-        }
-    }
-
-    public void updateOrientationAngles() {
         SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
         SensorManager.getOrientation(rotationMatrix, orientationAngles);
-        float azimuthInDegrees = (float) Math.toDegrees(orientationAngles[0]);
-        azimuthInDegrees = (azimuthInDegrees + 360) % 360;
-        if (webView != null && isMapReady) {
-            webView.evaluateJavascript("javascript:updateUserHeading(" + azimuthInDegrees + ")", null);
+        float heading = (float) Math.toDegrees(orientationAngles[0]);
+        if (isMapReady) {
+            webView.evaluateJavascript("javascript:updateUserHeading(" + heading + ")", null);
+            lastHeadingUpdateTime = System.currentTimeMillis();
         }
     }
 
     @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
-
-    private void setupEdgeToEdge() {
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.map), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, 0, systemBars.right, 0);
-            findViewById(R.id.appBarLayout).setPadding(0, systemBars.top, 0, 0);
-            return insets;
-        });
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {
+        // Nicht benötigt
     }
 }
+

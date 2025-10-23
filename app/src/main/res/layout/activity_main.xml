@@ -36,7 +36,7 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:padding="8dp"
-                        android:src="@drawable/search"
+                        android:src="@drawable/ic_credits"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -63,7 +63,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginEnd="16dp"
                         android:padding="8dp"
-                        android:src="@drawable/filter"
+                        android:src="@drawable/ic_filter"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
@@ -154,6 +154,29 @@
                         app:chipStrokeWidth="0dp"
                         app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill" />
 
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_aktivitaeten"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Aktivitäten"
+                        android:textColor="@color/chip_text_color"
+                        app:chipBackgroundColor="@color/chip_background_color"
+                        app:chipStrokeWidth="0dp"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill" />
+
+                    <com.google.android.material.chip.Chip
+                        android:id="@+id/chip_parks"
+                        style="@style/Widget.MaterialComponents.Chip.Choice"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:checkable="true"
+                        android:text="Parks"
+                        android:textColor="@color/chip_text_color"
+                        app:chipBackgroundColor="@color/chip_background_color"
+                        app:chipStrokeWidth="0dp"
+                        app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill" />
                 </com.google.android.material.chip.ChipGroup>
             </HorizontalScrollView>
 
@@ -188,6 +211,7 @@
                     android:clipToPadding="false"
                     android:orientation="horizontal"
                     android:paddingStart="16dp"
+                    android:paddingEnd="4dp"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     tools:itemCount="2"
                     tools:listitem="@layout/item_route_card" />
@@ -198,7 +222,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:orientation="vertical"
-                    android:paddingHorizontal="16dp">
+                    android:paddingHorizontal="16dp"
+                    android:clipToPadding="false"
+                    android:paddingBottom="50dp">
 
                     <!-- ======================================================= -->
                     <!-- ABSCHNITT 2: NEUIGKEITEN (VERTIKALE LISTE)              -->
@@ -239,7 +265,6 @@
                         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                         tools:itemCount="3"
                         tools:listitem="@layout/item_route_card" />
-
 
                 </LinearLayout>
             </LinearLayout>

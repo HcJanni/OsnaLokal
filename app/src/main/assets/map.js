@@ -34,12 +34,8 @@ function initializeMap() {
         attribution: '© OpenStreetMap contributors, © CARTO'
     }).addTo(map);
 
-    console.log("Karte initialisiert. Melde an Android, dass wir bereit sind.");
-    if (window.Android && typeof window.Android.onMapReady === 'function') {
-        window.Android.onMapReady();
-    } else {
-        console.error("Android Interface 'onMapReady' nicht gefunden!");
-    }
+    console.log("Karte initialisiert.");
+    // Der fehlerhafte Aufruf wurde hier entfernt.
 }
 
 function clearAllMarkers() {
@@ -137,6 +133,48 @@ function decodeGooglePolyline(encoded) {
         points.push([lat / 1e5, lng / 1e5]);
     }
     return points;
+}
+
+function showLocationsAsMarkers(locationsJsonString) {
+    // javascript:clearAll() in Java aufrufen, hier nicht nochmal
+
+    // JSON-String parsen
+    const locations = JSON.parse(locationsJsonString);
+
+    if (!locations || locations.length === 0) {
+        return;
+    }
+
+    const markers = [];
+    const pinIcon = defaultPin; // Wir verwenden immer den Standard-Pin
+
+    locations.forEach(location => {
+        // ACHTUNG: Stelle sicher, dass die Variablennamen hier mit denen
+        // in deiner Location.java Klasse übereinstimmen (breitengrad, laengengrad).
+        const marker = L.marker([location.breitengrad, location.laengengrad], { icon: pinIcon })
+            .addTo(map);
+
+        marker.on('click', () => {
+            if (window.Android && typeof window.Android.onLocationClicked === 'function') {
+                // Übergebe das komplette Location-Objekt als String zurück
+                window.Android.onLocationClicked(JSON.stringify(location));
+            }
+        });
+
+        markers.push(marker);
+    });
+
+    const group = new L.featureGroup(markers);
+    map.fitBounds(group.getBounds().pad(0.1));
+}
+
+// BEREINIGUNG: clearAll() Funktion
+function clearAll() {
+    clearAllMarkers();
+    if (currentRouteLayer) {
+        map.removeLayer(currentRouteLayer);
+        currentRouteLayer = null;
+    }
 }
 
 initializeMap();

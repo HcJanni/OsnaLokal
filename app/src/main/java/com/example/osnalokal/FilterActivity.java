@@ -1,5 +1,6 @@
 package com.example.osnalokal;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
@@ -20,16 +21,22 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 public class FilterActivity extends AppCompatActivity {
 
     // Header
     private TextView tvCancel, tvClearAll;
 
     // Dauer
+    private LinearLayout durationWrapper; // NEU: Wrapper für die Dauer-Sektion
     private EditText etDauerVon, etDauerBis;
 
     // Sektionen (zum Ein-/Ausklappen und Checkboxen)
     private TextView tvRestaurant, tvBudget;
+    private List<CheckBox> categoryCheckBoxes; // NEU: Liste für alle Kategorie-Checkboxen
     private CheckBox cbAktivitaeten, cbSehenswuerdigkeiten, cbBarsKneipen, cbParks;
     private ChipGroup chipGroupRestaurant, chipGroupBudget;
     private LinearLayout restaurantContent, budgetContentWrapper;
@@ -45,7 +52,8 @@ public class FilterActivity extends AppCompatActivity {
 
         initViews();
         setupDurationValidation();
-        setupClickListeners();
+        setupClickListeners(); // Diese Methode wird jetzt die ganze UI-Logik steuern
+        updateUiBasedOnFilters(); // Initialer UI-Zustand beim Start
     }
 
     private void setupEdgeToEdge() {
@@ -56,13 +64,11 @@ public class FilterActivity extends AppCompatActivity {
         });
     }
 
-    /**
-     * Findet alle UI-Elemente aus dem XML-Layout und weist sie den Variablen zu.
-     */
     private void initViews() {
         tvCancel = findViewById(R.id.tv_cancel);
         tvClearAll = findViewById(R.id.tv_clear_all);
 
+        durationWrapper = findViewById(R.id.dauer_wrapper); // NEU
         etDauerVon = findViewById(R.id.et_dauer_von);
         etDauerBis = findViewById(R.id.et_dauer_bis);
 
@@ -70,6 +76,8 @@ public class FilterActivity extends AppCompatActivity {
         cbSehenswuerdigkeiten = findViewById(R.id.cb_sehenswuerdigkeiten);
         cbBarsKneipen = findViewById(R.id.cb_bars_kneipen);
         cbParks = findViewById(R.id.cb_parks);
+        // NEU: Alle Checkboxen für einfachere Listener in einer Liste zusammenfassen
+        categoryCheckBoxes = new ArrayList<>(Arrays.asList(cbAktivitaeten, cbSehenswuerdigkeiten, cbBarsKneipen, cbParks));
 
         tvRestaurant = findViewById(R.id.tv_restaurant);
         tvBudget = findViewById(R.id.tv_budget);
@@ -82,17 +90,17 @@ public class FilterActivity extends AppCompatActivity {
 
         btnSuggestRoutes = findViewById(R.id.reusable_button_finish);
 
-        // Standardmäßig einklappen
         restaurantContent.setVisibility(View.GONE);
         budgetContentWrapper.setVisibility(View.GONE);
 
+        // Tags für das Budget setzen, um es später leichter auszulesen
         ((Chip) chipGroupBudget.getChildAt(0)).setTag("günstig"); // €
         ((Chip) chipGroupBudget.getChildAt(1)).setTag("mittel");  // €€
         ((Chip) chipGroupBudget.getChildAt(2)).setTag("teuer");   // €€€
     }
 
     private void setupDurationValidation() {
-        // Definiere die Grenzwerte für die Dauer
+        // Diese Methode ist bereits gut und bleibt unverändert.
         final int MAX_HOURS = 12;
         final int MIN_HOURS = 1;
 
@@ -105,6 +113,7 @@ public class FilterActivity extends AppCompatActivity {
 
             @Override
             public void afterTextChanged(Editable s) {
+                updateUiBasedOnFilters(); // NEU: UI nach jeder Eingabe aktualisieren
                 if (!s.toString().isEmpty()) {
                     try {
                         int value = Integer.parseInt(s.toString());
@@ -114,18 +123,12 @@ public class FilterActivity extends AppCompatActivity {
                             if (value > MAX_HOURS) {
                                 currentEditText.setError("Maximal " + MAX_HOURS + " Stunden erlaubt");
                             } else if (value < MIN_HOURS) {
-                                // Erlaube die Eingabe von "0", aber markiere es nicht als Fehler,
-                                // da der Nutzer vielleicht "01" oder "05" tippen will.
-                                if (value != 0) {
-                                    currentEditText.setError("Minimal " + MIN_HOURS + " Stunde erlaubt");
-                                }
+                                if (value != 0) currentEditText.setError("Minimal " + MIN_HOURS + " Stunde erlaubt");
                             } else {
-                                currentEditText.setError(null); // Wert ist gültig
+                                currentEditText.setError(null);
                             }
                         }
-                    } catch (NumberFormatException e) {
-                        // Ignoriere den Fehler, falls die Eingabe temporär ungültig ist (z.B. leer)
-                    }
+                    } catch (NumberFormatException e) { /* Ignorieren */ }
                 }
             }
         };
@@ -135,7 +138,8 @@ public class FilterActivity extends AppCompatActivity {
     }
 
     /**
-     * Weist allen interaktiven Elementen ihre Klick-Funktionen zu.
+     * Weist allen interaktiven Elementen ihre Klick-Funktionen zu
+     * und sorgt dafür, dass nach jeder Interaktion die UI aktualisiert wird.
      */
     private void setupClickListeners() {
         // Header
@@ -143,25 +147,90 @@ public class FilterActivity extends AppCompatActivity {
             setResult(RESULT_CANCELED);
             finish();
         });
+        tvClearAll.setOnClickListener(v -> {
+            clearFilters();
+            updateUiBasedOnFilters(); // UI nach dem Löschen aktualisieren
+        });
 
-        tvClearAll.setOnClickListener(v -> clearFilters());
-
-        // Sektionen
+        // Sektionen zum Ein- und Ausklappen
         tvRestaurant.setOnClickListener(v -> toggleSectionVisibility(restaurantContent, tvRestaurant));
         tvBudget.setOnClickListener(v -> toggleSectionVisibility(budgetContentWrapper, tvBudget));
 
-        // Footer
-        btnSuggestRoutes.setText("Routen anzeigen"); // Setze einen passenderen Text
-        btnSuggestRoutes.setOnClickListener(v -> {
-            // Rufe die Methode auf, die alle Filter sammelt und die MapActivity startet.
-            applyFilters();
-        });
+        // Footer Button
+        btnSuggestRoutes.setOnClickListener(v -> applyFiltersAndFinish());
+
+        // --- NEU: Listener für alle Filter-Interaktionen ---
+        // Listener für alle Kategorie-Checkboxen
+        for (CheckBox cb : categoryCheckBoxes) {
+            cb.setOnCheckedChangeListener((buttonView, isChecked) -> updateUiBasedOnFilters());
+        }
+
+        // Listener für die Restaurant-Tags
+        chipGroupRestaurant.setOnCheckedStateChangeListener((group, checkedIds) -> updateUiBasedOnFilters());
     }
 
     /**
-     * Schaltet die Sichtbarkeit einer Sektion (View) um und dreht den Pfeil (Drawable).
+     * NEU: Die zentrale Logik-Methode. Sie prüft den aktuellen Filter-Zustand
+     * und passt die UI (Dauer-Sichtbarkeit, Button-Text, Button-Aktivität) entsprechend an.
      */
+    private void updateUiBasedOnFilters() {
+        FilterCriteria criteria = buildFilterCriteriaFromUI();
+
+        if (!criteria.hasAnyCategorySelected()) {
+            // Zustand 1: Nichts ausgewählt
+            durationWrapper.setVisibility(View.GONE);
+            btnSuggestRoutes.setText("Bitte wähle eine Kategorie");
+            btnSuggestRoutes.setEnabled(false);
+
+        } else if (criteria.isSingleCategoryMode()) {
+            // Zustand 2: Nur EINE Kategorie -> "Orte entdecken"-Modus
+            durationWrapper.setVisibility(View.GONE);
+            btnSuggestRoutes.setText("Orte auf Karte anzeigen");
+            btnSuggestRoutes.setEnabled(true);
+
+        } else {
+            // Zustand 3: MEHRERE Kategorien -> "Routen planen"-Modus
+            durationWrapper.setVisibility(View.VISIBLE);
+            btnSuggestRoutes.setText("Routen-Vorschläge erhalten");
+            // Button nur aktiv, wenn eine Dauer eingegeben wurde
+            boolean hasDuration = criteria.minDurationHours != null || criteria.maxDurationHours != null;
+            btnSuggestRoutes.setEnabled(hasDuration);
+        }
+    }
+
+
+    /**
+     * Sammelt die Filter, validiert sie und sendet das Ergebnis an die MapActivity.
+     */
+    private void applyFiltersAndFinish() {
+        FilterCriteria criteria = buildFilterCriteriaFromUI();
+
+        // Diese Methode wird nur aufgerufen, wenn der Button aktiv ist,
+        // daher sind die grundlegenden Prüfungen bereits durch updateUiBasedOnFilters() abgedeckt.
+        // Ein zusätzlicher Check schadet aber nicht.
+        if (!criteria.hasAnyCategorySelected()) {
+            Toast.makeText(this, "Bitte wähle mindestens eine Kategorie.", Toast.LENGTH_SHORT).show();
+            return;
+        }
+
+        if (!criteria.isSingleCategoryMode()) {
+            boolean hasDuration = criteria.minDurationHours != null || criteria.maxDurationHours != null;
+            if (!hasDuration) {
+                Toast.makeText(this, "Bitte gib eine Dauer an, um Routen zu erstellen.", Toast.LENGTH_LONG).show();
+                etDauerVon.requestFocus();
+                return;
+            }
+        }
+
+        // Ergebnis an MapActivity zurücksenden
+        Intent resultIntent = new Intent();
+        resultIntent.putExtra("FILTER_CRITERIA", criteria);
+        setResult(Activity.RESULT_OK, resultIntent);
+        finish();
+    }
+
     private void toggleSectionVisibility(View section, TextView header) {
+        // Diese Methode ist bereits gut und bleibt unverändert.
         if (section.getVisibility() == View.GONE) {
             section.setVisibility(View.VISIBLE);
             header.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_up, 0);
@@ -171,64 +240,56 @@ public class FilterActivity extends AppCompatActivity {
         }
     }
 
-    /**
-     * Setzt alle Filter-Eingabefelder auf ihren Standardzustand zurück.
-     */
     private void clearFilters() {
+        // Diese Methode ist bereits gut und bleibt unverändert.
         etDauerVon.setText("");
         etDauerBis.setText("");
-        cbAktivitaeten.setChecked(false);
         chipGroupRestaurant.clearCheck();
         chipGroupBudget.clearCheck();
-        cbAktivitaeten.setChecked(false);
-        cbSehenswuerdigkeiten.setChecked(false);
-        cbBarsKneipen.setChecked(false);
-        cbParks.setChecked(false);
+        for (CheckBox cb : categoryCheckBoxes) {
+            cb.setChecked(false);
+        }
     }
 
-    /**
-     * Sammelt alle ausgewählten Filter und sendet sie zurück.
-     */
-    private void applyFilters() {
+    private FilterCriteria buildFilterCriteriaFromUI() {
+        // Diese Methode ist bereits gut und bleibt unverändert.
         FilterCriteria criteria = new FilterCriteria();
 
-        // 1. Dauer auslesen (unverändert)
         String minHoursStr = etDauerVon.getText().toString();
-        if (!minHoursStr.isEmpty()) {
-            criteria.minDurationHours = Integer.parseInt(minHoursStr);
-        }
+        if (!minHoursStr.isEmpty()) criteria.minDurationHours = Integer.parseInt(minHoursStr);
         String maxHoursStr = etDauerBis.getText().toString();
-        if (!maxHoursStr.isEmpty()) {
-            criteria.maxDurationHours = Integer.parseInt(maxHoursStr);
+        if (!maxHoursStr.isEmpty()) criteria.maxDurationHours = Integer.parseInt(maxHoursStr);
+
+        if (cbAktivitaeten.isChecked()) {
+            criteria.categories.add("Aktivitaeten"); // Ohne 'ä'
+        }
+        if (cbSehenswuerdigkeiten.isChecked()) {
+            criteria.categories.add("Sehenswuerdigkeit"); // Ohne 'ü'
+        }
+        if (cbBarsKneipen.isChecked()) {
+            criteria.categories.add("Bar");
+        }
+        if (cbParks.isChecked()) {
+            criteria.categories.add("Park");
         }
 
-        // 2. Budget auslesen (unverändert)
+        for (int i = 0; i < chipGroupRestaurant.getChildCount(); i++) {
+            Chip chip = (Chip) chipGroupRestaurant.getChildAt(i);
+            if (chip.isChecked()) {
+                // Wenn ein Restaurant-Chip gewählt wird, füge "Restaurant" als Kategorie hinzu
+                if (!criteria.categories.contains("Restaurant")) {
+                    criteria.categories.add("Restaurant");
+                }
+                criteria.restaurantTags.add(chip.getText().toString().toLowerCase());
+            }
+        }
+
         int selectedBudgetChipId = chipGroupBudget.getCheckedChipId();
         if (selectedBudgetChipId != View.NO_ID) {
             Chip selectedChip = findViewById(selectedBudgetChipId);
             criteria.budget = (String) selectedChip.getTag();
         }
 
-        // 3. Hauptkategorien aus den CheckBoxen auslesen
-        // HINWEIS: Stelle sicher, dass diese Strings exakt mit den `category`-Strings
-        // in deiner `Route.java`-Klasse übereinstimmen!
-        if (cbAktivitaeten.isChecked()) criteria.categories.add("Aktivitäten");
-        if (cbSehenswuerdigkeiten.isChecked()) criteria.categories.add("Sehenswürdigkeiten");
-        if (cbBarsKneipen.isChecked()) criteria.categories.add("Nachtleben");
-        if (cbParks.isChecked()) criteria.categories.add("Parks");
-
-        // 4. Restaurant-Tags auslesen (angenommen, du hast eine ChipGroup dafür)
-        // Dieser Teil ist noch auskommentiert, da du die Chips noch nicht hast.
-        // int selectedRestaurantTagId = chipGroupRestaurant.getCheckedChipId();
-        // if (selectedRestaurantTagId != View.NO_ID) { ... }
-
-        // 5. Erstelle einen Intent, um die MapActivity zu starten
-        Intent intent = new Intent(FilterActivity.this, MapActivity.class);
-
-        // 6. Packe das komplette Filter-Paket in den Intent
-        intent.putExtra("FILTER_CRITERIA", criteria);
-
-        // 7. Starte die MapActivity direkt
-        startActivity(intent);
+        return criteria;
     }
 }

@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".ImpressumActivity">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@android:color/transparent"
+        app:elevation="0dp"
+        android:fitsSystemWindows="true"> <!-- Korrekter Abstand für die Statusleiste -->
+
+        <com.google.android.material.appbar.MaterialToolbar
+            android:id="@+id/toolbar_impressum"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:title="Credits"
+            app:navigationIcon="@drawable/ic_arrow_left" />
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- ===== HIER BEGINNT DIE ÄNDERUNG ===== -->
+            <!-- 1. Platzhalter-Bild hinzugefügt -->
+            <com.google.android.material.imageview.ShapeableImageView
+                android:id="@+id/image_impressum_header"
+                android:layout_width="match_parent"
+                android:layout_height="180dp"
+                android:scaleType="centerCrop"
+                app:shapeAppearanceOverlay="@style/ShapeAppearance.Material3.Corner.Large"
+                android:src="@drawable/rec_tours_testimg" />
+
+            <!-- 2. Titel mit Abstand zum Bild -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="24dp"
+                android:text="Projektteam"
+                android:textAppearance="@style/TextAppearance.Material3.TitleLarge" />
+            <!-- ===== HIER ENDET DIE ÄNDERUNG ===== -->
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Ein großes Dankeschön an alle, die an diesem Projekt mitgewirkt haben:"
+                android:textAppearance="@style/TextAppearance.Material3.BodyLarge" />
+
+            <!-- Hier kannst du die Namen einfügen -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="• Max Mustermann (Projektleitung)"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="• Erika Musterfrau (UI/UX Design)"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="• Dein Name hier (Android Entwicklung)"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="• Name des Betreuers/Dozenten"
+                android:textAppearance="@style/TextAppearance.Material3.BodyMedium" />
+
+            <!-- Du kannst hier beliebig viele weitere Namen hinzufügen -->
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</LinearLayout>

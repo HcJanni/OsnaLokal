@@ -17,63 +17,40 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         void onRouteClick(Route route);
     }
 
-    private List<Route> routeList;
+    private List<Route> routes;
     private final OnRouteClickListener clickListener;
+    private final int layoutId;
 
-    public RouteAdapter(List<Route> routeList, OnRouteClickListener clickListener) {
-        this.routeList = routeList;
+    public RouteAdapter(List<Route> routes, OnRouteClickListener clickListener, int layoutId) {
+        this.routes = routes;
         this.clickListener = clickListener;
+        this.layoutId = layoutId;
     }
 
     @NonNull
     @Override
     public RouteViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        // Wir verwenden weiterhin das 'item_route_card.xml' Layout
-        View view = LayoutInflater.from(parent.getContext())
-                .inflate(R.layout.item_route_card, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(this.layoutId, parent, false);
         return new RouteViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull RouteViewHolder holder, int position) {
-        Route currentRoute = routeList.get(position);
-
-        // Binde die Daten des Route-Objekts an die Views der Karte
-        holder.title.setText(currentRoute.getName());
-        holder.description.setText(currentRoute.getDescription());
-        holder.image.setImageResource(currentRoute.getImageResource());
-
-        // Wir können die kleinen Chips für andere Infos nutzen, z.B. die Anzahl der Stationen
-        holder.categoryChip.setText("Route");
-        holder.distanceChip.setText(currentRoute.getLocationIds().size() + " Stationen");
-
-        // Lese den Wert aus dem Route-Objekt
-        boolean isSustainable = currentRoute.isSustainable();
-        if (isSustainable) {
-            holder.sustainabilityChip.setVisibility(View.VISIBLE);
-        } else {
-            holder.sustainabilityChip.setVisibility(View.GONE);
-        }
-
-        // Mache die ganze Karte klickbar
-        holder.viewLocationButton.setOnClickListener(v -> {
-            if (clickListener != null) {
-                clickListener.onRouteClick(currentRoute);
-            }
-        });
+        Route currentRoute = routes.get(position);
+        holder.bind(currentRoute, clickListener); // Delegiere das Binden an den ViewHolder
     }
 
     @Override
     public int getItemCount() {
-        return routeList.size();
+        return routes.size();
     }
 
-    // Die Filter-Methode, falls du später Routen filtern willst
     public void filterList(List<Route> filteredList) {
-        this.routeList = filteredList;
+        this.routes = filteredList;
         notifyDataSetChanged();
     }
 
+    // Die ViewHolder-Klasse ist für das Halten und Binden der Views zuständig.
     static class RouteViewHolder extends RecyclerView.ViewHolder {
         ImageView image;
         TextView title;
@@ -81,7 +58,7 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         Chip distanceChip;
         Chip categoryChip;
         Chip sustainabilityChip;
-        Button viewLocationButton;
+        Button viewRouteButton;
 
         public RouteViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -90,8 +67,36 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
             description = itemView.findViewById(R.id.text_route_description);
             distanceChip = itemView.findViewById(R.id.chip_distance);
             categoryChip = itemView.findViewById(R.id.chip_category);
-            viewLocationButton = itemView.findViewById(R.id.button_view_route);
+            viewRouteButton = itemView.findViewById(R.id.button_view_route);
             sustainabilityChip = itemView.findViewById(R.id.chip_sustainability);
+        }
+
+        // NEU: Eigene bind-Methode für sauberen Code
+        public void bind(final Route route, final OnRouteClickListener listener) {
+            // Binde die Standard-Daten
+            title.setText(route.getName());
+            description.setText(route.getDescription());
+            image.setImageResource(route.getImageResource()); // Behält den Platzhalter für jetzt
+
+            // ===== KORREKTUR 1: Setze den Kategorie-Text korrekt =====
+            categoryChip.setText(route.getCategory());
+
+            // Setze die Anzahl der Stationen
+            distanceChip.setText(route.getLocationIds().size() + " Stationen");
+
+            // Steuere die Sichtbarkeit des Nachhaltigkeits-Chips
+            if (route.isSustainable()) {
+                sustainabilityChip.setVisibility(View.VISIBLE);
+            } else {
+                sustainabilityChip.setVisibility(View.GONE);
+            }
+
+            // Setze den Klick-Listener auf den Button
+            viewRouteButton.setOnClickListener(v -> {
+                if (listener != null) {
+                    listener.onRouteClick(route);
+                }
+            });
         }
     }
 }

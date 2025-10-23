@@ -25,7 +25,7 @@
     "preisspanne": 10,
     "barrierefrei": false,
     "telefonnummer": "054160099882",
-    "essensart": "Vietnamesisch",
+    "essensart": "Asiatisch",
     "vegetarisch": false,
     "vegan": false,
     "breitengrad": 52.2738871,
@@ -59,7 +59,7 @@
     "preisspanne": 5,
     "barrierefrei": false,
     "telefonnummer": "054140717102",
-    "essensart": "Arabisch",
+    "essensart": "Andere",
     "vegetarisch": false,
     "vegan": false,
     "breitengrad": 52.2667643,
@@ -77,7 +77,7 @@
     "barrierefrei": true,
     "telefonnummer": "0541259320",
     "essensart": "Italienisch",
-    "vegetarisch": false,
+    "vegetarisch": true,
     "vegan": false,
     "breitengrad": 52.2806483,
     "laengengrad": 8.043771,
@@ -93,7 +93,7 @@
     "preisspanne": 5,
     "barrierefrei": true,
     "telefonnummer": "054198260688",
-    "essensart": "Tuerkisch",
+    "essensart": "Andere",
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.2715419,
@@ -110,7 +110,7 @@
     "preisspanne": 20,
     "barrierefrei": true,
     "telefonnummer": "054199868740",
-    "essensart": "Burger",
+    "essensart": "Andere",
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.2755056,
@@ -127,7 +127,7 @@
     "preisspanne": 10,
     "barrierefrei": true,
     "telefonnummer": "054135023529",
-    "essensart": "Unbekannt",
+    "essensart": "Andere",
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.2871871,
@@ -182,7 +182,7 @@
   {
     "id": 31,
     "name": "Museumsquartier",
-    "art": "Museum",
+    "art": "Aktivitaeten",
     "oeffnungszeiten": "Mo. - So. : 11:00 - 18:00",
     "bewertungen": 4.5,
     "preisspanne": 8,
@@ -195,7 +195,7 @@
   {
     "id": 32,
     "name": "Filmtheater Hasetor",
-    "art": "Kino",
+    "art": "Aktivitaeten",
     "oeffnungszeiten": "Mo. - So. : 11:00 - 22:00",
     "bewertungen": 4.6,
     "preisspanne": 11,
@@ -208,7 +208,7 @@
   {
     "id": 33,
     "name": "Cinema Arthouse",
-    "art": "Kino",
+    "art": "Aktivitaeten",
     "oeffnungszeiten": "Mo. - So. : 11:00 - 23:00",
     "bewertungen": 4.4,
     "preisspanne": 13,
@@ -221,7 +221,7 @@
   {
     "id": 34,
     "name": "Mindhunters",
-    "art": "Escape Room",
+    "art": "Aktivitaeten",
     "oeffnungszeiten": "Mo. - So. : 14:00 - 22:00",
     "bewertungen": 4.9,
     "preisspanne": 34,
@@ -234,7 +234,7 @@
   {
     "id": 41,
     "name": "Hexengang",
-    "art": "Historische Sehenswuerdigkeit",
+    "art": "Sehenswuerdigkeit",
     "bewertungen": 4.3,
     "preisspanne": 0,
     "oeffnungszeiten": "24h",
@@ -273,7 +273,7 @@
   {
     "id": 44,
     "name": "Pernickelmuehle",
-    "art": "Historische Sehenswuerdigkeit",
+    "art": "Sehenswuerdigkeit",
     "bewertungen": 4.7,
     "preisspanne": 0,
     "oeffnungszeiten": "24h",
@@ -286,7 +286,7 @@
   {
     "id": 45,
     "name": "Altstadt",
-    "art": "Touristenattraktion",
+    "art": "Sehenswuerdigkeit",
     "bewertungen": 4.6,
     "preisspanne": 0,
     "oeffnungszeiten": "24h",
@@ -299,7 +299,7 @@
   {
     "id": 46,
     "name": "Bürgerbrunnen Hans Gerd Ruwe",
-    "art": "Touristenattraktion",
+    "art": "Sehenswuerdigkeit",
     "bewertungen": 4.7,
     "preisspanne": 0,
     "oeffnungszeiten": "24h",
@@ -312,11 +312,10 @@
   {
     "id": 47,
     "name": "Botanischer Garten",
-    "art": "Botanischer Garten",
+    "art": "Sehenswuerdigkeit",
     "oeffnungszeiten": "Mo. - So. : 08:00 - 16:00",
     "bewertungen": 4.8,
     "preisspanne": 5,
-    "oeffnungszeiten": null,
     "barrierefrei": true,
     "breitengrad": 52.2818365,
     "laengengrad": 8.0282419,
@@ -368,7 +367,7 @@
   {
     "id": 54,
     "name": "Unikeller",
-    "art": "Kneipe",
+    "art": "Bar",
     "oeffnungszeiten": "Mo. - So. : 19:00 - 00:00",
     "bewertungen": 4.5,
     "preisspanne": 10,
@@ -377,6 +376,6 @@
     "breitengrad": 52.271834,
     "laengengrad": 8.043438,
     "nachhaltig": true,
-    "bild": "file:///android_asset/Pictures/Bars/24_Unikeller/24_1.jpg"
+    "bild": "file:///android_asset/Pictures/Bars/25_Unikeller/25_1.jpg"
   }
 ]

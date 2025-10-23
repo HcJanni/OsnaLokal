@@ -83,10 +83,9 @@
         <androidx.core.widget.NestedScrollView
             android:id="@+id/filter_scroll_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_behavior="@string/appbar_scrolling_view_behavior"
-            app:layout_constraintBottom_toTopOf="@+id/reusable_button"
-            app:layout_constraintTop_toBottomOf="@+id/divider_top">
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
             <LinearLayout
                 android:layout_width="match_parent"
@@ -96,66 +95,78 @@
                 android:paddingTop="8dp"
                 android:paddingEnd="16dp">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:text="Dauer"
-                    android:textSize="16sp"
-                    android:textStyle="bold" />
-
+                <!-- ===== HIER BEGINNT DIE ÄNDERUNG ===== -->
                 <LinearLayout
+                    android:id="@+id/dauer_wrapper"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="8dp"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal">
+                    android:orientation="vertical"
+                    tools:visibility="visible">
 
                     <TextView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="von" />
+                        android:layout_marginTop="16dp"
+                        android:text="Dauer"
+                        android:textSize="16sp"
+                        android:textStyle="bold" />
 
-                    <EditText
-                        android:id="@+id/et_dauer_von"
-                        android:layout_width="80dp"
+                    <LinearLayout
+                        android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/filter_textborder"
-                        android:gravity="center"
-                        android:hint="min"
-                        android:inputType="number"
-                        android:minHeight="48dp" />
+                        android:layout_marginTop="8dp"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="bis" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="von" />
 
-                    <EditText
-                        android:id="@+id/et_dauer_bis"
-                        android:layout_width="80dp"
-                        android:layout_height="wrap_content"
-                        android:layout_marginStart="8dp"
-                        android:layout_marginEnd="8dp"
-                        android:background="@drawable/filter_textborder"
-                        android:gravity="center"
-                        android:hint="max"
-                        android:inputType="number"
-                        android:minHeight="48dp" />
+                        <EditText
+                            android:id="@+id/et_dauer_von"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/filter_textborder"
+                            android:gravity="center"
+                            android:hint="min"
+                            android:inputType="number"
+                            android:minHeight="48dp" />
 
-                    <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Stunden" />
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="bis" />
+
+                        <EditText
+                            android:id="@+id/et_dauer_bis"
+                            android:layout_width="80dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="8dp"
+                            android:layout_marginEnd="8dp"
+                            android:background="@drawable/filter_textborder"
+                            android:gravity="center"
+                            android:hint="max"
+                            android:inputType="number"
+                            android:minHeight="48dp" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Stunden" />
+                    </LinearLayout>
                 </LinearLayout>
+                <!-- ===== HIER ENDET DIE ÄNDERUNG ===== -->
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
                     android:layout_marginTop="16dp"
                     android:background="#E0E0E0" />
+
+                <!-- Der Rest der Datei bleibt unverändert -->
 
                 <TextView
                     android:id="@+id/tv_restaurant"
@@ -184,6 +195,7 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="2dp">
 
+                        <!-- Deine Chips hier -->
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MaterialComponents.Chip.Choice"
                             android:layout_width="wrap_content"
@@ -193,7 +205,6 @@
                             app:chipBackgroundColor="@color/chip_background_color"
                             app:chipStrokeWidth="0dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
-
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MaterialComponents.Chip.Choice"
                             android:layout_width="wrap_content"
@@ -203,7 +214,7 @@
                             app:chipBackgroundColor="@color/chip_background_color"
                             app:chipStrokeWidth="0dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
-
+                        <!-- ... weitere Chips ... -->
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MaterialComponents.Chip.Choice"
                             android:layout_width="wrap_content"
@@ -213,7 +224,6 @@
                             app:chipBackgroundColor="@color/chip_background_color"
                             app:chipStrokeWidth="0dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
-
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MaterialComponents.Chip.Choice"
                             android:layout_width="wrap_content"
@@ -223,7 +233,6 @@
                             app:chipBackgroundColor="@color/chip_background_color"
                             app:chipStrokeWidth="0dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
-
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MaterialComponents.Chip.Choice"
                             android:layout_width="wrap_content"
@@ -233,7 +242,6 @@
                             app:chipBackgroundColor="@color/chip_background_color"
                             app:chipStrokeWidth="0dp"
                             app:shapeAppearanceOverlay="@style/ShapeAppearance.App.Chip.Pill"/>
-
                         <com.google.android.material.chip.Chip
                             style="@style/Widget.MaterialComponents.Chip.Choice"
                             android:layout_width="wrap_content"

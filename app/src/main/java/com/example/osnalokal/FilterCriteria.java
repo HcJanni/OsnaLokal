@@ -20,6 +20,21 @@ public class FilterCriteria implements Serializable {
     // Restaurant-spezifische Tags als Set ("vegetarisch", "vegan", etc.)
     public Set<String> restaurantTags = new HashSet<>();
 
+    public boolean isSingleCategoryMode() {
+        // Angenommen, 'categories' ist eine Liste oder ein Set der ausgewählten Kategorien
+        return categories != null && categories.size() == 1;
+    }
+
+    public boolean hasAnyCategorySelected() {
+        // Gibt true zurück, wenn entweder eine Hauptkategorie
+        // oder ein Restaurant-Tag (was implizit "Restaurant" als Kategorie meint) gewählt ist.
+        return !categories.isEmpty() || !restaurantTags.isEmpty();
+    }
+
+    public boolean containsRestaurantCategory() {
+        return categories.stream().anyMatch(cat -> cat.equalsIgnoreCase("Restaurant"));
+    }
+
     // Leerer Konstruktor
     public FilterCriteria() {}
 }
