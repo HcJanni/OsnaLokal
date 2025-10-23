@@ -184,7 +184,7 @@ public class MapActivity extends AppCompatActivity {
         List<Route> filteredRoutes = allRoutes.stream()
                 .filter(route -> criteria.minDurationHours == null || (route.getDurationInMinutes() / 60.0) >= criteria.minDurationHours)
                 .filter(route -> criteria.maxDurationHours == null || (route.getDurationInMinutes() / 60.0) <= criteria.maxDurationHours)
-                .filter(route -> criteria.budget == null || route.getBudget().equalsIgnoreCase(criteria.budget))
+                .filter(route -> criteria.budget == null)
                 .filter(route -> criteria.categories.isEmpty() || criteria.categories.contains(route.getCategory()))
                 .filter(route -> criteria.restaurantTags.isEmpty() || route.getTags().stream().anyMatch(tag -> criteria.restaurantTags.contains(tag)))
 
