@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.view.Gravity;
 import android.view.View;
 
 import androidx.annotation.NonNull;
@@ -19,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -95,8 +97,11 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
                 // Nutzer hat zugestimmt, starte Hintergrund-Updates
                 locationManager.startLocationUpdates(this);
             } else {
-                Toast.makeText(this, "Ohne Standortberechtigung können einige Kartenfunktionen nicht genutzt werden.", Toast.LENGTH_LONG).show();
+                View rootView = findViewById(R.id.main);
+                Snackbar.make(rootView, "Ohne Standortberechtigung können einige Kartenfunktionen nicht genutzt werden.", Snackbar.LENGTH_LONG).show();
             }
+
+
         }
     }
 

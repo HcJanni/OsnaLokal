@@ -153,7 +153,6 @@ function drawRouteFromApp(startCoordsString, endCoordsString, apiKey) {
 }
 
 
-// Passen Sie die fetchAndDrawGoogleRoute Funktion an, um den API-Key als Parameter zu erhalten
 async function fetchAndDrawGoogleRoute(origin, destination, apiKey) {
     console.log(`Rufe Google Directions API ab für: ${origin.name} -> ${destination.name}`);
 
@@ -168,12 +167,13 @@ async function fetchAndDrawGoogleRoute(origin, destination, apiKey) {
 
     try {
         const response = await fetch(apiUrl);
+        const data = await response.json();
+        console.log("Google Directions Antwort:", data);
+
         if (!response.ok) {
             const errorData = await response.json();
             throw new Error(`Google API Fehler: ${response.status} - ${errorData.error_message || response.statusText}`);
         }
-        const data = await response.json();
-        console.log("Google Directions Antwort:", data);
 
         if (data.status !== 'OK' || !data.routes || data.routes.length === 0) {
             console.error("Keine Route von Google gefunden:", data.status, data.error_message);
@@ -182,8 +182,15 @@ async function fetchAndDrawGoogleRoute(origin, destination, apiKey) {
         }
 
         const route = data.routes[0];
-        const encodedPolyline = route.overview_polyline.points;
+        const leg = route.legs[0];
 
+        const distanceText = leg.distance.text; // z.B. "1,8 km"
+        const durationText = leg.duration.text; // z.B. "23 Min."
+
+        console.log(`Distanz: ${distanceText}, Dauer: ${durationText}`);
+        alert(`Geschätzte Route:\nDistanz: ${distanceText}\nDauer: ${durationText}`);
+
+        const encodedPolyline = route.overview_polyline.points;
         const decodedCoords = decodeGooglePolyline(encodedPolyline);
 
         drawRoutePolyline(decodedCoords);

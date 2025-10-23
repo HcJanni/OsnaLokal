@@ -62,6 +62,17 @@
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
+                    android:id="@+id/tv_route_details"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:textSize="12sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="@id/tv_route_title"
+                    app:layout_constraintStart_toStartOf="@id/tv_route_title"
+                    app:layout_constraintTop_toBottomOf="@id/tv_route_title"
+                    tools:text="3,5 km | ca. 45 Min." />
+
+                <TextView
                     android:id="@+id/tv_stops_count"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"

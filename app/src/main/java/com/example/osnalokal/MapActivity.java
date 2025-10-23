@@ -23,6 +23,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
 import com.google.maps.GeoApiContext;
+import com.google.maps.model.DirectionsLeg;
+import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.TravelMode;
 
@@ -185,12 +187,29 @@ public class MapActivity extends AppCompatActivity {
 
                 // Extrahiere die kodierte Pfad-Linie aus dem Ergebnis
                 if (result.routes != null && result.routes.length > 0) {
-                    String encodedPath = result.routes[0].overviewPolyline.getEncodedPath();
+                    DirectionsRoute route = result.routes[0];
+
+                    long totalDistanceInMeters = 0;
+                    long totalDurationInSeconds = 0;
+
+                    for (DirectionsLeg leg : route.legs) {
+                        totalDistanceInMeters += leg.distance.inMeters;
+                        totalDurationInSeconds += leg.duration.inSeconds;
+                    }
+
+                    final String totalDistanceString = String.format(java.util.Locale.GERMANY, "%.1f km", totalDistanceInMeters / 1000.0);
+                    final String totalDurationString = String.format(java.util.Locale.GERMANY, "%d Min.", totalDurationInSeconds / 60);
+
+                    final String encodedPath = route.overviewPolyline.getEncodedPath();
+
+                    //final String encodedPath = result.routes[0].overviewPolyline.getEncodedPath();
 
                     // Übergib den Pfad an das JavaScript, um ihn zu zeichnen
                     runOnUiThread(() -> {
-                        String escapedEncodedPath = encodedPath.replace("\\", "\\\\");
+                        TextView tvRouteDetails = findViewById(R.id.tv_route_details);
+                        tvRouteDetails.setText(totalDistanceString + " | ca. " + totalDurationString);
 
+                        String escapedEncodedPath = encodedPath.replace("\\", "\\\\");
                         // Baue den JavaScript-Aufruf mit dem sauber escapeten String
                         String javascript = "javascript:drawRouteFromEncodedPath('" + escapedEncodedPath + "')";
                         webView.evaluateJavascript(javascript, null);
@@ -204,31 +223,7 @@ public class MapActivity extends AppCompatActivity {
         }).start();
     }
 
-    private void requestLocationPermission() {
-        // Prüfe, ob die Berechtigung bereits erteilt wurde
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // Wenn nicht, frage den Nutzer nach der Berechtigung
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION}, LOCATION_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    private void drawTestRouteInWebView() {
-        String startPoint = "52.2726,8.0449"; // Schloss
-        String endPoint = "52.2799,8.0422";   // Dom
-
-        // Escape der Anführungszeichen für den JavaScript-Aufruf
-        String startPointJs = "'" + startPoint + "'";
-        String endPointJs = "'" + endPoint + "'";
-        String apiKeyJs = "'" + GOOGLE_API_KEY + "'";
-
-        // Erstelle den JavaScript-Aufruf
-        String javascript = "javascript:drawRouteFromApp(" + startPointJs + ", " + endPointJs + ", " + apiKeyJs + ")";
-
-        // Führe den Code in der WebView aus
-        webView.post(() -> webView.evaluateJavascript(javascript, null));
-    }
-
-    @Override
+    /*@Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         if (requestCode == LOCATION_PERMISSION_REQUEST_CODE) {
@@ -249,7 +244,7 @@ public class MapActivity extends AppCompatActivity {
                 Toast.makeText(this, "Standortberechtigung verweigert. Die Karte kann deine Position nicht anzeigen.", Toast.LENGTH_LONG).show();
             }
         }
-    }
+    }*/
     @Override
     protected void onPause() {
         super.onPause();
