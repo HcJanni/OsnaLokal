@@ -20,7 +20,7 @@ const selectedPin = L.icon({
 });
 
 const userPin = L.icon({
-    iconUrl: 'file:///android_res/drawable/locationmarker.png',
+    iconUrl: 'file:///android_res/drawable/directedlocationmarker.png',
 
     iconSize:     [38, 38],
     iconAnchor:   [19, 19],
@@ -127,8 +127,21 @@ function updateUserLocationFromApp(lat, lng) {
     if (userMarker) {
         userMarker.setLatLng(userLatLng);
     } else {
-        userMarker = L.marker(userLatLng, {icon: userPin}).addTo(map);
+        // WICHTIG: Erstelle den Marker mit den Optionen für die Drehung
+        userMarker = L.marker(userLatLng, {
+            icon: userPin,
+            rotationAngle: 0, // Startet mit 0 Grad (Norden)
+            rotationOrigin: 'center center' // Definiert den Drehpunkt
+        }).addTo(map);
         userMarker.bindPopup("<b>Dein Standort</b>");
+    }
+}
+
+function updateUserHeading(heading) {
+    // console.log(`Blickrichtung empfangen: ${heading}`); // Zum Debuggen einkommentieren
+    if (userMarker) {
+        // Die setRotationAngle-Methode kommt vom RotatedMarker-Plugin
+        userMarker.setRotationAngle(heading);
     }
 }
 
