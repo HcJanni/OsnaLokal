@@ -427,7 +427,7 @@
     </LinearLayout>
 
     <include
-        android:id="@+id/reusable_button"
+        android:id="@+id/reusable_button_filter"
         layout="@layout/reusable_navigation_buttons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

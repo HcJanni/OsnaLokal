@@ -27,6 +27,13 @@ const userPin = L.icon({
     popupAnchor:  [0, -19]
 });
 
+const greyPin = L.icon({
+    iconUrl: 'file:///android_res/drawable/mappin_grey.png',
+
+    iconSize:     [38, 38],
+    iconAnchor:   [19, 38]
+});
+
 
 function initializeMap() {
     console.log("Initialisiere die Karte...");
@@ -40,14 +47,21 @@ function initializeMap() {
     }).addTo(map);
 }
 
-function loadLocationsFromApp(jsonString) {
-    console.log("Externe Orte werden geladen...");
-    try {
-        allLocations = JSON.parse(jsonString);
-        addMarkersForLocations();
-    } catch (e) {
-        console.error("Fehler beim Parsen des JSON-Strings:", e);
-    }
+function loadLocationsFromApp(jsonString, isActive) {
+    console.log(`Lade Locations. Aktiv: ${isActive}`);
+    const locations = JSON.parse(jsonString);
+
+    // Wähle das richtige Icon basierend auf dem 'isActive'-Status
+    const pinIcon = isActive ? defaultPin : greyPin;
+
+    locations.forEach(location => {
+        const marker = L.marker([location.breitengrad, location.laengengrad], { icon: pinIcon })
+            .addTo(map)
+            .on('click', () => {
+                // Bei Klick wird immer die Android-Funktion aufgerufen
+                window.Android.onMarkerClick(location.id);
+            });
+    });
 }
 
 // ==========================================================
@@ -267,87 +281,36 @@ function decodeGooglePolyline(encoded) {
     return points;
 }
 
-function drawRouteFromEncodedPath(encodedPath) {
-    // Die Leaflet-Bibliothek kann mit Google's Polyline-Format umgehen
-    // (benötigt das leaflet-polyline-Plugin, das wir aber hier direkt einbinden)
+// Variable, um die aktuelle Route zu speichern und später löschen zu können
+let currentRouteLayer = null;
 
-    // Lade das Polyline-Utility von Leaflet
-    if (typeof L.Polyline.fromEncoded === 'undefined') {
-        // Wenn das Plugin nicht da ist, können wir nichts tun.
-        // Für eine robustere Lösung müsste man das Plugin explizit einbinden.
-        // Wir verwenden hier einen kleinen Hack, um es direkt zu nutzen.
-        console.error("Leaflet Polyline Plugin nicht gefunden.");
+// ERSETZE DEINE ALTE drawRouteFromEncodedPath-FUNKTION DURCH DIESE NEUE:
+function drawRouteFromEncodedPath(encodedPath) {
+    console.log("Zeichne Route aus Java mit encodedPath...");
+
+    // 1. Entferne die alte Route, falls eine existiert
+    if (currentRouteLayer) {
+        map.removeLayer(currentRouteLayer);
+    }
+
+    // 2. Dekodiere den Google-String in Koordinaten mit deiner EIGENEN Funktion
+    const decodedCoords = decodeGooglePolyline(encodedPath);
+
+    if (!decodedCoords || decodedCoords.length === 0) {
+        console.error("Dekodierung fehlgeschlagen oder keine Koordinaten.");
         return;
     }
 
-    try {
-        // Dekodiere den Pfad und erstelle eine Polyline (die blaue Linie)
-        var latlngs = L.Polyline.fromEncoded(encodedPath).getLatLngs();
+    // 3. Zeichne die neue Polyline mit den dekodierten Koordinaten
+    currentRouteLayer = L.polyline(decodedCoords, {
+        color: '#4A89F3', // Ein schönes Google-Blau
+        weight: 6,
+        opacity: 0.85
+    }).addTo(map);
 
-        var polyline = L.polyline(latlngs, {
-            color: '#03a9f4', // Helles Blau
-            weight: 5,
-            opacity: 0.7
-        }).addTo(map);
-
-        // Zoome die Karte so, dass die gesamte Route sichtbar ist
-        map.fitBounds(polyline.getBounds().pad(0.1));
-
-    } catch (e) {
-        console.error("Fehler beim Zeichnen der Route: ", e);
-    }
+    // 4. Zoome die Karte so, dass die gesamte Route sichtbar ist
+    map.fitBounds(currentRouteLayer.getBounds().pad(0.1));
 }
-
-// Damit L.Polyline.fromEncoded funktioniert, müssen wir sicherstellen,
-// dass das nötige Utility geladen ist. Leaflet selbst bringt es oft nicht mit.
-// Hier ist eine Implementierung des Decoders, falls er fehlt.
-(function () {
-    var L = window.L;
-    if (L && L.Polyline) {
-        L.Polyline.fromEncoded = function (encoded, options) {
-            var coords = decode(encoded, 5);
-            var latlngs = new Array(coords.length);
-            for (var i = 0; i < coords.length; i++) {
-                latlngs[i] = new L.LatLng(coords[i][0], coords[i][1]);
-            }
-            return new L.Polyline(latlngs, options);
-        };
-    }
-    function decode(str, precision) {
-        var index = 0,
-            lat = 0,
-            lng = 0,
-            coordinates = [],
-            shift = 0,
-            result = 0,
-            byte = null,
-            latitude_change,
-            longitude_change,
-            factor = Math.pow(10, precision || 5);
-        while (index < str.length) {
-            byte = null;
-            shift = 0;
-            result = 0;
-            do {
-                byte = str.charCodeAt(index++) - 63;
-                result |= (byte & 0x1f) << shift;
-                shift += 5;
-            } while (byte >= 0x20);
-            latitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-            shift = result = 0;
-            do {
-                byte = str.charCodeAt(index++) - 63;
-                result |= (byte & 0x1f) << shift;
-                shift += 5;
-            } while (byte >= 0x20);
-            longitude_change = ((result & 1) ? ~(result >> 1) : (result >> 1));
-            lat += latitude_change;
-            lng += longitude_change;
-            coordinates.push([lat / factor, lng / factor]);
-        }
-        return coordinates;
-    }
-})();
 
 // --- Initialisierung ---
 initializeMap();
