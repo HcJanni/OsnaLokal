@@ -53,7 +53,7 @@ public class RoutesData {
         ));
 
         routes.add(new Route(
-                1003,
+                1004,
                 "Eine nachhaltige Kulturreise",
                 "Begib dich auf eine Entdeckungstour zu den kulturellen Schätzen und nachhaltigen Orten, die im Herzen Osnabrücks verborgen liegen.",
                 "mix", // Kategorie
@@ -63,7 +63,7 @@ public class RoutesData {
         ));
 
         routes.add(new Route(
-                1003,
+                1005,
                 "Eine nicht nachhaltige Kulturreise",
                 "Begib dich auf eine Entdeckungstour zu den kulturellen Schätzen und nicht nachhaltigen Orten, die im Herzen Osnabrücks verborgen liegen.",
                 "mix", // Kategorie
@@ -72,6 +72,15 @@ public class RoutesData {
                 120
         ));
 
+        routes.add(new Route(
+                1006,
+            "Osnabrück sehen und trinken",
+            "",
+            "Bar und Sehenswürdigkeiten",
+            R.drawable.rec_tours_testimg,
+            Arrays.asList(41,46, 52, 54),
+                120
+        ));
 
 
         // -- Aktivitätsrouten ---

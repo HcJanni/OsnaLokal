@@ -20,6 +20,9 @@ import androidx.core.view.WindowInsetsCompat;
 import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
+import java.io.Serializable;
+import java.util.List;
+
 public class FilterActivity extends AppCompatActivity {
 
     // Header
@@ -190,9 +193,42 @@ public class FilterActivity extends AppCompatActivity {
      * Sammelt alle ausgewählten Filter und sendet sie zurück.
      */
     private void applyFilters() {
+
+        // --- 1. Zuerst alle Klicks auslesen ---
+        boolean aktivitaetenChecked = cbAktivitaeten.isChecked();
+        boolean sehenswuerdigkeitenChecked = cbSehenswuerdigkeiten.isChecked();
+        boolean barsChecked = cbBarsKneipen.isChecked();
+        boolean parksChecked = cbParks.isChecked();
+
+        // --- 2. DEIN SHOWCASE-SPEZIALFALL ---
+        // Prüfen: Sind NUR "Sehenswürdigkeiten" UND "Bars/Kneipen" ausgewählt?
+        if (sehenswuerdigkeitenChecked && barsChecked && !aktivitaetenChecked && !parksChecked) {
+
+            // Lade die hardgecodete Route (Index 5)
+            List<Route> allRoutes = RoutesData.getAllRoutes();
+            int showcaseIndex = 5; // Die 6. Route in der Liste (da Zählung bei 0 beginnt)
+
+            if (allRoutes != null && allRoutes.size() > showcaseIndex) {
+                Route showcaseRoute = allRoutes.get(showcaseIndex);
+
+                // Erstelle den Intent für den "Einzelrouten-Modus"
+                Intent intent = new Intent(FilterActivity.this, MapActivity.class);
+                intent.putExtra("SINGLE_ROUTE_IDS", (Serializable) showcaseRoute.getLocationIds());
+                intent.putExtra("ROUTE_NAME", "Eigene Route");
+                startActivity(intent);
+
+                return; // WICHTIG: Beende die Funktion hier!
+            }
+            // (Fallback: Wenn Route 5 nicht existiert, wird die Funktion
+            // normal fortgesetzt und die Standard-Filterlogik unten greift)
+        }
+
+        // --- 3. STANDARD-FILTERLOGIK (Fallback) ---
+        // Dieser Code wird ausgeführt, wenn dein Spezialfall NICHT zutrifft
+
         FilterCriteria criteria = new FilterCriteria();
 
-        // 1. Dauer auslesen (unverändert)
+        // 1. Dauer auslesen
         String minHoursStr = etDauerVon.getText().toString();
         if (!minHoursStr.isEmpty()) {
             criteria.minDurationHours = Integer.parseInt(minHoursStr);
@@ -202,7 +238,7 @@ public class FilterActivity extends AppCompatActivity {
             criteria.maxDurationHours = Integer.parseInt(maxHoursStr);
         }
 
-        // 2. Budget auslesen (unverändert)
+        // 2. Budget auslesen
         int selectedBudgetChipId = chipGroupBudget.getCheckedChipId();
         if (selectedBudgetChipId != View.NO_ID) {
             Chip selectedChip = findViewById(selectedBudgetChipId);
@@ -210,25 +246,17 @@ public class FilterActivity extends AppCompatActivity {
         }
 
         // 3. Hauptkategorien aus den CheckBoxen auslesen
-        // HINWEIS: Stelle sicher, dass diese Strings exakt mit den `category`-Strings
-        // in deiner `Route.java`-Klasse übereinstimmen!
-        if (cbAktivitaeten.isChecked()) criteria.categories.add("Aktivitäten");
-        if (cbSehenswuerdigkeiten.isChecked()) criteria.categories.add("Sehenswürdigkeiten");
-        if (cbBarsKneipen.isChecked()) criteria.categories.add("Nachtleben");
-        if (cbParks.isChecked()) criteria.categories.add("Parks");
+        if (aktivitaetenChecked) criteria.categories.add("Aktivitäten");
+        if (sehenswuerdigkeitenChecked) criteria.categories.add("Sehenswürdigkeiten");
+        if (barsChecked) criteria.categories.add("Nachtleben");
+        if (parksChecked) criteria.categories.add("Parks");
 
-        // 4. Restaurant-Tags auslesen (angenommen, du hast eine ChipGroup dafür)
-        // Dieser Teil ist noch auskommentiert, da du die Chips noch nicht hast.
-        // int selectedRestaurantTagId = chipGroupRestaurant.getCheckedChipId();
-        // if (selectedRestaurantTagId != View.NO_ID) { ... }
+        // 4. Restaurant-Tags (falls du sie später hinzufügst)
+        // ...
 
-        // 5. Erstelle einen Intent, um die MapActivity zu starten
+        // 5. Erstelle einen Intent, um die MapActivity im FILTER-Modus zu starten
         Intent intent = new Intent(FilterActivity.this, MapActivity.class);
-
-        // 6. Packe das komplette Filter-Paket in den Intent
         intent.putExtra("FILTER_CRITERIA", criteria);
-
-        // 7. Starte die MapActivity direkt
         startActivity(intent);
     }
 }

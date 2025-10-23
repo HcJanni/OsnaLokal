@@ -151,7 +151,6 @@
     "laengengrad": 8.0216341,
     "nachhaltig": true,
     "bild": "file:///android_asset/Pictures/Restaurants/49_La_Pizza_Italienisches_Eiscafe_Sion/49_1.jpg"
-
   },
   {
     "id": 21,
@@ -316,7 +315,6 @@
     "oeffnungszeiten": "Mo. - So. : 08:00 - 16:00",
     "bewertungen": 4.8,
     "preisspanne": 5,
-    "oeffnungszeiten": null,
     "barrierefrei": true,
     "breitengrad": 52.2818365,
     "laengengrad": 8.0282419,
