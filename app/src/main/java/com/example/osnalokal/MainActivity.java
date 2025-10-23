@@ -194,12 +194,12 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         newsItems.add(new NewsItem(
                 "Tag der Niedersachsen",
                 "Ein großes Fest mit vielen Attraktionen in der Innenstadt. Erfahre hier mehr über das Programm.",
-                R.drawable.rec_tours_testimg
+                "file:///android_asset/Pictures/Aktivitäten/11_Museumquartier/11_1.jpg"
         ));
         newsItems.add(new NewsItem(
                 "Historischer Weihnachtsmarkt",
                 "Der Weihnachtsmarkt vor dem Rathaus und der Marienkirche öffnet wieder seine Tore.",
-                R.drawable.rec_tours_testimg
+                "file:///android_asset/Sehenswürdigkeiten/55_Altstadt/55_1.jpg"
         ));
 
         NewsAdapter newsAdapter = new NewsAdapter(newsItems, this);
@@ -219,7 +219,11 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         DetailBottomSheetFragment.newInstance(
                 newsItem.getTitle(),
                 newsItem.getDescription(),
-                newsItem.getImageResource()
+                "News", // "art"
+                "",     // "rating"
+                "",     // "openingHours"
+                "",     // "budget"
+                newsItem.getImagePfad()
         ).show(getSupportFragmentManager(), "DetailBottomSheet");
     }
 }

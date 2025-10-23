@@ -5,40 +5,37 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-// KORREKTUR: "implements Serializable" hinzufügen
 public class Route implements Serializable {
-
-    // --- ANGEPASSTE FELDER FÜR DAS NEUE KONZEPT ---
     private final int id;
-    private final String name; // 'title' wurde zu 'name' für Konsistenz
+    private final String name;
     private final String description;
     private final String category;
-    private final int imageResource;
-    private final List<Integer> locationIds; // <-- Das ist das entscheidende neue Feld!
-    private final int durationInMinutes; // Dauer in Minuten (flexibler als Stunden)
-    private final Set<String> tags;      // Eine Liste von Tags wie "vegetarisch", "asiatisch", "barrierefrei"
+    private final String imagePfad;
+    private final List<Integer> locationIds;
+    private final int durationInMinutes;
+    private final Set<String> tags;
     private final boolean isSustainable;
 
-    public Route(int id, String name, String description, String category, int imageResource, List<Integer> locationIds,
+    public Route(int id, String name, String description, String category, String imagePfad, List<Integer> locationIds,
                  int durationInMinutes, Set<String> tags, boolean isSustainable) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.category = category;
-        this.imageResource = imageResource;
+        this.imagePfad = imagePfad;
         this.locationIds = locationIds;
         this.durationInMinutes = durationInMinutes;
         this.tags = tags;
         this.isSustainable = isSustainable;
     }
 
-    public Route(int id, String name, String description, String category, int imageResource, List<Integer> locationIds,
+    public Route(int id, String name, String description, String category, String imagePfad, List<Integer> locationIds,
                  int durationInMinutes) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.category = category;
-        this.imageResource = imageResource;
+        this.imagePfad = imagePfad;
         this.locationIds = locationIds;
         this.durationInMinutes = durationInMinutes;
         this.tags = new HashSet<>();
@@ -50,7 +47,7 @@ public class Route implements Serializable {
     public String getName() { return name; }
     public String getCategory() { return category; }
     public String getDescription() { return description; }
-    public int getImageResource() { return imageResource; }
+    public String getImagePfad() { return imagePfad; }
     public List<Integer> getLocationIds() { return locationIds; }
     public int getDurationInMinutes() { return durationInMinutes; }
     public Set<String> getTags() { return tags; }

@@ -8,6 +8,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.google.android.material.chip.Chip;
 import java.util.List;
 
@@ -41,8 +43,12 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         // Binde die Daten des Route-Objekts an die Views der Karte
         holder.title.setText(currentRoute.getName());
         holder.description.setText(currentRoute.getDescription());
-        holder.image.setImageResource(currentRoute.getImageResource());
+        String imagePath = currentRoute.getImagePfad();
 
+        Glide.with(holder.itemView.getContext())
+                .load("file:///android_asset/Pictures/default.png") // Pfad zu den Assets
+                .centerCrop()
+                .into(holder.image);
         // Wir können die kleinen Chips für andere Infos nutzen, z.B. die Anzahl der Stationen
         holder.categoryChip.setText("Route");
         holder.distanceChip.setText(currentRoute.getLocationIds().size() + " Stationen");

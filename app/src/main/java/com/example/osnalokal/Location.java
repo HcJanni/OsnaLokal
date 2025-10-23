@@ -4,23 +4,22 @@ public class Location {
 
     private final int id;
     private final String name;
-    private final String art; // "Restaurant", "Bar", etc.
+    private final String art;
     private final double bewertungen;
     private final int preisspanne;
     private int budget;
     private final boolean barrierefrei;
     private final String telefonnummer;
-    private final String essensart; // "Asiatisch", "Italienisch", etc.
+    private final String essensart;
     private final boolean vegetarisch;
     private final boolean vegan;
     private final double breitengrad;
     private final double laengengrad;
     private final String oeffnungszeiten;
-    private final String beschreibung;// <-- 1. NEUES FELD HINZUGEFÜGT
+    private final String beschreibung;
+    private String imagePfad;
 
-    // Konstruktor, um neue Location-Objekte zu erstellen
-    // 2. KONSTRUKTOR UM DAS NEUE FELD ERWEITERT
-    public Location(int id, String name, String art, double bewertungen, int preisspanne, boolean barrierefrei, String telefonnummer, String essensart, boolean vegetarisch, boolean vegan, double breitengrad, double laengengrad, String oeffnungszeiten, String beschreibung) {
+    public Location(int id, String name, String art, double bewertungen, int preisspanne, boolean barrierefrei, String telefonnummer, String essensart, boolean vegetarisch, boolean vegan, double breitengrad, double laengengrad, String oeffnungszeiten, String beschreibung, String imagePfad) {
         this.id = id;
         this.name = name;
         this.art = art;
@@ -31,14 +30,13 @@ public class Location {
         this.essensart = essensart;
         this.vegetarisch = vegetarisch;
         this.vegan = vegan;
-        // KORREKTUR: Die Zuweisung für Breitengrad und Längengrad wurde hinzugefügt.
         this.breitengrad = breitengrad;
         this.laengengrad = laengengrad;
         this.oeffnungszeiten = oeffnungszeiten;
         this.beschreibung = beschreibung;
+        this.imagePfad = imagePfad;
     }
 
-    // Getter-Methoden, damit andere Teile der App auf die Daten zugreifen können
     public int getId() {
         return id;
     }
@@ -106,5 +104,12 @@ public class Location {
 
     public String getBeschreibung() {
         return beschreibung;
+    }
+    public String getImagePfad() {
+        // Wichtig: Gib einen Fallback zurück, falls kein Bild da ist
+        if (imagePfad == null || imagePfad.isEmpty()) {
+            return "file://android_asset/Pictures/Sehenswürdigkeiten/55_Altstadt/55_3.jpg";
+        }
+        return imagePfad;
     }
 }

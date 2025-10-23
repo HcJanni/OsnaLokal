@@ -7,6 +7,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
+
 import java.util.List;
 
 public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder> {
@@ -36,8 +39,10 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
         // ... (Daten binden bleibt gleich)
         holder.title.setText(currentItem.getTitle());
         holder.distance.setText(currentItem.getDescription());
-        holder.image.setImageResource(currentItem.getImageResource());
-
+        Glide.with(holder.itemView.getContext())
+                .load("file:///android_asset/Pictures/default.png")
+                .centerCrop()
+                .into(holder.image);
         // Klick-Listener auf die ganze Zeile setzen
         holder.itemView.setOnClickListener(v -> {
             if (clickListener != null) {

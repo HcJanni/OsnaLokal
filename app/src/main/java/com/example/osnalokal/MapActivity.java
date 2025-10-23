@@ -137,7 +137,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
 
         @JavascriptInterface
         public void onMarkerClick(int locationId) {
-            // *** KORREKTUR 3: Greife auf die bereits geladene Liste zu. ***
             Location clickedLocation = findLocationById(locationId);
             if (clickedLocation != null) {
                 runOnUiThread(() -> DetailBottomSheetFragment.newInstance(
@@ -147,7 +146,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                         String.valueOf(clickedLocation.getBewertungen()),
                         clickedLocation.getOeffnungszeiten(),
                         clickedLocation.getBudgetAsEuroString(),
-                        R.drawable.rec_tours_testimg
+                        clickedLocation.getImagePfad()
                 ).show(getSupportFragmentManager(), "DetailBottomSheetFromMap"));
             }
         }
