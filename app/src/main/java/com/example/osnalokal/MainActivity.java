@@ -206,10 +206,8 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
     public void onRouteClick(Route route) {
         Intent intent = new Intent(this, MapActivity.class);
 
-        //1. Die IDs der Orte (hast du schon)
-        intent.putExtra("LOCATION_IDS", (Serializable) route.getLocationIds());
-
-        // --- 2. HIER DEN NAMEN DER ROUTE HINZUFÜGEN ---
+        // WICHTIG: Gib die IDs für eine SPEZIFISCHE Route mit
+        intent.putExtra("SINGLE_ROUTE_IDS", (Serializable) route.getLocationIds());
         intent.putExtra("ROUTE_NAME", route.getName());
 
         startActivity(intent);

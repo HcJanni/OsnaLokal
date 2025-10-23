@@ -27,6 +27,13 @@ const userPin = L.icon({
     popupAnchor:  [0, -19]
 });
 
+const greyPin = L.icon({
+    iconUrl: 'file:///android_res/drawable/mappin_grey.png',
+
+    iconSize:     [38, 38],
+    iconAnchor:   [19, 38]
+});
+
 
 function initializeMap() {
     console.log("Initialisiere die Karte...");
@@ -40,14 +47,21 @@ function initializeMap() {
     }).addTo(map);
 }
 
-function loadLocationsFromApp(jsonString) {
-    console.log("Externe Orte werden geladen...");
-    try {
-        allLocations = JSON.parse(jsonString);
-        addMarkersForLocations();
-    } catch (e) {
-        console.error("Fehler beim Parsen des JSON-Strings:", e);
-    }
+function loadLocationsFromApp(jsonString, isActive) {
+    console.log(`Lade Locations. Aktiv: ${isActive}`);
+    const locations = JSON.parse(jsonString);
+
+    // Wähle das richtige Icon basierend auf dem 'isActive'-Status
+    const pinIcon = isActive ? defaultPin : greyPin;
+
+    locations.forEach(location => {
+        const marker = L.marker([location.breitengrad, location.laengengrad], { icon: pinIcon })
+            .addTo(map)
+            .on('click', () => {
+                // Bei Klick wird immer die Android-Funktion aufgerufen
+                window.Android.onMarkerClick(location.id);
+            });
+    });
 }
 
 // ==========================================================

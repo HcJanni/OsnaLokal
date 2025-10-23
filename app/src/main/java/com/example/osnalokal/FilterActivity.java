@@ -1,5 +1,6 @@
 package com.example.osnalokal;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -9,12 +10,14 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
 
+import com.google.android.material.chip.Chip;
 import com.google.android.material.chip.ChipGroup;
 
 public class FilterActivity extends AppCompatActivity {
@@ -77,11 +80,15 @@ public class FilterActivity extends AppCompatActivity {
         chipGroupRestaurant = findViewById(R.id.chip_group_restaurant);
         chipGroupBudget = findViewById(R.id.chip_group_budget);
 
-        btnSuggestRoutes = findViewById(R.id.reusable_button_next);
+        btnSuggestRoutes = findViewById(R.id.reusable_button_finish);
 
         // Standardmäßig einklappen
         restaurantContent.setVisibility(View.GONE);
         budgetContentWrapper.setVisibility(View.GONE);
+
+        ((Chip) chipGroupBudget.getChildAt(0)).setTag("günstig"); // €
+        ((Chip) chipGroupBudget.getChildAt(1)).setTag("mittel");  // €€
+        ((Chip) chipGroupBudget.getChildAt(2)).setTag("teuer");   // €€€
     }
 
     private void setupDurationValidation() {
@@ -144,7 +151,11 @@ public class FilterActivity extends AppCompatActivity {
         tvBudget.setOnClickListener(v -> toggleSectionVisibility(budgetContentWrapper, tvBudget));
 
         // Footer
-        btnSuggestRoutes.setOnClickListener(v -> applyFilters());
+        btnSuggestRoutes.setText("Routen anzeigen"); // Setze einen passenderen Text
+        btnSuggestRoutes.setOnClickListener(v -> {
+            // Rufe die Methode auf, die alle Filter sammelt und die MapActivity startet.
+            applyFilters();
+        });
     }
 
     /**
@@ -179,6 +190,45 @@ public class FilterActivity extends AppCompatActivity {
      * Sammelt alle ausgewählten Filter und sendet sie zurück.
      */
     private void applyFilters() {
-        // Hier kommt deine Logik zum Anwenden der Filter hin.
+        FilterCriteria criteria = new FilterCriteria();
+
+        // 1. Dauer auslesen (unverändert)
+        String minHoursStr = etDauerVon.getText().toString();
+        if (!minHoursStr.isEmpty()) {
+            criteria.minDurationHours = Integer.parseInt(minHoursStr);
+        }
+        String maxHoursStr = etDauerBis.getText().toString();
+        if (!maxHoursStr.isEmpty()) {
+            criteria.maxDurationHours = Integer.parseInt(maxHoursStr);
+        }
+
+        // 2. Budget auslesen (unverändert)
+        int selectedBudgetChipId = chipGroupBudget.getCheckedChipId();
+        if (selectedBudgetChipId != View.NO_ID) {
+            Chip selectedChip = findViewById(selectedBudgetChipId);
+            criteria.budget = (String) selectedChip.getTag();
+        }
+
+        // 3. Hauptkategorien aus den CheckBoxen auslesen
+        // HINWEIS: Stelle sicher, dass diese Strings exakt mit den `category`-Strings
+        // in deiner `Route.java`-Klasse übereinstimmen!
+        if (cbAktivitaeten.isChecked()) criteria.categories.add("Aktivitäten");
+        if (cbSehenswuerdigkeiten.isChecked()) criteria.categories.add("Sehenswürdigkeiten");
+        if (cbBarsKneipen.isChecked()) criteria.categories.add("Nachtleben");
+        if (cbParks.isChecked()) criteria.categories.add("Parks");
+
+        // 4. Restaurant-Tags auslesen (angenommen, du hast eine ChipGroup dafür)
+        // Dieser Teil ist noch auskommentiert, da du die Chips noch nicht hast.
+        // int selectedRestaurantTagId = chipGroupRestaurant.getCheckedChipId();
+        // if (selectedRestaurantTagId != View.NO_ID) { ... }
+
+        // 5. Erstelle einen Intent, um die MapActivity zu starten
+        Intent intent = new Intent(FilterActivity.this, MapActivity.class);
+
+        // 6. Packe das komplette Filter-Paket in den Intent
+        intent.putExtra("FILTER_CRITERIA", criteria);
+
+        // 7. Starte die MapActivity direkt
+        startActivity(intent);
     }
 }
