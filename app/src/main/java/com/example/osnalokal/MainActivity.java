@@ -31,6 +31,7 @@ import androidx.transition.Fade;
 import androidx.transition.TransitionManager;
 
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.HorizontalScrollView;
 import android.widget.TextView;
 import android.animation.ObjectAnimator;
@@ -73,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         setupNewsList();
         setupAllRoutesList();
         setupFilterLogic();
-        setupFloatingActionButtons();
+        setupActionButtons();
     }
 
     private void requestLocationPermission() {
@@ -230,12 +231,11 @@ public class MainActivity extends AppCompatActivity implements RouteAdapter.OnRo
         recyclerView.setNestedScrollingEnabled(false);
     }
 
-    private void setupFloatingActionButtons() {
-        FloatingActionButton fabFilter = findViewById(R.id.fab_filter_filter);
-        fabFilter.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, FilterActivity.class)));
-
-        FloatingActionButton fabMap = findViewById(R.id.fab_filter_map);
-        fabMap.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, MapActivity.class)));
+    private void setupActionButtons() {
+        View includedLayout = findViewById(R.id.reusable_button);
+        Button btnSuggest = includedLayout.findViewById(R.id.reusable_button_finish);
+        btnSuggest.setText("Routen erstellen");
+        btnSuggest.setOnClickListener(view -> startActivity(new Intent(MainActivity.this, FilterActivity.class)));
     }
 
 
