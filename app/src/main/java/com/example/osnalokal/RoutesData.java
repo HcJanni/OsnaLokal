@@ -68,7 +68,7 @@ public class RoutesData {
                 "Begib dich auf eine Entdeckungstour zu den kulturellen Schätzen und nicht nachhaltigen Orten, die im Herzen Osnabrücks verborgen liegen.",
                 "mix", // Kategorie
                 R.drawable.rec_tours_testimg,
-                Arrays.asList(21,11, 41, 17), // Location IDs
+                Arrays.asList(31,33, 34, 52), // Location IDs
                 120
         ));
 
