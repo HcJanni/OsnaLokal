@@ -13,7 +13,8 @@
     "vegan": true,
     "breitengrad": 52.273085,
     "laengengrad": 8.0500529,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Restaurants/41_BuddhaBowl/41_1.jpg"
   },
   {
     "id": 12,
@@ -29,7 +30,8 @@
     "vegan": false,
     "breitengrad": 52.2738871,
     "laengengrad": 8.0457893,
-    "nachhaltig": false
+    "nachhaltig": false,
+    "bild": "file:///android_asset/Pictures/Restaurants/42_Viet_Nam_Wok/42_1.jpg"
   },
   {
     "id": 13,
@@ -45,7 +47,8 @@
     "vegan": true,
     "breitengrad": 52.2651942,
     "laengengrad": 8.0640171,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Restaurants/43_LOsteria/43_1.jpg"
   },
   {
     "id": 14,
@@ -61,7 +64,8 @@
     "vegan": false,
     "breitengrad": 52.2667643,
     "laengengrad": 8.0536759,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Restaurants/44_Al_Sakr/44_1.jpg"
   },
   {
     "id": 15,
