@@ -14,12 +14,11 @@ public class Route {
     private final int imageResource;
     private final List<Integer> locationIds; // <-- Das ist das entscheidende neue Feld!
     private final int durationInMinutes; // Dauer in Minuten (flexibler als Stunden)
-    private final String budget;         // "günstig", "mittel", "teuer"
     private final Set<String> tags;      // Eine Liste von Tags wie "vegetarisch", "asiatisch", "barrierefrei"
     private final boolean isSustainable;
 
     public Route(int id, String name, String description, String category, int imageResource, List<Integer> locationIds,
-                 int durationInMinutes, String budget, Set<String> tags, boolean isSustainable) {
+                 int durationInMinutes, Set<String> tags, boolean isSustainable) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -27,13 +26,12 @@ public class Route {
         this.imageResource = imageResource;
         this.locationIds = locationIds;
         this.durationInMinutes = durationInMinutes;
-        this.budget = budget;
         this.tags = tags;
         this.isSustainable = isSustainable;
     }
 
     public Route(int id, String name, String description, String category, int imageResource, List<Integer> locationIds,
-                 int durationInMinutes, String budget) {
+                 int durationInMinutes) {
         this.id = id;
         this.name = name;
         this.description = description;
@@ -41,7 +39,6 @@ public class Route {
         this.imageResource = imageResource;
         this.locationIds = locationIds;
         this.durationInMinutes = durationInMinutes;
-        this.budget = budget;
         this.tags = new HashSet<>();
         this.isSustainable = false;
     }
@@ -75,9 +72,7 @@ public class Route {
         return durationInMinutes;
     }
 
-    public String getBudget() {
-        return budget;
-    }
+
 
     public Set<String> getTags() {
         return tags;

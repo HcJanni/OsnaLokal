@@ -13,7 +13,7 @@
     "vegan": true,
     "breitengrad": 52.273085,
     "laengengrad": 8.0500529,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 12,
@@ -29,7 +29,7 @@
     "vegan": false,
     "breitengrad": 52.2738871,
     "laengengrad": 8.0457893,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 13,
@@ -45,7 +45,7 @@
     "vegan": true,
     "breitengrad": 52.2651942,
     "laengengrad": 8.0640171,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 14,
@@ -61,7 +61,7 @@
     "vegan": false,
     "breitengrad": 52.2667643,
     "laengengrad": 8.0536759,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 15,
@@ -77,7 +77,7 @@
     "vegan": false,
     "breitengrad": 52.2806483,
     "laengengrad": 8.043771,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 16,
@@ -93,7 +93,7 @@
     "vegan": true,
     "breitengrad": 52.2715419,
     "laengengrad": 8.0501296,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 17,
@@ -109,7 +109,7 @@
     "vegan": true,
     "breitengrad": 52.2755056,
     "laengengrad": 8.044341,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 18,
@@ -125,7 +125,7 @@
     "vegan": true,
     "breitengrad": 52.2871871,
     "laengengrad": 8.0256127,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 19,
@@ -141,7 +141,7 @@
     "vegan": false,
     "breitengrad": 52.2895497,
     "laengengrad": 8.0216341,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 21,
@@ -153,7 +153,7 @@
     "barrierefrei": true,
     "breitengrad": 52.270993,
     "laengengrad": 8.04415,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 22,
@@ -165,7 +165,7 @@
     "barrierefrei": true,
     "breitengrad": 52.275818,
     "laengengrad": 8.031176,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 31,
@@ -177,7 +177,7 @@
     "barrierefrei": true,
     "breitengrad": 52.2753889,
     "laengengrad": 8.0382876,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 32,
@@ -189,7 +189,7 @@
     "barrierefrei": true,
     "breitengrad": 52.2784791,
     "laengengrad": 8.0435356,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 33,
@@ -201,7 +201,7 @@
     "barrierefrei": true,
     "breitengrad": 52.2775563,
     "laengengrad": 8.0502757,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 34,
@@ -213,7 +213,7 @@
     "barrierefrei": false,
     "breitengrad": 52.2728377,
     "laengengrad": 8.048326,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 41,
@@ -225,7 +225,7 @@
     "barrierefrei": true,
     "breitengrad": 52.277678,
     "laengengrad": 8.045625,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 42,
@@ -237,7 +237,7 @@
     "barrierefrei": false,
     "breitengrad": 52.277166,
     "laengengrad": 8.044662,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 43,
@@ -249,7 +249,7 @@
     "barrierefrei": false,
     "breitengrad": 52.269899,
     "laengengrad": 8.042340,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 44,
@@ -261,7 +261,7 @@
     "barrierefrei": false,
     "breitengrad": 52.280411,
     "laengengrad": 8.045345,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 45,
@@ -273,7 +273,7 @@
     "barrierefrei": true,
     "breitengrad": 52.2774313,
     "laengengrad": 8.04185,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 46,
@@ -285,7 +285,7 @@
     "barrierefrei": false,
     "breitengrad": 52.2759533,
     "laengengrad": 8.0432642,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 47,
@@ -298,7 +298,7 @@
     "barrierefrei": true,
     "breitengrad": 52.2818365,
     "laengengrad": 8.0282419,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 51,
@@ -311,7 +311,7 @@
     "telefonnummer": "054176029499",
     "breitengrad": 52.2752428,
     "laengengrad": 8.0422041,
-    "nachhaltig" : true
+    "nachhaltig": true
   },
   {
     "id": 52,
@@ -324,7 +324,7 @@
     "telefonnummer": "054127360",
     "breitengrad": 52.2734612,
     "laengengrad": 8.044132,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 53,
@@ -337,7 +337,7 @@
     "telefonnummer": "054144029284",
     "breitengrad": 52.2793869,
     "laengengrad": 8.0415181,
-    "nachhaltig" : false
+    "nachhaltig": false
   },
   {
     "id": 54,
@@ -350,6 +350,6 @@
     "telefonnummer": "01783178363",
     "breitengrad": 52.271834,
     "laengengrad": 8.043438,
-    "nachhaltig" : true
+    "nachhaltig": true
   }
 ]
