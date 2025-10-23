@@ -43,7 +43,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     private List<List<Location>> inactiveWaypointsToLoad = new ArrayList<>();
     private boolean isPageLoaded = false;
 
-    // VARIABLEN FÜR DEN KOMPASS
     private SensorManager sensorManager;
     private final float[] accelerometerReading = new float[3];
     private final float[] magnetometerReading = new float[3];
@@ -58,7 +57,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
         locationManager = LocationManager.getInstance(this);
 
-        // --- 1. WebView und UI initialisieren ---
         webView = findViewById(R.id.mapWebView);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
@@ -71,12 +69,10 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         FloatingActionButton fab = findViewById(R.id.fab_center_on_user);
         fab.setOnClickListener(v -> webView.evaluateJavascript("javascript:centerOnUserLocation()", null));
 
-        // --- 2. JavaScript-Brücke und WebChromeClient einrichten (vereinfacht) ---
         webView.addJavascriptInterface(new WebAppInterface(), "Android");
         webView.setWebChromeClient(new WebChromeClient() {
             @Override
             public void onProgressChanged(WebView view, int newProgress) {
-                // Wenn die Seite fertig geladen ist, können wir den Standort des Nutzers setzen
                 if (newProgress == 100) {
                     isPageLoaded = true;
                     android.location.Location lastLocation = locationManager.getLastKnownLocation();
@@ -90,14 +86,12 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
 
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
-                callback.invoke(origin, false, false); // JS soll sich nicht um Berechtigungen kümmern
+                callback.invoke(origin, false, false);
             }
         });
 
-        // --- 3. WebView laden ---
         webView.loadUrl("file:///android_asset/map.html");
 
-        // --- 4. Hauptlogik starten: Unterscheide den Start-Modus ---
         Intent intent = getIntent();
         if (intent.hasExtra("FILTER_CRITERIA")) {
             FilterCriteria criteria = (FilterCriteria) intent.getSerializableExtra("FILTER_CRITERIA");
@@ -107,7 +101,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             String routeName = intent.getStringExtra("ROUTE_NAME");
             handleSingleRoute(locationIds, routeName);
         } else {
-            // Fallback, falls die Activity ohne Daten gestartet wird
             Toast.makeText(this, "Keine Routendaten gefunden.", Toast.LENGTH_SHORT).show();
             finish();
         }
@@ -118,7 +111,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     @Override
     protected void onResume() {
         super.onResume();
-        // Registriere die Listener für die Sensoren
         Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
         if (accelerometer != null) {
             sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
@@ -132,7 +124,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     @Override
     protected void onPause() {
         super.onPause();
-        // Deregistriere die Listener, um Akku zu sparen, wenn die App im Hintergrund ist
         sensorManager.unregisterListener(this);
     }
 
@@ -144,7 +135,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             System.arraycopy(event.values, 0, magnetometerReading, 0, magnetometerReading.length);
         }
 
-        // Aktualisiere die Richtung nur alle 100ms, um das System nicht zu überlasten
         long currentTime = System.currentTimeMillis();
         if (currentTime - lastHeadingUpdateTime > 100) {
             updateOrientationAngles();
@@ -153,20 +143,14 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     }
 
     public void updateOrientationAngles() {
-        // Berechne die Rotationsmatrix
         SensorManager.getRotationMatrix(rotationMatrix, null, accelerometerReading, magnetometerReading);
 
-        // Erhalte die Orientierungswinkel
         SensorManager.getOrientation(rotationMatrix, orientationAngles);
 
-        // Der Azimut (die Richtung) ist der erste Wert. Er ist in Radian.
-        // Konvertiere ihn in Grad.
         float azimuthInDegrees = (float) Math.toDegrees(orientationAngles[0]);
 
-        // Normalisiere den Wert auf 0-360 Grad (Norden = 0)
         azimuthInDegrees = (azimuthInDegrees + 360) % 360;
 
-        // Sende den Wert an das WebView
         if (webView != null && isPageLoaded) {
             String javascript = "javascript:updateUserHeading(" + azimuthInDegrees + ")";
             webView.evaluateJavascript(javascript, null);
@@ -175,7 +159,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
 
     @Override
     public void onAccuracyChanged(Sensor sensor, int accuracy) {
-        // Kann ignoriert werden, ist aber für das Interface notwendig
     }
 
     private void setupEdgeToEdge() {
@@ -229,7 +212,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                         tvRouteDetails.setText(totalDistanceString + " • ca. " + totalDurationString);
                         String javascript = "javascript:drawRouteFromEncodedPath('" + encodedPath.replace("\\", "\\\\") + "')";
                         if (isPageLoaded) {
-                            // Wenn ja, führe den Befehl sofort aus
                             webView.evaluateJavascript(javascript, null);
                         } else {
                             webView.evaluateJavascript(javascript, null);
@@ -248,8 +230,8 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         List<Location> waypoints = findWaypointsByIds(locationIds);
         updateToolbar(routeName, waypoints.size());
 
-        this.activeWaypointsToLoad = waypoints; // Daten für später speichern
-        loadDataIntoWebViewIfReady(); // Versuche, die Daten zu laden
+        this.activeWaypointsToLoad = waypoints;
+        loadDataIntoWebViewIfReady();
 
         calculateAndDrawRoute(waypoints);
     }
@@ -271,7 +253,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             return;
         }
 
-        // TODO: Hier deine Sortierlogik für die "beste" Route einfügen
         Route activeRoute = filteredRoutes.get(0);
         updateToolbar(activeRoute.getName(), activeRoute.getLocationIds().size());
 
@@ -280,23 +261,18 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             this.inactiveWaypointsToLoad.add(findWaypointsByIds(filteredRoutes.get(i).getLocationIds()));
         }
 
-        //List<Location> activeWaypoints = findWaypointsByIds(activeRoute.getLocationIds());
         loadDataIntoWebViewIfReady();
         calculateAndDrawRoute(activeWaypointsToLoad);
     }
 
     private void loadDataIntoWebViewIfReady() {
-        // Führe den Code nur aus, wenn die Seite geladen ist UND es Daten zum Laden gibt
         if (isPageLoaded && activeWaypointsToLoad != null) {
-            // Lade die aktiven Pins
             loadLocationsIntoWebView(activeWaypointsToLoad, true);
 
-            // Lade alle inaktiven Pins
             for (List<Location> inactiveList : inactiveWaypointsToLoad) {
                 loadLocationsIntoWebView(inactiveList, false);
             }
 
-            // Setze die Daten zurück, damit sie nicht doppelt geladen werden
             activeWaypointsToLoad = null;
             inactiveWaypointsToLoad.clear();
         }
@@ -327,17 +303,13 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
 
     private void loadLocationsIntoWebView(List<Location> waypoints, boolean isActive) {
         String json = new Gson().toJson(waypoints);
-        // HINWEIS: Dein JavaScript braucht eine Funktion wie `loadLocations(json, isActive)`
         String javascript = "javascript:loadLocationsFromApp('" + json.replace("'", "\\'") + "', " + isActive + ")";
         webView.evaluateJavascript(javascript, null);
     }
 
-    // Vereinfachte JavaScript-Brücke, die nur noch auf Klicks reagiert
     public class WebAppInterface {
         @JavascriptInterface
         public void onMarkerClick(int locationId) {
-            // Hier muss die Logik hin, um das BottomSheet zu zeigen
-            // Wir brauchen eine Methode, um die Location-Daten zu bekommen
             Location clickedLocation = findLocationById(locationId);
             if (clickedLocation != null) {
                 runOnUiThread(() -> {

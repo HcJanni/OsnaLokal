@@ -81,7 +81,8 @@
     "vegan": false,
     "breitengrad": 52.2806483,
     "laengengrad": 8.043771,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Restaurants/45_Pizzaria_Da_Michele/45_1.jpg"
   },
   {
     "id": 16,
@@ -97,7 +98,8 @@
     "vegan": true,
     "breitengrad": 52.2715419,
     "laengengrad": 8.0501296,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Restaurants/46_HasAntep_CigKoefte/46_1.jpg"
   },
   {
     "id": 17,
@@ -113,7 +115,8 @@
     "vegan": true,
     "breitengrad": 52.2755056,
     "laengengrad": 8.044341,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Restaurants/47_Peter_Pane/47_1.jpg"
   },
   {
     "id": 18,
@@ -129,7 +132,8 @@
     "vegan": true,
     "breitengrad": 52.2871871,
     "laengengrad": 8.0256127,
-    "nachhaltig": false
+    "nachhaltig": false,
+    "bild": "file:///android_asset/Pictures/Restaurants/48_Pans_Kitchen/48_1.jpg"
   },
   {
     "id": 19,
@@ -145,7 +149,9 @@
     "vegan": false,
     "breitengrad": 52.2895497,
     "laengengrad": 8.0216341,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Restaurants/49_La_Pizza_Italienisches_Eiscafe_Sion/49_1.jpg"
+
   },
   {
     "id": 21,
@@ -157,7 +163,8 @@
     "barrierefrei": true,
     "breitengrad": 52.270993,
     "laengengrad": 8.04415,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Parks/31_Schlossgarten/31_1.jpg"
   },
   {
     "id": 22,
@@ -169,7 +176,8 @@
     "barrierefrei": true,
     "breitengrad": 52.275818,
     "laengengrad": 8.031176,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Parks/32_Strassburgerplatz/32_1.jpg"
   },
   {
     "id": 31,
@@ -181,7 +189,8 @@
     "barrierefrei": true,
     "breitengrad": 52.2753889,
     "laengengrad": 8.0382876,
-    "nachhaltig": false
+    "nachhaltig": false,
+    "bild": "file:///android_asset/Pictures/Aktivitäten/11_Museumsquartier/11_1.jpg"
   },
   {
     "id": 32,
@@ -193,7 +202,8 @@
     "barrierefrei": true,
     "breitengrad": 52.2784791,
     "laengengrad": 8.0435356,
-    "nachhaltig": false
+    "nachhaltig": false,
+    "bild": "file:///android_asset/Pictures/Aktivitäten/12_Filmtheater_Hasetor/12_1.jpg"
   },
   {
     "id": 33,
@@ -205,7 +215,8 @@
     "barrierefrei": true,
     "breitengrad": 52.2775563,
     "laengengrad": 8.0502757,
-    "nachhaltig": false
+    "nachhaltig": false,
+    "bild": "file:///android_asset/Pictures/Aktivitäten/13_Cinema_Arthouse/13_1.jpg"
   },
   {
     "id": 34,
@@ -217,7 +228,8 @@
     "barrierefrei": false,
     "breitengrad": 52.2728377,
     "laengengrad": 8.048326,
-    "nachhaltig": false
+    "nachhaltig": false,
+    "bild": "file:///android_asset/Pictures/Aktivitäten/14_Mindhunters/14_1.jpg"
   },
   {
     "id": 41,
@@ -229,7 +241,8 @@
     "barrierefrei": true,
     "breitengrad": 52.277678,
     "laengengrad": 8.045625,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Sehenswürdigkeiten/51_Hexengang/51_1.jpg"
   },
   {
     "id": 42,
@@ -241,7 +254,8 @@
     "barrierefrei": false,
     "breitengrad": 52.277166,
     "laengengrad": 8.044662,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Sehenswürdigkeiten/52_Osnabruecker_Dom/52_1.jpg"
   },
   {
     "id": 43,
@@ -253,7 +267,8 @@
     "barrierefrei": false,
     "breitengrad": 52.269899,
     "laengengrad": 8.042340,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Sehenswürdigkeiten/53_Pluemersturm/53_1.jpg"
   },
   {
     "id": 44,
@@ -265,7 +280,8 @@
     "barrierefrei": false,
     "breitengrad": 52.280411,
     "laengengrad": 8.045345,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Sehenswürdigkeiten/54_Pernickelmuehle/54_1.jpg"
   },
   {
     "id": 45,
@@ -277,7 +293,8 @@
     "barrierefrei": true,
     "breitengrad": 52.2774313,
     "laengengrad": 8.04185,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Sehenswürdigkeiten/55_Altstadt/55_1.jpg"
   },
   {
     "id": 46,
@@ -289,7 +306,8 @@
     "barrierefrei": false,
     "breitengrad": 52.2759533,
     "laengengrad": 8.0432642,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Sehenswürdigkeiten/56_Buergerbrunnen_Hans_Gerd_Ruwe/56_1.jpg"
   },
   {
     "id": 47,
@@ -302,7 +320,8 @@
     "barrierefrei": true,
     "breitengrad": 52.2818365,
     "laengengrad": 8.0282419,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Sehenswürdigkeiten/57_Botanischer_Garten/57_1.jpg"
   },
   {
     "id": 51,
@@ -315,7 +334,8 @@
     "telefonnummer": "054176029499",
     "breitengrad": 52.2752428,
     "laengengrad": 8.0422041,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Bars/21_Spielcafe_Osnabrett/21_1.jpg"
   },
   {
     "id": 52,
@@ -328,7 +348,8 @@
     "telefonnummer": "054127360",
     "breitengrad": 52.2734612,
     "laengengrad": 8.044132,
-    "nachhaltig": false
+    "nachhaltig": false,,
+    "bild": "file:///android_asset/Pictures/Bars/22_Gruener_Jaeger/22_1.jpg"
   },
   {
     "id": 53,
@@ -341,7 +362,8 @@
     "telefonnummer": "054144029284",
     "breitengrad": 52.2793869,
     "laengengrad": 8.0415181,
-    "nachhaltig": false
+    "nachhaltig": false,
+    "bild": "file:///android_asset/Pictures/Bars/23_Countdown/23_1.jpg"
   },
   {
     "id": 54,
@@ -354,6 +376,8 @@
     "telefonnummer": "01783178363",
     "breitengrad": 52.271834,
     "laengengrad": 8.043438,
-    "nachhaltig": true
+    "nachhaltig": true,
+    "bild": "file:///android_asset/Pictures/Bars/24_Unikeller/24_1.jpg"
+  },
   }
 ]
