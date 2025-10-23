@@ -34,7 +34,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class MapActivity extends AppCompatActivity implements SensorEventListener {
+public class MapActivity extends AppCompatActivity implements DetailBottomSheetFragment.OnDismissListener, SensorEventListener {
 
     private WebView webView;
     private LocationManager locationManager;
@@ -135,6 +135,26 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         // Deregistriere die Listener, um Akku zu sparen, wenn die App im Hintergrund ist
         sensorManager.unregisterListener(this);
     }
+
+    // Füge das irgendwo in die MapActivity.java Klasse ein
+    @Override
+    public void onBottomSheetDismissed() {
+        // Wird aufgerufen, wenn das Sheet geschlossen wird.
+        // Wir müssen hier nichts tun, aber die Methode ist für das Interface nötig.
+    }
+
+    private Route findRouteByName(String name) {
+        if (name == null) return null;
+        List<Route> allRoutes = RoutesData.getAllRoutes();
+        for (Route route : allRoutes) {
+            if (name.equals(route.getName())) {
+                return route;
+            }
+        }
+        return null; // Route nicht gefunden
+    }
+
+
 
     @Override
     public void onSensorChanged(SensorEvent event) {
@@ -252,6 +272,14 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         loadDataIntoWebViewIfReady(); // Versuche, die Daten zu laden
 
         calculateAndDrawRoute(waypoints);
+
+        Route currentRoute = findRouteByName(routeName);
+        if (currentRoute != null) {
+            // Erstelle das BottomSheet mit der newInstance(Route) Methode
+            DetailBottomSheetFragment bottomSheet = DetailBottomSheetFragment.newInstance(currentRoute);
+            bottomSheet.setOnDismissListener(this); // Setze den Listener
+            bottomSheet.show(getSupportFragmentManager(), "RouteDetailSheet"); // Zeige das Sheet an
+        }
     }
 
     private void handleFilteredRoutes(FilterCriteria criteria) {

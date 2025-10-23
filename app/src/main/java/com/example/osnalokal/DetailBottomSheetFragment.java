@@ -23,6 +23,10 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment {
     private static final String ARG_OPENINGTIMES = "arg_OPENINGTIMES";
     private static final String ARG_BUDGET = "arg_budget";
     private static final String ARG_IMAGE_RES = "arg_image_res";
+    private static final String ARG_IS_ROUTE = "arg_is_route";
+    private static final String ARG_DURATION = "arg_duration";
+    private static final String ARG_IS_SUSTAINABLE = "arg_is_sustainable";
+
 
     // Statische Methode, um eine neue Instanz zu erstellen und Daten sicher zu übergeben
     public static DetailBottomSheetFragment newInstance(String title, String description, String type, String rating, String openingtimes, String budget, int imageRes) {
@@ -48,6 +52,21 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment {
         fragment.setArguments(args);
         return fragment;
     }
+
+    public static DetailBottomSheetFragment newInstance(Route route) {
+        DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
+        Bundle args = new Bundle();
+        args.putBoolean(ARG_IS_ROUTE, true); // Marker, dass es eine Route ist
+        args.putString(ARG_TITLE, route.getName());
+        args.putString(ARG_DESCRIPTION, route.getDescription());
+        args.putInt(ARG_IMAGE_RES, route.getImageResource());
+        args.putInt(ARG_DURATION, route.getDurationInMinutes());
+        args.putString(ARG_BUDGET, route.getBudget()); // Wichtig: Budget übergeben
+        args.putBoolean(ARG_IS_SUSTAINABLE, route.isSustainable());
+        fragment.setArguments(args);
+        return fragment;
+    }
+
 
     // 1. Definiere das Interface, das die Activity implementieren kann
     public interface OnDismissListener {
@@ -95,8 +114,23 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment {
             titleView.setText(title);
             imageView.setImageResource(imageRes);
 
-            // Prüfe, ob es eine Location ist (hat type, rating etc.)
-            if (getArguments().containsKey(ARG_TYPE)) {
+            if (getArguments().getBoolean(ARG_IS_ROUTE)) {
+                // FALL 1: Es ist eine ROUTE
+                String description = getArguments().getString(ARG_DESCRIPTION);
+                int duration = getArguments().getInt(ARG_DURATION);
+                String budget = getArguments().getString(ARG_BUDGET);
+                boolean isSustainable = getArguments().getBoolean(ARG_IS_SUSTAINABLE);
+
+                String routeDetails = description + "\n\n"
+                        + "Dauer: ca. " + duration + " Minuten"
+                        + "\nBudget: " + budget
+                        + "\nNachhaltig: " + (isSustainable ? "Ja" : "Nein");
+                descriptionView.setText(routeDetails);
+
+                // Optional: Button-Text anpassen
+                closeButton.setText("Route auf Karte ansehen");
+
+            } else if (getArguments().containsKey(ARG_TYPE)) {
                 // FALL 1: Es ist eine Location
                 String type = getArguments().getString(ARG_TYPE);
                 String description = getArguments().getString(ARG_DESCRIPTION);

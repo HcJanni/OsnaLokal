@@ -24,6 +24,7 @@ public class RoutesData {
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(11, 12, 18), // Location IDs
                 150, // Dauer: 2,5 Stunden (150 Minuten)
+                "€€",
                 new HashSet<>(Arrays.asList("asiatisch", "vegetarisch", "vegan")), // Tags
                 true // sustainable
         ));
@@ -37,7 +38,8 @@ public class RoutesData {
                 "Bar", // Kategorie
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(52, 54), // Location IDs
-                180
+                180,
+                "€"
         ));
 
         // --- Sehenswürdigkeitsrouten ---
@@ -49,7 +51,8 @@ public class RoutesData {
                 "Sehenswürdigkeiten", // Kategorie
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(31, 42, 45), // Location IDs
-                120
+                120,
+                "€€"
         ));
 
         routes.add(new Route(
@@ -59,7 +62,8 @@ public class RoutesData {
                 "mix", // Kategorie
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(21,11, 41, 17), // Location IDs
-                120
+                120,
+                "€"
         ));
 
         routes.add(new Route(
@@ -69,7 +73,8 @@ public class RoutesData {
                 "mix", // Kategorie
                 R.drawable.rec_tours_testimg,
                 Arrays.asList(31,33, 34, 52), // Location IDs
-                120
+                120,
+                "€€"
         ));
 
 
