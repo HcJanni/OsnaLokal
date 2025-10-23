@@ -101,7 +101,7 @@
         android:layout_gravity="bottom"
         android:orientation="vertical">
         <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_view_route_suggestions"
+            android:id="@+id/recycler_view_route_info"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
@@ -112,12 +112,13 @@
             tools:visibility="visible"
             android:visibility="gone" />
         <include
-            android:id="@+id/reusable_button"
+            android:id="@+id/start_route_button_container"
             layout="@layout/reusable_navigation_buttons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="bottom"
-            android:layout_margin="0dp" />
+            android:layout_margin="0dp"
+            android:visibility="gone" />
     </LinearLayout>
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton

@@ -6,4 +6,5 @@
     <color name="text_black">#FF1F2024</color>
     <color name="card_bg">#FF2F3036</color>
     <color name="icon_color_on_bg">#FFFFFFFF</color>
+    <color name="inactive_suggestion_border">#D1D1D6</color>
 </resources>
