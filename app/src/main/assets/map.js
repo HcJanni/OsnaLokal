@@ -1,12 +1,9 @@
-// --- Globale Variablen ---
+
 let map;
 let userMarker = null;let hasZoomedToUser = false;
-let allLocations = []; // Hier speichern wir alle Orte aus der JSON-Datei
-let locationMarkers = []; // NEU: Hier speichern wir alle Marker-Objekte
+let allLocations = [];
+let locationMarkers = [];
 
-// ==========================================================
-// NEU: Definiere die beiden Pin-Icons
-// ==========================================================
 const defaultPin = L.icon({
     iconUrl: 'file:///android_res/drawable/mappin.png',
     iconSize:     [38, 38],
@@ -20,7 +17,7 @@ const selectedPin = L.icon({
 });
 
 const userPin = L.icon({
-    iconUrl: 'file:///android_res/drawable/locationmarker.png',
+    iconUrl: 'file:///android_res/drawable/directedlocationmarker.png',
 
     iconSize:     [38, 38],
     iconAnchor:   [19, 19],
@@ -39,7 +36,7 @@ function initializeMap() {
     console.log("Initialisiere die Karte...");
 
     map = L.map('map');
-    map.setView([52.2790, 8.0425], 15); // Default View auf Osnabrück
+    map.setView([52.2790, 8.0425], 15);
 
     L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png', {
         maxZoom: 19,
@@ -51,56 +48,41 @@ function loadLocationsFromApp(jsonString, isActive) {
     console.log(`Lade Locations. Aktiv: ${isActive}`);
     const locations = JSON.parse(jsonString);
 
-    // Wähle das richtige Icon basierend auf dem 'isActive'-Status
     const pinIcon = isActive ? defaultPin : greyPin;
 
     locations.forEach(location => {
         const marker = L.marker([location.breitengrad, location.laengengrad], { icon: pinIcon })
             .addTo(map)
             .on('click', () => {
-                // Bei Klick wird immer die Android-Funktion aufgerufen
                 window.Android.onMarkerClick(location.id);
             });
     });
 }
 
-// ==========================================================
-// NEU: Funktion zum Zurücksetzen aller Marker
-// ==========================================================
 function resetAllMarkers() {
     locationMarkers.forEach(m => m.setIcon(defaultPin));
 }
 
-// ==========================================================
-// ANGEPASSTE FUNKTION: Fügt Marker hinzu und speichert sie
-// ==========================================================
 function addMarkersForLocations() {
     console.log(`Füge ${allLocations.length} Marker hinzu...`);
     if (!map || !allLocations) return;
 
-    // Leere die alte Marker-Liste, falls die Funktion erneut aufgerufen wird
     locationMarkers.forEach(m => map.removeLayer(m));
     locationMarkers = [];
 
     allLocations.forEach(location => {
         if (location.breitengrad && location.laengengrad) {
-            // Erstelle den Marker mit dem Standard-Pin
             const marker = L.marker([location.breitengrad, location.laengengrad], {icon: defaultPin}).addTo(map);
 
-            // Speichere den Marker im Array
             locationMarkers.push(marker);
 
-            // Füge den Klick-Listener hinzu
             marker.on('click', function() {
-                // 1. Setze alle Marker auf den Standard-Pin zurück
                 resetAllMarkers();
 
-                // 2. Setze NUR den geklickten Marker auf den ausgewählten Pin
                 marker.setIcon(selectedPin);
 
                 map.panTo(marker.getLatLng());
 
-                // 3. Rufe die Java-Methode auf, um das Bottom Sheet zu öffnen
                 if (window.Android && typeof window.Android.onMarkerClick === 'function') {
                     window.Android.onMarkerClick(location.id);
                 } else {
@@ -113,10 +95,9 @@ function addMarkersForLocations() {
 
 function centerOnUserLocation() {
     if (userMarker) {
-        map.flyTo(userMarker.getLatLng(), 17); // Fliege elegant zur Position
+        map.flyTo(userMarker.getLatLng(), 17);
     } else {
         console.log("User-Position ist noch nicht bekannt.");
-        // Optional: Hier könnte man eine Toast-Nachricht über das Android-Interface anzeigen
     }
 }
 
@@ -127,12 +108,21 @@ function updateUserLocationFromApp(lat, lng) {
     if (userMarker) {
         userMarker.setLatLng(userLatLng);
     } else {
-        userMarker = L.marker(userLatLng, {icon: userPin}).addTo(map);
+        userMarker = L.marker(userLatLng, {
+            icon: userPin,
+            rotationAngle: 0,
+            rotationOrigin: 'center center'
+        }).addTo(map);
         userMarker.bindPopup("<b>Dein Standort</b>");
     }
 }
 
-// Passe die centerOnUserLocation-Funktion an. Der Fallback ist jetzt unwahrscheinlicher.
+function updateUserHeading(heading) {
+    if (userMarker) {
+        userMarker.setRotationAngle(heading);
+    }
+}
+
 function centerOnUserLocation() {
     if (userMarker) {
         map.flyTo(userMarker.getLatLng(), 17);
@@ -159,10 +149,8 @@ function drawRouteFromApp(startCoordsString, endCoordsString, apiKey) {
         lng: parseFloat(endLatLon[1])
     };
 
-    // Blende alle Location-Marker aus, um die Route hervorzuheben
     locationMarkers.forEach(m => map.removeLayer(m));
 
-    // Rufe die Funktion auf, um die Route abzurufen und zu zeichnen
     fetchAndDrawGoogleRoute(startPoint, endPoint, apiKey);
 }
 
@@ -170,7 +158,6 @@ function drawRouteFromApp(startCoordsString, endCoordsString, apiKey) {
 async function fetchAndDrawGoogleRoute(origin, destination, apiKey) {
     console.log(`Rufe Google Directions API ab für: ${origin.name} -> ${destination.name}`);
 
-    // Der API-Schlüssel wird jetzt als Parameter übergeben
     if (!apiKey) {
         console.error("API Key fehlt!");
         alert("Routenplanung fehlgeschlagen: API-Schlüssel nicht konfiguriert.");
@@ -198,8 +185,8 @@ async function fetchAndDrawGoogleRoute(origin, destination, apiKey) {
         const route = data.routes[0];
         const leg = route.legs[0];
 
-        const distanceText = leg.distance.text; // z.B. "1,8 km"
-        const durationText = leg.duration.text; // z.B. "23 Min."
+        const distanceText = leg.distance.text;
+        const durationText = leg.duration.text;
 
         console.log(`Distanz: ${distanceText}, Dauer: ${durationText}`);
         alert(`Geschätzte Route:\nDistanz: ${distanceText}\nDauer: ${durationText}`);
@@ -208,7 +195,7 @@ async function fetchAndDrawGoogleRoute(origin, destination, apiKey) {
         const decodedCoords = decodeGooglePolyline(encodedPolyline);
 
         drawRoutePolyline(decodedCoords);
-        addStartEndMarkers(origin, destination); // Hinzugefügt für visuelles Feedback
+        addStartEndMarkers(origin, destination);
 
     } catch (error) {
         console.error("Fehler beim Abrufen/Verarbeiten der Google Directions:", error);
@@ -217,27 +204,22 @@ async function fetchAndDrawGoogleRoute(origin, destination, apiKey) {
 }
 
 
-// --- Funktion zum Zeichnen der Polyline (unverändert) ---
 function drawRoutePolyline(coordinates) {
-    // Alte Route entfernen
     if (currentRouteLayer) {
         map.removeLayer(currentRouteLayer);
     }
     if (!coordinates || coordinates.length === 0) return;
     console.log("Zeichne Google Route Polyline...");
     currentRouteLayer = L.polyline(coordinates, {
-        color: '#4A89F3', // Google Blau
+        color: '#4A89F3',
         weight: 6,
         opacity: 0.8
     }).addTo(map);
 
-    // Zoom auf die gesamte Route
     map.fitBounds(currentRouteLayer.getBounds());
 }
 
-// NEUE Funktion, um Start- & End-Marker hinzuzufügen
 function addStartEndMarkers(origin, destination) {
-    // Alte Marker entfernen
     startEndMarkers.forEach(m => map.removeLayer(m));
     startEndMarkers = [];
 
@@ -248,9 +230,7 @@ function addStartEndMarkers(origin, destination) {
 }
 
 
-// --- decodeGooglePolyline bleibt unverändert ---
 function decodeGooglePolyline(encoded) {
-    // Ihr Code hier... (keine Änderung nötig)
     let points = [];
     let index = 0, len = encoded.length;
     let lat = 0, lng = 0;
@@ -281,19 +261,15 @@ function decodeGooglePolyline(encoded) {
     return points;
 }
 
-// Variable, um die aktuelle Route zu speichern und später löschen zu können
 let currentRouteLayer = null;
 
-// ERSETZE DEINE ALTE drawRouteFromEncodedPath-FUNKTION DURCH DIESE NEUE:
 function drawRouteFromEncodedPath(encodedPath) {
     console.log("Zeichne Route aus Java mit encodedPath...");
 
-    // 1. Entferne die alte Route, falls eine existiert
     if (currentRouteLayer) {
         map.removeLayer(currentRouteLayer);
     }
 
-    // 2. Dekodiere den Google-String in Koordinaten mit deiner EIGENEN Funktion
     const decodedCoords = decodeGooglePolyline(encodedPath);
 
     if (!decodedCoords || decodedCoords.length === 0) {
@@ -301,16 +277,13 @@ function drawRouteFromEncodedPath(encodedPath) {
         return;
     }
 
-    // 3. Zeichne die neue Polyline mit den dekodierten Koordinaten
     currentRouteLayer = L.polyline(decodedCoords, {
-        color: '#4A89F3', // Ein schönes Google-Blau
+        color: '#4A89F3',
         weight: 6,
         opacity: 0.85
     }).addTo(map);
 
-    // 4. Zoome die Karte so, dass die gesamte Route sichtbar ist
     map.fitBounds(currentRouteLayer.getBounds().pad(0.1));
 }
 
-// --- Initialisierung ---
 initializeMap();
