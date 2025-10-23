@@ -31,9 +31,10 @@ public class Location {
         this.essensart = essensart;
         this.vegetarisch = vegetarisch;
         this.vegan = vegan;
+        // KORREKTUR: Die Zuweisung für Breitengrad und Längengrad wurde hinzugefügt.
         this.breitengrad = breitengrad;
         this.laengengrad = laengengrad;
-        this.oeffnungszeiten = oeffnungszeiten; // Zuweisung für das neue Feld
+        this.oeffnungszeiten = oeffnungszeiten;
         this.beschreibung = beschreibung;
     }
 

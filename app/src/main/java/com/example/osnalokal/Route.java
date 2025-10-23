@@ -1,10 +1,12 @@
 package com.example.osnalokal;
 
+import java.io.Serializable; // <-- WICHTIG: Import hinzufügen
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Route {
+// KORREKTUR: "implements Serializable" hinzufügen
+public class Route implements Serializable {
 
     // --- ANGEPASSTE FELDER FÜR DAS NEUE KONZEPT ---
     private final int id;
@@ -43,41 +45,14 @@ public class Route {
         this.isSustainable = false;
     }
 
-    // --- ANGEPASSTE GETTER ---
-    public int getId() {
-        return id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public String getCategory() {
-        return category;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public int getImageResource() {
-        return imageResource;
-    }
-
-    public List<Integer> getLocationIds() {
-        return locationIds;
-    }
-
-    public int getDurationInMinutes() {
-        return durationInMinutes;
-    }
-
-
-
-    public Set<String> getTags() {
-        return tags;
-    }
-    public boolean isSustainable() {
-        return isSustainable;
-    }
+    // --- GETTER (unverändert) ---
+    public int getId() { return id; }
+    public String getName() { return name; }
+    public String getCategory() { return category; }
+    public String getDescription() { return description; }
+    public int getImageResource() { return imageResource; }
+    public List<Integer> getLocationIds() { return locationIds; }
+    public int getDurationInMinutes() { return durationInMinutes; }
+    public Set<String> getTags() { return tags; }
+    public boolean isSustainable() { return isSustainable; }
 }

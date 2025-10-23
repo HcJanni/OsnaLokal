@@ -348,7 +348,7 @@
     "telefonnummer": "054127360",
     "breitengrad": 52.2734612,
     "laengengrad": 8.044132,
-    "nachhaltig": false,,
+    "nachhaltig": false,
     "bild": "file:///android_asset/Pictures/Bars/22_Gruener_Jaeger/22_1.jpg"
   },
   {
@@ -378,6 +378,5 @@
     "laengengrad": 8.043438,
     "nachhaltig": true,
     "bild": "file:///android_asset/Pictures/Bars/24_Unikeller/24_1.jpg"
-  },
   }
 ]

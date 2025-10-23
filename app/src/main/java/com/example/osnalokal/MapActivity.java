@@ -1,9 +1,16 @@
 package com.example.osnalokal;
 
+// ... (alle imports bleiben gleich)
+import android.content.Context;
 import android.content.Intent;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
 import android.os.Bundle;
+import android.util.Base64;
+import android.util.Log;
+import android.view.View;
 import android.webkit.GeolocationPermissions;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
@@ -17,9 +24,8 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.graphics.Insets;
 import androidx.core.view.ViewCompat;
 import androidx.core.view.WindowInsetsCompat;
-import android.content.Context;
-import android.hardware.Sensor;
-import android.hardware.SensorEvent;
+import androidx.recyclerview.widget.RecyclerView;
+
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.gson.Gson;
 import com.google.maps.DirectionsApi;
@@ -28,9 +34,8 @@ import com.google.maps.model.DirectionsLeg;
 import com.google.maps.model.DirectionsRoute;
 import com.google.maps.model.DirectionsResult;
 import com.google.maps.model.TravelMode;
-import androidx.recyclerview.widget.RecyclerView;
-import android.view.View;
 
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,57 +45,54 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     private WebView webView;
     private LocationManager locationManager;
     private final String GOOGLE_API_KEY = BuildConfig.GOOGLE_MAPS_API_KEY;
-    private boolean isPageLoaded = false;
+    private boolean isMapReady = false;
 
+    // *** KORREKTUR 1: Lade die Locations EINMAL und halte sie hier. ***
+    private List<Location> allLocations;
+    private List<Route> allRoutes;
+
+    // ... (Rest der Member-Variablen bleibt gleich)
     private SensorManager sensorManager;
     private final float[] accelerometerReading = new float[3];
     private final float[] magnetometerReading = new float[3];
     private final float[] rotationMatrix = new float[9];
     private final float[] orientationAngles = new float[3];
     private long lastHeadingUpdateTime = 0;
-
-    // --- Neue UI-Komponenten und Datenlisten ---
     private RecyclerView routeSuggestionsRecyclerView;
     private RouteSuggestionAdapter routeSuggestionAdapter;
     private List<MapRouteSuggestion> currentSuggestions = new ArrayList<>();
-    private List<Route> filteredRoutes = new ArrayList<>(); // Hält alle gefilterten Routen
+    private List<Route> filteredRoutes = new ArrayList<>();
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
-        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
+
+        // *** KORREKTUR 2: Lade ALLE Daten hier und nur hier. ***
+        this.allLocations = LocationsData.getAllLocations(this);
+        this.allRoutes = RoutesData.getAllRoutes(); // Angenommen, diese braucht keinen Context.
+
         locationManager = LocationManager.getInstance(this);
+        sensorManager = (SensorManager) getSystemService(Context.SENSOR_SERVICE);
 
         webView = findViewById(R.id.mapWebView);
         WebSettings webSettings = webView.getSettings();
         webSettings.setJavaScriptEnabled(true);
         webSettings.setGeolocationEnabled(true);
         webSettings.setDomStorageEnabled(true);
+        webSettings.setCacheMode(WebSettings.LOAD_DEFAULT);
+        webSettings.setAllowFileAccess(true);
+        WebView.setWebContentsDebuggingEnabled(true);
 
         routeSuggestionsRecyclerView = findViewById(R.id.recycler_view_route_suggestions);
-
         ImageView iconBack = findViewById(R.id.icon_back);
         iconBack.setOnClickListener(v -> finish());
-
         FloatingActionButton fab = findViewById(R.id.fab_center_on_user);
         fab.setOnClickListener(v -> webView.evaluateJavascript("javascript:centerOnUserLocation()", null));
 
         webView.addJavascriptInterface(new WebAppInterface(), "Android");
         webView.setWebChromeClient(new WebChromeClient() {
-            @Override
-            public void onProgressChanged(WebView view, int newProgress) {
-                if (newProgress == 100 && !isPageLoaded) {
-                    isPageLoaded = true;
-                    android.location.Location lastLocation = locationManager.getLastKnownLocation();
-                    if (lastLocation != null) {
-                        String javascriptUserPos = "javascript:updateUserLocationFromApp(" + lastLocation.getLatitude() + ", " + lastLocation.getLongitude() + ")";
-                        webView.evaluateJavascript(javascriptUserPos, null);
-                    }
-                    prepareDataFromIntent();
-                }
-            }
-
             @Override
             public void onGeolocationPermissionsShowPrompt(String origin, GeolocationPermissions.Callback callback) {
                 callback.invoke(origin, true, false);
@@ -102,6 +104,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     }
 
     private void prepareDataFromIntent() {
+        Log.d("MapActivity", "prepareDataFromIntent aufgerufen, da die Karte bereit ist.");
         Intent intent = getIntent();
         if (intent.hasExtra("FILTER_CRITERIA")) {
             FilterCriteria criteria = (FilterCriteria) intent.getSerializableExtra("FILTER_CRITERIA");
@@ -111,10 +114,72 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             String routeName = intent.getStringExtra("ROUTE_NAME");
             handleSingleRoute(locationIds, routeName);
         } else {
+            Log.e("MapActivity", "Keine Routen-Daten im Intent gefunden!");
             Toast.makeText(this, "Keine Routendaten gefunden.", Toast.LENGTH_SHORT).show();
             finish();
         }
     }
+
+    public class WebAppInterface {
+        @JavascriptInterface
+        public void onMapReady() {
+            runOnUiThread(() -> {
+                Log.d("MapActivity", "JavaScript meldet: Karte ist initialisiert. Setze isMapReady=true.");
+                isMapReady = true;
+                android.location.Location lastLocation = locationManager.getLastKnownLocation();
+                if (lastLocation != null) {
+                    String js = String.format(java.util.Locale.US, "javascript:updateUserLocationFromApp(%f, %f)", lastLocation.getLatitude(), lastLocation.getLongitude());
+                    webView.evaluateJavascript(js, null);
+                }
+                prepareDataFromIntent();
+            });
+        }
+
+        @JavascriptInterface
+        public void onMarkerClick(int locationId) {
+            // *** KORREKTUR 3: Greife auf die bereits geladene Liste zu. ***
+            Location clickedLocation = findLocationById(locationId);
+            if (clickedLocation != null) {
+                runOnUiThread(() -> DetailBottomSheetFragment.newInstance(
+                        clickedLocation.getName(),
+                        clickedLocation.getBeschreibung(),
+                        clickedLocation.getArt(),
+                        String.valueOf(clickedLocation.getBewertungen()),
+                        clickedLocation.getOeffnungszeiten(),
+                        clickedLocation.getBudgetAsEuroString(),
+                        R.drawable.rec_tours_testimg
+                ).show(getSupportFragmentManager(), "DetailBottomSheetFromMap"));
+            }
+        }
+    }
+
+    // *** KORREKTUR 4: Diese Methoden greifen jetzt auf die Member-Variable 'allLocations' zu. ***
+    private Location findLocationById(int id) {
+        if (this.allLocations == null) return null;
+        return this.allLocations.stream()
+                .filter(loc -> loc.getId() == id)
+                .findFirst()
+                .orElse(null);
+    }
+
+    private List<Location> findWaypointsByIds(List<Integer> locationIds) {
+        List<Location> waypoints = new ArrayList<>();
+        if (locationIds == null || this.allLocations == null) return waypoints;
+
+        for (Integer id : locationIds) {
+            this.allLocations.stream()
+                    .filter(loc -> loc.getId() == id)
+                    .findFirst()
+                    .ifPresent(waypoints::add);
+        }
+        if (waypoints.size() > 1) {
+            waypoints.sort((l1, l2) -> Integer.compare(locationIds.indexOf(l1.getId()), locationIds.indexOf(l2.getId())));
+        }
+        return waypoints;
+    }
+
+    // --- Der Rest der Datei ist logisch korrekt und bleibt unverändert. ---
+    // (Hier folgt der Code für onRouteSuggestionClick, handleSingleRoute, handleFilteredRoutes etc. wie in deiner Datei)
 
     @Override
     public void onRouteSuggestionClick(MapRouteSuggestion routeSuggestion, int position) {
@@ -126,6 +191,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     }
 
     private void handleSingleRoute(List<Integer> locationIds, String routeName) {
+        Log.d("MapActivity", "Verarbeite einzelne Route: " + routeName);
         updateToolbar(routeName, locationIds.size());
         List<Location> waypoints = findWaypointsByIds(locationIds);
         loadLocationsIntoWebView(waypoints, true);
@@ -133,10 +199,9 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     }
 
     private void handleFilteredRoutes(FilterCriteria criteria) {
-        // KORREKTUR: Das Argument 'this' wurde entfernt.
-        List<Route> allRoutes = RoutesData.getAllRoutes();
-
-        this.filteredRoutes = allRoutes.stream()
+        Log.d("MapActivity", "Verarbeite gefilterte Routen.");
+        // Greift jetzt auf die Member-Variable 'allRoutes' zu
+        this.filteredRoutes = this.allRoutes.stream()
                 .filter(route -> criteria.minDurationHours == null || (route.getDurationInMinutes() / 60.0) >= criteria.minDurationHours)
                 .filter(route -> criteria.maxDurationHours == null || (route.getDurationInMinutes() / 60.0) <= criteria.maxDurationHours)
                 .filter(route -> criteria.budget == null)
@@ -174,7 +239,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
 
     private void calculateAndDrawRoute(List<Location> waypoints, final int routeIndexInAdapter) {
         if (waypoints == null || waypoints.size() < 2) return;
-
         new Thread(() -> {
             try {
                 GeoApiContext context = new GeoApiContext.Builder().apiKey(GOOGLE_API_KEY).build();
@@ -185,7 +249,6 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     Location loc = waypoints.get(i);
                     intermediatePoints[i - 1] = new com.google.maps.model.LatLng(loc.getBreitengrad(), loc.getLaengengrad());
                 }
-
                 DirectionsResult result = DirectionsApi.newRequest(context)
                         .origin(new com.google.maps.model.LatLng(start.getBreitengrad(), start.getLaengengrad()))
                         .destination(new com.google.maps.model.LatLng(end.getBreitengrad(), end.getLaengengrad()))
@@ -201,15 +264,12 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                         totalDistanceInMeters += leg.distance.inMeters;
                         totalDurationInSeconds += leg.duration.inSeconds;
                     }
-
                     final String totalDistanceString = String.format(java.util.Locale.GERMANY, "%.1f km", totalDistanceInMeters / 1000.0);
                     final String totalDurationString = String.format(java.util.Locale.GERMANY, "%d Min.", totalDurationInSeconds / 60);
                     final String encodedPath = route.overviewPolyline.getEncodedPath();
-
                     runOnUiThread(() -> {
                         String javascript = "javascript:drawRouteFromEncodedPath('" + encodedPath.replace("\\", "\\\\") + "')";
                         webView.evaluateJavascript(javascript, null);
-
                         if (routeSuggestionAdapter != null && routeIndexInAdapter >= 0 && routeIndexInAdapter < currentSuggestions.size()) {
                             MapRouteSuggestion suggestion = currentSuggestions.get(routeIndexInAdapter);
                             MapRouteSuggestion updatedSuggestion = new MapRouteSuggestion(
@@ -224,7 +284,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
                     });
                 }
             } catch (Exception e) {
-                android.util.Log.e("MapActivity", "Fehler bei der Routenberechnung: " + e.getMessage(), e);
+                Log.e("MapActivity", "Fehler bei der Routenberechnung: " + e.getMessage(), e);
             }
         }).start();
     }
@@ -240,8 +300,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     }
 
     private void updateMapMarkersForSelection(Route selectedRoute) {
-        if (!isPageLoaded) return;
-
+        if (!isMapReady) return;
         List<Location> activeWaypoints = findWaypointsByIds(selectedRoute.getLocationIds());
         List<Location> allWaypoints = new ArrayList<>();
         for (Route route : filteredRoutes) {
@@ -255,27 +314,12 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         loadLocationsIntoWebView(activeWaypoints, true);
     }
 
-    private List<Location> findWaypointsByIds(List<Integer> locationIds) {
-        List<Location> allLocations = LocationsData.getAllLocations(this);
-        List<Location> waypoints = new ArrayList<>();
-        if (locationIds != null) {
-            for (Integer id : locationIds) {
-                allLocations.stream()
-                        .filter(loc -> loc.getId() == id)
-                        .findFirst()
-                        .ifPresent(waypoints::add);
-            }
-        }
-        return waypoints;
-    }
-
     private String getLocationsString(Route route) {
         List<Location> locations = findWaypointsByIds(route.getLocationIds());
         return locations.stream().map(Location::getName).collect(Collectors.joining(", "));
     }
 
     private void updateToolbar(String title, int stops) {
-        // KORREKTUR: Diese Aufrufe funktionieren jetzt, da die IDs im XML existieren.
         TextView tvRouteTitle = findViewById(R.id.tv_route_title);
         TextView tvStopsCount = findViewById(R.id.tv_stops_count);
         tvRouteTitle.setText(title);
@@ -283,20 +327,24 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
     }
 
     private void loadLocationsIntoWebView(List<Location> waypoints, boolean isActive) {
-        if (waypoints == null || waypoints.isEmpty() || !isPageLoaded) return;
+        if (waypoints == null || waypoints.isEmpty() || !isMapReady) {
+            Log.d("MapActivity", "loadLocationsIntoWebView übersprungen: waypoints=" + (waypoints == null ? "null" : waypoints.size()) + ", isMapReady=" + isMapReady);
+            return;
+        }
+
         String json = new Gson().toJson(waypoints);
-        String escapedJson = json.replace("'", "\\'");
-        String javascript = "javascript:loadLocationsFromApp('" + escapedJson + "', " + isActive + ")";
+        String base64 = Base64.encodeToString(json.getBytes(StandardCharsets.UTF_8), Base64.NO_WRAP);
+
+        String javascript = String.format("javascript:loadLocationsFromAppBase64('%s', %b)", base64, isActive);
+        Log.d("MapActivity", "Sende " + waypoints.size() + " Pins an JavaScript (Aktiv: " + isActive + ")");
         webView.evaluateJavascript(javascript, null);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
-        if (accelerometer != null) sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_UI);
-        Sensor magneticField = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
-        if (magneticField != null) sensorManager.registerListener(this, magneticField, SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER), SensorManager.SENSOR_DELAY_UI);
+        sensorManager.registerListener(this, sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD), SensorManager.SENSOR_DELAY_UI);
     }
 
     @Override
@@ -324,7 +372,7 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
         SensorManager.getOrientation(rotationMatrix, orientationAngles);
         float azimuthInDegrees = (float) Math.toDegrees(orientationAngles[0]);
         azimuthInDegrees = (azimuthInDegrees + 360) % 360;
-        if (webView != null && isPageLoaded) {
+        if (webView != null && isMapReady) {
             webView.evaluateJavascript("javascript:updateUserHeading(" + azimuthInDegrees + ")", null);
         }
     }
@@ -339,30 +387,5 @@ public class MapActivity extends AppCompatActivity implements SensorEventListene
             findViewById(R.id.appBarLayout).setPadding(0, systemBars.top, 0, 0);
             return insets;
         });
-    }
-
-    public class WebAppInterface {
-        @JavascriptInterface
-        public void onMarkerClick(int locationId) {
-            Location clickedLocation = findLocationById(locationId);
-            if (clickedLocation != null) {
-                runOnUiThread(() -> DetailBottomSheetFragment.newInstance(
-                        clickedLocation.getName(),
-                        clickedLocation.getBeschreibung(),
-                        clickedLocation.getArt(),
-                        String.valueOf(clickedLocation.getBewertungen()),
-                        clickedLocation.getOeffnungszeiten(),
-                        clickedLocation.getBudgetAsEuroString(),
-                        R.drawable.rec_tours_testimg
-                ).show(getSupportFragmentManager(), "DetailBottomSheetFromMap"));
-            }
-        }
-
-        private Location findLocationById(int id) {
-            return LocationsData.getAllLocations(MapActivity.this).stream()
-                    .filter(loc -> loc.getId() == id)
-                    .findFirst()
-                    .orElse(null);
-        }
     }
 }
