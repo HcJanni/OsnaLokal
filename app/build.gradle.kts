@@ -16,6 +16,10 @@ android {
         version = release(36)
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     defaultConfig {
         applicationId = "com.example.osnalokal"
         minSdk = 35
@@ -24,6 +28,13 @@ android {
         versionName = "1.0"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // DIESE ZEILE ist der Befehl, die BuildConfig-Variable zu erstellen
+        buildConfigField(
+            "String",
+            "GOOGLE_MAPS_API_KEY",
+            properties.getProperty("GOOGLE_MAPS_API_KEY", "\"\"")
+        )
     }
 
     buildTypes {
