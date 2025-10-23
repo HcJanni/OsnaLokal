@@ -46,17 +46,6 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment {
         return fragment;
     }
 
-    // Statische Methode für NEWS (nutzt alte int-ID)
-    public static DetailBottomSheetFragment newInstance(String title, String description, int imageRes) {
-        DetailBottomSheetFragment fragment = new DetailBottomSheetFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_TITLE, title);
-        args.putString(ARG_DESCRIPTION, description);
-        args.putInt(ARG_IMAGE_RES_LEGACY, imageRes); // Benutzt den Legacy-Key
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     // Interface (unverändert)
     public interface OnDismissListener {
         void onDismiss();
@@ -105,7 +94,7 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment {
                 String openingTimes = getArguments().getString(ARG_OPENINGTIMES, "k.A.");
                 String rating = getArguments().getString(ARG_RATING, "-");
                 String budget = getArguments().getString(ARG_BUDGET, "");
-                String imagePath = getArguments().getString(ARG_IMAGE_PATH); // Holt den String-Pfad
+                String imagePath = getArguments().getString(ARG_IMAGE_PATH);
 
                 String fullDescription = description + "\n\n"
                         + "Öffnungszeiten: " + openingTimes
@@ -116,10 +105,10 @@ public class DetailBottomSheetFragment extends BottomSheetDialogFragment {
                 // --- BILD MIT GLIDE LADEN ---
                 if (imagePath != null && !imagePath.isEmpty() && getContext() != null) {
                     Glide.with(getContext())
-                            .load("file:///android_asset/" + imagePath) // Der Pfad für Assets
+                            .load(imagePath)
                             .centerCrop()
-                            .placeholder(R.drawable.rec_tours_testimg) // Dein altes Bild als Platzhalter
-                            .error(R.drawable.rec_tours_testimg)       // Bild bei Ladefehler
+                            .placeholder(R.drawable.rec_tours_testimg)
+                            .error(R.drawable.rec_tours_testimg)
                             .into(imageView);
                 } else {
                     imageView.setImageResource(R.drawable.rec_tours_testimg); // Not-Fallback

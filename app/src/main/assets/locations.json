@@ -189,7 +189,7 @@
     "breitengrad": 52.2753889,
     "laengengrad": 8.0382876,
     "nachhaltig": false,
-    "bild": "file:///android_asset/Pictures/Aktivitäten/11_Museumsquartier/11_1.jpg"
+    "bild": "file:///android_asset/Pictures/Aktivitäten/11_Museumquartier/11_1.jpg"
   },
   {
     "id": 32,
@@ -228,7 +228,7 @@
     "breitengrad": 52.2728377,
     "laengengrad": 8.048326,
     "nachhaltig": false,
-    "bild": "file:///android_asset/Pictures/Aktivitäten/14_Mindhunters/14_1.jpg"
+    "bild": "file:///android_asset/Pictures/Aktivitäten/14_Mindhunters/14_2.jpg"
   },
   {
     "id": 41,
@@ -347,7 +347,7 @@
     "breitengrad": 52.2734612,
     "laengengrad": 8.044132,
     "nachhaltig": false,
-    "bild": "file:///android_asset/Pictures/Bars/22_Gruener_Jaeger/22_1.jpg"
+    "bild": "file:///android_asset/Pictures/Bars/22_Gruener_jaeger/22_2.jpg"
   },
   {
     "id": 53,
@@ -375,6 +375,6 @@
     "breitengrad": 52.271834,
     "laengengrad": 8.043438,
     "nachhaltig": true,
-    "bild": "file:///android_asset/Pictures/Bars/24_Unikeller/24_1.jpg"
+    "bild": "file:///android_asset/Pictures/Bars/25_Unikeller/25_1.jpg"
   }
 ]

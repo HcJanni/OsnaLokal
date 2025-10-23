@@ -21,7 +21,7 @@ public class RoutesData {
                 "Asiatische Genüsse",
                 "Entdecke die besten asiatischen Restaurants der Stadt.",
                 "Restaurant", // Kategorie
-                "file:///android_asset/Sehenswürdigkeiten/41_Buddah_Bowl/41_1.jpg",
+                "file:///android_asset/Pictures/Restaurants/41_Buddah_Bowl/41_3.jpg",
                 Arrays.asList(11, 12, 18), // Location IDs
                 150, // Dauer: 2,5 Stunden (150 Minuten)
                 new HashSet<>(Arrays.asList("asiatisch", "vegetarisch", "vegan")), // Tags
@@ -35,7 +35,7 @@ public class RoutesData {
                 "Osnabrücker Kneipen-Runde",
                 "Eine klassische Tour durch die beliebtesten Kneipen der Altstadt.",
                 "Bar", // Kategorie
-                "file:///android_asset/Sehenswürdigkeiten/22/Gruener_jaeger/22_1.jpg",
+                "file:///android_asset/Pictures/Bars/22_Gruener_jaeger/22_2.jpg",
                 Arrays.asList(52, 54), // Location IDs
                 180
         ));
@@ -47,7 +47,7 @@ public class RoutesData {
                 "Kultur-Spaziergang",
                 "Entdecke die kulturellen Highlights im Herzen Osnabrücks.",
                 "Sehenswürdigkeiten", // Kategorie
-                "file:///android_asset/Sehenswürdigkeiten/51_Hexengang/51_1.jpg",
+                "file:///android_asset/Pictures/Sehenswürdigkeiten/51_Hexengang/51_1.jpg",
                 Arrays.asList(31, 42, 45), // Location IDs
                 120
         ));
@@ -57,7 +57,7 @@ public class RoutesData {
                 "Eine nachhaltige Kulturreise",
                 "Begib dich auf eine Entdeckungstour zu den kulturellen Schätzen und nachhaltigen Orten, die im Herzen Osnabrücks verborgen liegen.",
                 "mix", // Kategorie
-                "file:///android_asset/Sehenswürdigkeiten/55_Altstadt/55_3.jpg",
+                "file:///android_asset/Pictures/Sehenswürdigkeiten/55_Altstadt/55_3.jpg",
                 Arrays.asList(21,11, 41, 17), // Location IDs
                 120
         ));
@@ -67,7 +67,7 @@ public class RoutesData {
                 "Eine nicht nachhaltige Kulturreise",
                 "Begib dich auf eine Entdeckungstour zu den kulturellen Schätzen und nicht nachhaltigen Orten, die im Herzen Osnabrücks verborgen liegen.",
                 "mix", // Kategorie
-                "file:///android_asset/Sehenswürdigkeiten/55_Altstadt/55_2.jpg",
+                "file:///android_asset/Pictures/Sehenswürdigkeiten/55_Altstadt/55_2.jpg",
                 Arrays.asList(31,33, 34, 52), // Location IDs
                 120
         ));
@@ -77,7 +77,7 @@ public class RoutesData {
             "Osnabrück sehen und trinken",
             "",
             "Bar und Sehenswürdigkeiten",
-                "file:///android_asset/Sehenswürdigkeiten/55_Altstadt/55_1.jpg",
+                "file:///android_asset/Pictures/Sehenswürdigkeiten/55_Altstadt/55_1.jpg",
             Arrays.asList(41,46, 52, 54),
                 120
         ));

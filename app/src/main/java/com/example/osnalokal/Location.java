@@ -1,4 +1,5 @@
 package com.example.osnalokal;
+import com.google.gson.annotations.SerializedName;
 
 public class Location {
 
@@ -17,6 +18,7 @@ public class Location {
     private final double laengengrad;
     private final String oeffnungszeiten;
     private final String beschreibung;
+    @SerializedName("bild")
     private String imagePfad;
 
     public Location(int id, String name, String art, double bewertungen, int preisspanne, boolean barrierefrei, String telefonnummer, String essensart, boolean vegetarisch, boolean vegan, double breitengrad, double laengengrad, String oeffnungszeiten, String beschreibung, String imagePfad) {

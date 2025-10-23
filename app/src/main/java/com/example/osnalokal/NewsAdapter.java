@@ -36,12 +36,13 @@ public class NewsAdapter extends RecyclerView.Adapter<NewsAdapter.NewsViewHolder
     @Override
     public void onBindViewHolder(@NonNull NewsViewHolder holder, int position) {
         NewsItem currentItem = newsList.get(position);
-        // ... (Daten binden bleibt gleich)
         holder.title.setText(currentItem.getTitle());
         holder.distance.setText(currentItem.getDescription());
         Glide.with(holder.itemView.getContext())
-                .load("file:///android_asset/Pictures/default.png")
+                .load(currentItem.getImagePfad())
                 .centerCrop()
+                .placeholder(R.drawable.rec_tours_testimg)
+                .error(R.drawable.rec_tours_testimg)
                 .into(holder.image);
         // Klick-Listener auf die ganze Zeile setzen
         holder.itemView.setOnClickListener(v -> {

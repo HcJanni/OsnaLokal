@@ -46,8 +46,10 @@ public class RouteAdapter extends RecyclerView.Adapter<RouteAdapter.RouteViewHol
         String imagePath = currentRoute.getImagePfad();
 
         Glide.with(holder.itemView.getContext())
-                .load("file:///android_asset/Pictures/default.png") // Pfad zu den Assets
+                .load(imagePath)
                 .centerCrop()
+                .placeholder(R.drawable.rec_tours_testimg)
+                .error(R.drawable.rec_tours_testimg)
                 .into(holder.image);
         // Wir können die kleinen Chips für andere Infos nutzen, z.B. die Anzahl der Stationen
         holder.categoryChip.setText("Route");
