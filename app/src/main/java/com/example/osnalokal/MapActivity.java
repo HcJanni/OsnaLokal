@@ -154,7 +154,11 @@ public class MapActivity extends AppCompatActivity {
                         tvRouteDetails.setText(totalDistanceString + " • ca. " + totalDurationString);
                         String javascript = "javascript:drawRouteFromEncodedPath('" + encodedPath.replace("\\", "\\\\") + "')";
                         if (isPageLoaded) {
-                            webView.evaluateJavascript(javascript, null); // Seite schon bereit? Sofort zeichnen.
+                            // Wenn ja, führe den Befehl sofort aus
+                            webView.evaluateJavascript(javascript, null);
+                        } else {
+                            webView.evaluateJavascript(javascript, null);
+                            webView.evaluateJavascript(javascript, null);
                         }
                     });
                 }
