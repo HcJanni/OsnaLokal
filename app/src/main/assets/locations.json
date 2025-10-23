@@ -12,7 +12,8 @@
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.273085,
-    "laengengrad": 8.0500529
+    "laengengrad": 8.0500529,
+    "nachhaltig" : true
   },
   {
     "id": 12,
@@ -27,7 +28,8 @@
     "vegetarisch": false,
     "vegan": false,
     "breitengrad": 52.2738871,
-    "laengengrad": 8.0457893
+    "laengengrad": 8.0457893,
+    "nachhaltig" : false
   },
   {
     "id": 13,
@@ -42,7 +44,8 @@
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.2651942,
-    "laengengrad": 8.0640171
+    "laengengrad": 8.0640171,
+    "nachhaltig" : true
   },
   {
     "id": 14,
@@ -57,7 +60,8 @@
     "vegetarisch": false,
     "vegan": false,
     "breitengrad": 52.2667643,
-    "laengengrad": 8.0536759
+    "laengengrad": 8.0536759,
+    "nachhaltig" : true
   },
   {
     "id": 15,
@@ -72,7 +76,8 @@
     "vegetarisch": false,
     "vegan": false,
     "breitengrad": 52.2806483,
-    "laengengrad": 8.043771
+    "laengengrad": 8.043771,
+    "nachhaltig" : true
   },
   {
     "id": 16,
@@ -87,7 +92,8 @@
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.2715419,
-    "laengengrad": 8.0501296
+    "laengengrad": 8.0501296,
+    "nachhaltig" : true
   },
   {
     "id": 17,
@@ -102,7 +108,8 @@
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.2755056,
-    "laengengrad": 8.044341
+    "laengengrad": 8.044341,
+    "nachhaltig" : true
   },
   {
     "id": 18,
@@ -117,7 +124,8 @@
     "vegetarisch": true,
     "vegan": true,
     "breitengrad": 52.2871871,
-    "laengengrad": 8.0256127
+    "laengengrad": 8.0256127,
+    "nachhaltig" : false
   },
   {
     "id": 19,
@@ -132,7 +140,8 @@
     "vegetarisch": false,
     "vegan": false,
     "breitengrad": 52.2895497,
-    "laengengrad": 8.0216341
+    "laengengrad": 8.0216341,
+    "nachhaltig" : true
   },
   {
     "id": 21,
@@ -143,7 +152,8 @@
     "oeffnungszeiten": "24h",
     "barrierefrei": true,
     "breitengrad": 52.270993,
-    "laengengrad": 8.04415
+    "laengengrad": 8.04415,
+    "nachhaltig" : true
   },
   {
     "id": 22,
@@ -154,7 +164,8 @@
     "oeffnungszeiten": "24h",
     "barrierefrei": true,
     "breitengrad": 52.275818,
-    "laengengrad": 8.031176
+    "laengengrad": 8.031176,
+    "nachhaltig" : true
   },
   {
     "id": 31,
@@ -165,7 +176,8 @@
     "preisspanne": 8,
     "barrierefrei": true,
     "breitengrad": 52.2753889,
-    "laengengrad": 8.0382876
+    "laengengrad": 8.0382876,
+    "nachhaltig" : false
   },
   {
     "id": 32,
@@ -176,7 +188,8 @@
     "preisspanne": 11,
     "barrierefrei": true,
     "breitengrad": 52.2784791,
-    "laengengrad": 8.0435356
+    "laengengrad": 8.0435356,
+    "nachhaltig" : false
   },
   {
     "id": 33,
@@ -187,7 +200,8 @@
     "preisspanne": 13,
     "barrierefrei": true,
     "breitengrad": 52.2775563,
-    "laengengrad": 8.0502757
+    "laengengrad": 8.0502757,
+    "nachhaltig" : false
   },
   {
     "id": 34,
@@ -198,7 +212,8 @@
     "preisspanne": 34,
     "barrierefrei": false,
     "breitengrad": 52.2728377,
-    "laengengrad": 8.048326
+    "laengengrad": 8.048326,
+    "nachhaltig" : false
   },
   {
     "id": 41,
@@ -209,29 +224,32 @@
     "oeffnungszeiten": "24h",
     "barrierefrei": true,
     "breitengrad": 52.277678,
-    "laengengrad": 8.045625
+    "laengengrad": 8.045625,
+    "nachhaltig" : true
   },
   {
     "id": 42,
-    "name": "Osnabruecker Dom",
+    "name": "Osnabrücker Dom",
     "art": "Sehenswuerdigkeit",
     "bewertungen": 5.0,
     "preisspanne": 0,
     "oeffnungszeiten": "24h",
     "barrierefrei": false,
     "breitengrad": 52.277166,
-    "laengengrad": 8.044662
+    "laengengrad": 8.044662,
+    "nachhaltig" : true
   },
   {
     "id": 43,
-    "name": "Pluemersturm",
+    "name": "Plümersturm",
     "art": "Sehenswuerdigkeit",
     "bewertungen": 4.7,
     "preisspanne": 0,
     "oeffnungszeiten": "24h",
     "barrierefrei": false,
     "breitengrad": 52.269899,
-    "laengengrad": 8.042340
+    "laengengrad": 8.042340,
+    "nachhaltig" : true
   },
   {
     "id": 44,
@@ -242,7 +260,8 @@
     "oeffnungszeiten": "24h",
     "barrierefrei": false,
     "breitengrad": 52.280411,
-    "laengengrad": 8.045345
+    "laengengrad": 8.045345,
+    "nachhaltig" : true
   },
   {
     "id": 45,
@@ -253,18 +272,20 @@
     "oeffnungszeiten": "24h",
     "barrierefrei": true,
     "breitengrad": 52.2774313,
-    "laengengrad": 8.04185
+    "laengengrad": 8.04185,
+    "nachhaltig" : true
   },
   {
     "id": 46,
-    "name": "Buergerbrunnen Hans Gerd Ruwe",
+    "name": "Bürgerbrunnen Hans Gerd Ruwe",
     "art": "Touristenattraktion",
     "bewertungen": 4.7,
     "preisspanne": 0,
     "oeffnungszeiten": "24h",
     "barrierefrei": false,
     "breitengrad": 52.2759533,
-    "laengengrad": 8.0432642
+    "laengengrad": 8.0432642,
+    "nachhaltig" : true
   },
   {
     "id": 47,
@@ -276,7 +297,8 @@
     "oeffnungszeiten": null,
     "barrierefrei": true,
     "breitengrad": 52.2818365,
-    "laengengrad": 8.0282419
+    "laengengrad": 8.0282419,
+    "nachhaltig" : true
   },
   {
     "id": 51,
@@ -288,11 +310,12 @@
     "barrierefrei": true,
     "telefonnummer": "054176029499",
     "breitengrad": 52.2752428,
-    "laengengrad": 8.0422041
+    "laengengrad": 8.0422041,
+    "nachhaltig" : true
   },
   {
     "id": 52,
-    "name": "Gruener Jaeger",
+    "name": "Grüner Jaeger",
     "art": "Bar",
     "oeffnungszeiten": "Mo. - So. : 11:00 - 01:00",
     "bewertungen": 4.4,
@@ -300,7 +323,8 @@
     "barrierefrei": true,
     "telefonnummer": "054127360",
     "breitengrad": 52.2734612,
-    "laengengrad": 8.044132
+    "laengengrad": 8.044132,
+    "nachhaltig" : false
   },
   {
     "id": 53,
@@ -312,7 +336,8 @@
     "barrierefrei": false,
     "telefonnummer": "054144029284",
     "breitengrad": 52.2793869,
-    "laengengrad": 8.0415181
+    "laengengrad": 8.0415181,
+    "nachhaltig" : false
   },
   {
     "id": 54,
@@ -324,6 +349,7 @@
     "barrierefrei": false,
     "telefonnummer": "01783178363",
     "breitengrad": 52.271834,
-    "laengengrad": 8.043438
+    "laengengrad": 8.043438,
+    "nachhaltig" : true
   }
 ]
